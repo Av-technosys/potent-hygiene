@@ -17,7 +17,7 @@ const products = [
   },
   {
     title: "Reusable Menstrual Cup",
-    image: "/product.png",
+    image: "/product2.png",
     price: 299,
     originalPrice: 399,
     rating: 4,
@@ -27,7 +27,7 @@ const products = [
   },
   {
     title: "Daily Comfort Pantyliners",
-    image: "/product.png",
+    image: "/product3.png",
     price: 299,
     originalPrice: 399,
     rating: 4,
@@ -37,7 +37,7 @@ const products = [
   },
   {
     title: "Complete Care Bundle",
-    image: "/product.png",
+    image: "/product4.png",
     price: 299,
     originalPrice: 399,
     rating: 4,
@@ -49,23 +49,27 @@ const products = [
 
 export function BestsellingProducts() {
   return (
-    <section className="py-10 bg-[#FDFCF9]">
-      <div className="container mx-auto px-16">
+    <section className="py-10 md:bg-[#F8F6F1] overflow-hidden">
+      <div className="container mx-auto px-4 md:px-16">
+        
         {/* Header */}
-        <div className="text-center mb-12 space-y-4">
-          <h2 className="text-4xl font-serif font-bold text-[#2C5F63]">Bestselling Products</h2>
-          <p className="max-w-2xl mx-auto text-sm text-gray-500">
+        <div className="text-center mb-8 md:mb-12 space-y-2 md:space-y-4">
+          <h2 className="text-3xl md:text-4xl font-serif font-bold text-[#2C5F63]">Bestselling Products</h2>
+          <p className="max-w-2xl mx-auto text-xs md:text-sm text-gray-500">
             Loved by thousands of women. Our most popular products for comfort, care, and confidence.
           </p>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {/* --- X-SCROLL CONTAINER --- */}
+        <div className="flex overflow-x-auto pb-6 gap-4 md:grid md:grid-cols-4 md:gap-6 no-scrollbar snap-x snap-mandatory">
           {products.map((product, index) => {
             const discount = Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100);
             
             return (
-              <div key={index} className="group relative flex flex-col rounded-[24px] bg-white p-3 shadow-sm border border-transparent transition-all hover:shadow-md">
+              <div 
+                key={index} 
+                className="group relative flex flex-col min-w-[260px] md:min-w-0 rounded-[24px] bg-white p-3 shadow-sm border border-transparent transition-all hover:shadow-md snap-start"
+              >
                 {/* Wishlist Button */}
                 <button className="absolute left-5 top-5 z-10 rounded-full bg-white p-1.5 text-gray-400 shadow-sm hover:text-red-500 transition-colors">
                   <Heart className="h-4 w-4" />
@@ -120,7 +124,7 @@ export function BestsellingProducts() {
         </div>
 
         {/* Footer Button */}
-        <div className="mt-12 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <Button variant="outline" className="rounded-full border-[#1A8D91] px-10 py-6 text-[#1A8D91] hover:bg-[#D1E9EC] transition-colors">
             View All Products
           </Button>

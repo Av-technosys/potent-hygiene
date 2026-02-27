@@ -35,8 +35,8 @@ const categories = [
 
 export function CategoryGrid() {
   return (
-    <section className="py-10 bg-[#FDFCF9]">
-      <div className="container mx-auto px-16">
+    <section className="py-10 md:bg-[#F8F6F1]">
+      <div className="container mx-auto md:px-16 px-4">
         {/* Section Header */}
         <div className="text-center mb-12 space-y-4">
           <h2 className="text-4xl font-serif font-bold text-[#2C5F63]">Shop by Category</h2>
@@ -47,15 +47,15 @@ export function CategoryGrid() {
         </div>
 
         {/* Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {categories.map((category) => (
             <Link 
               key={category.id} 
               href={`/category/${category.id}`}
-              className="group block bg-white rounded-4xl p-3 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
+              className="group block bg-white rounded-md p-3 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
             >
               {/* Image Container */}
-              <div className={`relative aspect-square w-full overflow-hidden rounded-4xl  mb-4 flex items-center justify-center`}>
+              <div className={`relative aspect-square w-full overflow-hidden rounded-md  mb-4 flex items-center justify-center`}>
                 <Image
                   src={category.image}
                   alt={category.title}
