@@ -8,22 +8,22 @@ export function Footer() {
 
   return (
     <footer className="bg-[#1A8D91] pt-16 pb-8 py-10 text-white">
-      <div className="container mx-auto px-16">
+      <div className="max-w-6xl mx-auto px-10 ">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
-          
+
           {/* Column 1: Brand & About */}
           <div className="space-y-6">
             <div className="inline-block rounded-xl bg-white p-2">
-              <Image 
-                src="/logo.png" 
-                alt="Potent Hygiene Logo" 
-                width={150} 
-                height={50} 
+              <Image
+                src="/logo.png"
+                alt="Potent Hygiene Logo"
+                width={150}
+                height={50}
                 className="object-contain"
               />
             </div>
             <p className="text-sm leading-relaxed opacity-90">
-              Empowering women with safe, sustainable, and comfortable personal care products. 
+              Empowering women with safe, sustainable, and comfortable personal care products.
               Your wellness, our priority.
             </p>
             <div className="flex gap-4 pt-2">

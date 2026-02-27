@@ -13,20 +13,22 @@ const feedImages = [
 
 export function InstagramFeed() {
   return (
-    <section className="relative w-full overflow-hidden bg-gradient-to-r from-[#1A8D91] to-[#7ED4DB] py-10">
-      <div className="container mx-auto px-16">
+    <section className="w-full md:bg-[#F8F6F1] py-12 md:py-20 overflow-hidden">
+      <div className="container mx-auto px-4 md:px-16">
+        
         {/* Header */}
-        <div className="mb-12 text-center text-white">
-          <h2 className="text-4xl font-serif font-bold lg:text-5xl">Join Our Community</h2>
-          <p className="mt-2 text-lg opacity-90">@potenthygiene</p>
+        <div className="mb-8 md:mb-12 text-center space-y-2">
+          <h2 className="text-3xl md:text-5xl font-serif font-bold text-gray-900">Join Our Community</h2>
+          <p className="text-sm md:text-lg text-gray-500 font-medium">@potenthygiene</p>
         </div>
 
-        {/* Image Row */}
-        <div className="flex flex-nowrap justify-center gap-4 overflow-x-auto pb-12 lg:flex-row lg:overflow-visible">
+        {/* --- Layout: Mobile (X-Scroll) | Laptop (Grid) --- */}
+        {/* Mobile par 'flex overflow-x-auto' aur Laptop par 'md:grid' */}
+        <div className="flex overflow-x-auto pb-8 gap-4 md:grid md:grid-cols-4 lg:grid-cols-5 md:overflow-visible no-scrollbar snap-x snap-mandatory">
           {feedImages.map((image) => (
             <div 
               key={image.id} 
-              className="relative aspect-square w-48 flex-shrink-0 overflow-hidden rounded-[24px] bg-white/20 shadow-lg transition-transform hover:scale-105 lg:w-56"
+              className="relative aspect-square min-w-[200px] md:min-w-0 w-full overflow-hidden rounded-[20px] md:rounded-[32px] shadow-sm transition-transform hover:scale-105 snap-start"
             >
               <Image
                 src={image.src}
@@ -39,13 +41,13 @@ export function InstagramFeed() {
         </div>
 
         {/* Action Button */}
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center pt-2">
           <Button 
             variant="outline" 
-            className="group rounded-full border-2 border-white bg-transparent px-8 py-6 text-white hover:bg-white hover:text-[#1A8D91]"
+            className="group rounded-full border border-[#1A8D91] bg-white px-8 py-6 text-[#1A8D91] shadow-sm hover:bg-[#1A8D91] hover:text-white transition-all duration-300"
           >
             <Instagram className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
-            Follow us on Instagram
+            <span className="font-bold text-sm">Follow us on Instagram</span>
           </Button>
         </div>
       </div>

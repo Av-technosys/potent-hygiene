@@ -11,10 +11,12 @@ import { InstagramFeed } from "@/app/components/common/homepage/InstaFeed";
 import { BlogSection } from "@/app/components/common/homepage/Blogs";
 import { Newsletter } from "@/app/components/common/homepage/NewsLetter";
 import { Footer } from "@/app/components/common/Footer";
+import StoryTruth from "./components/common/homepage/StoryTruth";
+import AboutStory from "./components/common/homepage/AboutStory";
 
 export default function Home() {
   return (
-    <main className="min-h-screen   bg-white">
+    <main className="min-h-screen   md:bg-white bg-linear-to-b from-[#E2F4F7] to-[#FFFFFF]">
       <Navbar />
 
       <Hero />
@@ -23,19 +25,26 @@ export default function Home() {
 
       <CategoryGrid />
 
+      <StoryTruth/>
+
       <BestsellingProducts />
 
       <OurStory />
 
       <WhyChooseUs />
 
-      <Testimonials />
+      <AboutStory/>
 
       <InstagramFeed />
+      <Testimonials />
+
+      <Newsletter />
+
+   
+
 
       <BlogSection />
 
-      <Newsletter />
 
       <Footer />
     </main>
