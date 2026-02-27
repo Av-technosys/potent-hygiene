@@ -116,13 +116,14 @@ export function Navbar() {
           <button className="hidden md:block hover:opacity-70">
             <Heart className="md:h-5 md:w-5 w-6 h-6 " />
           </button>
+         <Link href="/login">
           <Button
             variant="ghost"
             className="hidden md:flex rounded-full bg-[#D1E9EC] px-6 text-[#1A8D91] hover:bg-[#b8dce1]"
           >
             <User className="mr-2 h-4 w-4" />
             Login
-          </Button>
+          </Button></Link>
         </div>
       </div>
     </nav>
