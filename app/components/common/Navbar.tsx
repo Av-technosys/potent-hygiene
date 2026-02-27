@@ -53,13 +53,14 @@ export function Navbar() {
           </button>
 
           {/* Login Button - Styled to match Figma pill shape */}
+         <Link href="/login">
           <Button
             variant="ghost"
             className="rounded-full bg-[#D1E9EC] px-6  text-[#1A8D91] hover:bg-[#b8dce1] hover:text-[#1A8D91]"
           >
             <User className="mr-2 h-4 w-4" />
             Login
-          </Button>
+          </Button></Link>
         </div>
       </div>
     </nav>
