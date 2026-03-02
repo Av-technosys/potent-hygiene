@@ -1,22 +1,17 @@
 import React from 'react'
-import FilterBar from '../components/common/category/filterTopBar'
-import CategoryProducts from '../components/common/category/categoryProduct'
-import FiltersSidebar from '../components/common/category/filterSideBar'
 import { Navbar } from '../components/common/Navbar'
 import { Footer } from '../components/common/Footer'
-import CategoryProduct from '../components/common/category/categoryProduct'
+import CategoryProducts from '../components/common/category/categoryProducts'
+import FiltersSidebar from '../components/common/category/filterSideBar'
 
 const page = () => {
     return (
         <div>
             <Navbar />
-            <FilterBar total={6} keyword="abcabc" />
             <div className="max-w-7xl mx-auto py-8 px-6 flex gap-8">
                 <FiltersSidebar />
-                <CategoryProduct />
-
+                <CategoryProducts />
             </div>
-
             <Footer />
         </div>
     )

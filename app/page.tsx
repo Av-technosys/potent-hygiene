@@ -25,7 +25,7 @@ export default function Home() {
 
       <CategoryGrid />
 
-      <StoryTruth/>
+      <StoryTruth />
 
       <BestsellingProducts />
 
@@ -33,14 +33,14 @@ export default function Home() {
 
       <WhyChooseUs />
 
-      <AboutStory/>
+      <AboutStory />
 
       <InstagramFeed />
       <Testimonials />
 
       <Newsletter />
 
-   
+
 
 
       <BlogSection />
