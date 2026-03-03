@@ -1,4 +1,3 @@
-// app/page.tsx
 import { Navbar } from "@/app/components/common/Navbar";
 import { Hero } from "@/app/components/common/homepage/HeroSection";
 import { BrandAccordion } from "@/app/components/common/homepage/Brand";
@@ -13,39 +12,29 @@ import { Newsletter } from "@/app/components/common/homepage/NewsLetter";
 import { Footer } from "@/app/components/common/Footer";
 import StoryTruth from "./components/common/homepage/StoryTruth";
 import AboutStory from "./components/common/homepage/AboutStory";
+import Faq from "./components/common/homepage/Faq";
+import { ProductCategories } from "./components/common/homepage/ProductCategories";
+import { WhatsAppWidget } from "./components/common/homepage/WhatsAppWidget";
 
 export default function Home() {
   return (
     <main className="min-h-screen   md:bg-white bg-linear-to-b from-[#E2F4F7] to-[#FFFFFF]">
       <Navbar />
-
       <Hero />
-
       <BrandAccordion />
-
       <CategoryGrid />
-
       <StoryTruth />
-
       <BestsellingProducts />
-
       <OurStory />
-
       <WhyChooseUs />
-
       <AboutStory />
-
       <InstagramFeed />
       <Testimonials />
-
+      <ProductCategories/>
       <Newsletter />
-
-
-
-
       <BlogSection />
-
-
+      <Faq/>
+      <WhatsAppWidget/>
       <Footer />
     </main>
   );

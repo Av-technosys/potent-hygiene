@@ -14,13 +14,13 @@ export function BrandAccordion() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   return (
-    <section className="py-10 md:bg-[#F8F6F1">
+    <section className="py-10 md:bg-[#F8F6F1]">
       <div className="container mx-auto px-4 md:px-16">
         <div className="text-center mb-10 space-y-2">
-          <h2 className="text-3xl font-serif font-bold text-[#333333]">
+          <h2 className="md:text-4xl text-3xl font-serif font-bold text-[#333333]">
             Our Trusted Brands
           </h2>
-          <p className="max-w-xl mx-auto text-[11px] md:text-xs text-gray-500">
+          <p className="max-w-2xl mx-auto text-sm text-black/50 leading-relaxed">
             Discover our range of brands for premium feminine hygiene products,
             thoughtfully crafted for your comfort and wellness.
           </p>
@@ -56,7 +56,7 @@ export function BrandAccordion() {
           ))}
         </div>
         <div
-          className="hidden md:flex flex-row h-[350px] w-full gap-0 overflow-hidden  shadow-lg border border-gray-100"
+          className="hidden md:flex flex-row h-87.5 w-full gap-0 overflow-hidden  shadow-lg border border-gray-100"
           onMouseLeave={() => setHoveredId(null)}
         >
           {brands.map((brand) => (

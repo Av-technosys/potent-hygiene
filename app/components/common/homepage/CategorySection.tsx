@@ -39,8 +39,8 @@ export function CategoryGrid() {
       <div className="container mx-auto md:px-16 px-4">
         {/* Section Header */}
         <div className="text-center mb-12 space-y-4">
-          <h2 className="text-4xl font-serif font-bold text-[#2C5F63]">Shop by Category</h2>
-          <p className="max-w-2xl mx-auto text-sm text-gray-500 leading-relaxed">
+          <h2 className="md:text-4xl text-3xl font-serif font-bold text-[#333333]">Shop by Category</h2>
+          <p className="max-w-2xl mx-auto text-sm text-black/50 leading-relaxed">
             Discover our range of premium feminine hygiene products, 
             thoughtfully crafted for your comfort and wellness.
           </p>
