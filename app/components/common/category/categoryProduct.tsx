@@ -4,74 +4,127 @@ import Image from "next/image"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Heart } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useState, useEffect } from "react"
 
 const products = [
-  { id: 1, title: "Sanitary Pads", img: "/product.png", tag: "Bestseller" },
-  { id: 2, title: "Menstrual Cup", img: "/product.png", tag: "New" },
-  { id: 3, title: "Pantyliners", img: "/product.png", tag: "Popular" },
-  { id: 4, title: "Combo", img: "/product.png", tag: "Value Pack" },
-  { id: 5, title: "Sanitary Pads", img: "/product.png", tag: "Bestseller" },
-  { id: 6, title: "Menstrual Cup", img: "/product.png", tag: "New" },
-  { id: 7, title: "Pantyliners", img: "/product.png", tag: "Popular" },
-  { id: 8, title: "Combo", img: "/product.png", tag: "Value Pack" },
-  { id: 9, title: "Combo", img: "/product.png", tag: "Value Pack" },
-  { id: 10, title: "Sanitary Pads", img: "/product.png", tag: "Bestseller" },
-  { id: 11, title: "Menstrual Cup", img: "/product.png", tag: "New" },
-  { id: 12, title: "Pantyliners", img: "/product.png", tag: "Popular" },
+
+  {id:1,title:"Sanitary Pads",img:"/product.png"},
+  {id:2,title:"Sanitary Pads",img:"/product.png"},
+
+  {id:3,title:"Menstrual Cup",img:"/product.png"},
+  {id:4,title:"Menstrual Cup",img:"/product.png"},
+
+  {id:5,title:"Pantyliners",img:"/product.png"},
+  {id:6,title:"Pantyliners",img:"/product.png"},
+
+  {id:7,title:"Combo",img:"/product.png"},
+  {id:8,title:"Combo",img:"/product.png"}
+
 ]
 
-export default function CategoryProducts() {
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 flex-1">
-      {products.map((product) => (
-        <Card
-          key={product.id}
-          className="relative rounded-3xl bg-white shadow-sm hover:shadow-md transition-all overflow-hidden"
-        >
-          <CardContent className="p-3 md:p-4 relative">
+export default function CategoryProducts(){
 
-            {/* Image Wrapper */}
-            <div className="relative aspect-square w-full bg-[#EADCF3] rounded-xl overflow-visible flex items-center justify-center">
+  const router = useRouter()
 
-              {/* Heart */}
-              <div className="absolute -top-3 left-4 bg-white rounded-full p-2 shadow-sm z-20">
-                <Heart className="w-4 h-4 text-gray-500 hover:text-red-500 transition" />
-              </div>
+  const [wishlist,setWishlist] = useState<number[]>([])
+
+  useEffect(()=>{
+    const data = JSON.parse(localStorage.getItem("wishlist") || "[]")
+    setWishlist(data.map((p:any)=>p.id))
+  },[])
+
+  const toggleWishlist = (product:any)=>{
+
+    const list = JSON.parse(localStorage.getItem("wishlist") || "[]")
+
+    const exists = list.find((item:any)=>item.id === product.id)
+
+    let updated
+
+    if(exists){
+      updated = list.filter((item:any)=>item.id !== product.id)
+    }else{
+      updated = [...list,product]
+    }
+
+    localStorage.setItem("wishlist",JSON.stringify(updated))
+
+    // navbar instant update
+    window.dispatchEvent(new StorageEvent("storage",{key:"wishlist"}))
+
+    setWishlist(updated.map((p:any)=>p.id))
+  }
+
+  return(
+
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 flex-1">
+
+      {products.map((product)=>(
+
+        <Card key={product.id} className="rounded-3xl bg-white shadow-sm">
+
+          <CardContent className="p-4">
+
+            <div className="relative aspect-square bg-[#EADCF3] rounded-xl flex items-center justify-center overflow-hidden">
+
+              {/* Wishlist */}
+
+              <button
+                onClick={()=>toggleWishlist(product)}
+                className="absolute top-2 left-2 bg-white rounded-full p-1 shadow"
+              >
+                <Heart
+                  className={`w-4 h-4 ${
+                    wishlist.includes(product.id)
+                    ? "fill-red-500 text-red-500"
+                    : "text-gray-500"
+                  }`}
+                />
+              </button>
 
               {/* Discount */}
-              <div className="absolute -top-3 right-4 bg-[#1A8D91] text-white text-xs px-3 py-1 rounded-full font-semibold shadow-sm z-20">
-                25% OFF
-              </div>
 
-              {/* Product Image */}
+              <span className="absolute top-2 right-2 bg-[#1A8D91] text-white text-xs px-2 py-1 rounded-full">
+                25% OFF
+              </span>
+
               <Image
                 src={product.img}
                 alt={product.title}
-                width={180}
-                height={180}
-                className="object-contain rounded-xl"
+                width={160}
+                height={160}
               />
 
-              {/* Tag - Half inside half outside */}
-              <div className="absolute -bottom-3 left-4 bg-emerald-500 text-white text-xs px-3 py-1 rounded-full font-medium shadow-sm z-20">
-                {product.tag}
-              </div>
+              {/* Badge */}
+
+              <span className="absolute bottom-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+                Best Seller
+              </span>
+
             </div>
 
-            {/* Content */}
-            <div className="mt-6 space-y-3">
-              <h3 className="text-base font-semibold text-gray-800">
+            <div className="mt-5 space-y-3">
+
+              <h3 className="font-semibold text-gray-800">
                 {product.title}
               </h3>
 
-              <Button className="w-full rounded-xl bg-[#1A8D91] hover:bg-[#146e71] text-white font-medium">
+              <Button
+                className="w-full rounded-xl bg-[#1A8D91]"
+                onClick={()=>router.push(`/shop?type=${product.title}`)}
+              >
                 View all
               </Button>
+
             </div>
 
           </CardContent>
+
         </Card>
       ))}
+
     </div>
+
   )
 }

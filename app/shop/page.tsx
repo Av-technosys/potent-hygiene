@@ -11,7 +11,7 @@ const page = () => {
     return (
         <div>
             <Navbar />
-            <FilterBar total={6} keyword="abcabc" />
+         <FilterBar />
             <div className="max-w-7xl mx-auto py-8 px-6 flex gap-8">
                 <FiltersSidebar />
                   <CategoryProducts />
