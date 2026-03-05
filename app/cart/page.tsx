@@ -1,5 +1,5 @@
 import { Navbar } from "@/app/components/common/Navbar";
-import { Footer } from "@/app/components/common/Footer";
+// import { Footer } from "@/app/components/common/Footer";
 import { CartItems } from "../components/common/cart/CartItems";
 import { OrderSummary } from "../components/common/cart/OrderSummary";
 import { WhatsAppWidget } from "../components/common/homepage/WhatsAppWidget";
@@ -20,7 +20,7 @@ export default function CartPage() {
         </div>
             <RelatedProducts />
       </main>
-      <Footer />
+      {/* <Footer /> */}
       <WhatsAppWidget />
     </div>
   );

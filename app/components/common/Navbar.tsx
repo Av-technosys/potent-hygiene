@@ -1,23 +1,41 @@
 "use client"; 
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { Search, ShoppingBag, Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { IconBuildingStore, IconHome, IconInfoCircle, IconMenu2, IconNews, IconPhone, IconSquareRoundedX, IconUser } from "@tabler/icons-react";
+import { 
+  IconBuildingStore, IconHome, IconInfoCircle, IconMenu2, IconNews, 
+  IconPhone, IconSquareRoundedX, IconUser, IconLayoutDashboard,
+  IconHistory, IconStar, IconShieldLock, IconAddressBook
+} from "@tabler/icons-react";
 
 const navLinks = [
-  { name: "Home", href: "/", icon: <IconHome size={20} />, active: true },
+  { name: "Home", href: "/", icon: <IconHome size={20} /> },
   { name: "Shop", href: "/shop", icon: <IconBuildingStore size={20} /> },
   { name: "Contact", href: "/content", icon: <IconPhone size={20} /> }, 
   { name: "Blogs", href: "/blog", icon: <IconNews size={20} /> },
   { name: "About", href: "/about", icon: <IconInfoCircle size={20} /> },
 ];
 
+const dashboardLinks = [
+  { name: "Dashboard", href: "/dashboard", icon: <IconLayoutDashboard size={20} /> },
+  { name: "Profile Info", href: "/dashboard/profile", icon: <IconUser size={20} /> },
+  { name: "Address Book", href: "/dashboard/address", icon: <IconAddressBook size={20} /> },
+  { name: "Order History", href: "/dashboard/orders", icon: <IconHistory size={20} /> },
+  { name: "Review & Ratings", href: "/dashboard/reviews", icon: <IconStar size={20} /> },
+  { name: "Rewards & Security", href: "/dashboard/rewards", icon: <IconShieldLock size={20} /> },
+];
+
 export function Navbar() {
   const [open, setOpen] = useState(false); 
+  const pathname = usePathname();
+
+  // Glitch rokne ke liye useMemo use kiya hai
+  const isDashboard = useMemo(() => pathname.startsWith("/dashboard"), [pathname]);
 
   return (
     <nav className="w-full border-b bg-white relative">
@@ -33,97 +51,80 @@ export function Navbar() {
               <SheetContent side="left" className="w-[300px] bg-white p-0 border-r-0 [&>button]:hidden">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
                 <div className="flex flex-col h-full">
+                  
+                  {/* Close Button Section */}
                   <div className="px-7 pt-6 pb-6">
                     <button onClick={() => setOpen(false)} className="text-[#1A8D91]">
                       <IconSquareRoundedX size={35} />
                     </button>
                   </div>
 
-                  <div className="flex-1 space-y-1 px-3">
-                    {navLinks.map((link) => (
-                      <Link
-                        key={link.name}
-                        href={link.href}
-                        onClick={() => setOpen(false)} 
-                        className={`flex items-center space-x-4 px-4 py-4 rounded-r-xl transition-all ${
-                          link.active 
-                          ? "bg-[#D1E9EC] text-[#1A8D91] border-l-[8px] border-[#1A8D91] rounded-md font-semibold" 
-                          : "text-gray-600 hover:bg-gray-50"
-                        }`}
-                      >
-                        <span className={link.active ? "text-[#1A8D91]" : "text-gray-500"}>
-                          {link.icon}
-                        </span>
-                        <span className="text-[16px]">{link.name}</span>
-                      </Link>
-                    ))}
+                  {/* Menu Section - Key lagayi hai glitch rokne ke liye */}
+                  <div className="flex-1 space-y-1 px-3" key={isDashboard ? "dash-menu" : "main-menu"}>
+                    {(isDashboard ? dashboardLinks : navLinks).map((link) => {
+                      const isActive = pathname === link.href;
+                      return (
+                        <Link
+                          key={link.name}
+                          href={link.href}
+                          onClick={() => setOpen(false)} 
+                          className={`flex items-center space-x-4 px-4 py-4 rounded-r-xl transition-all ${
+                            isActive 
+                            ? "bg-[#D1E9EC] text-[#1A8D91] border-l-[8px] border-[#1A8D91] rounded-md font-semibold" 
+                            : "text-gray-600 hover:bg-gray-50"
+                          }`}
+                        >
+                          <span className={isActive ? "text-[#1A8D91]" : "text-gray-500"}>
+                            {link.icon}
+                          </span>
+                          <span className="text-[16px]">{link.name}</span>
+                        </Link>
+                      );
+                    })}
                   </div>
 
+                  {/* Bottom Logic: Toggle between Dashboard and Home */}
                   <div className="px-3 mb-6">
                     <Link
-                      href="/account"
+                      href={isDashboard ? "/" : "/dashboard"}
                       onClick={() => setOpen(false)}
                       className="flex items-center space-x-4 px-4 py-4 rounded-r-xl bg-[#D1E9EC] text-[#1A8D91] border-l-[8px] rounded-md border-[#1A8D91] font-semibold"
                     >
-                      <IconUser size={20} />
-                      <span className="text-[16px]">Account</span>
+                      {isDashboard ? <IconHome size={20} /> : <IconUser size={20} />}
+                      <span className="text-[16px]">{isDashboard ? "Main Website" : "Account Dashboard"}</span>
                     </Link>
                   </div>
                 </div>
               </SheetContent>
             </Sheet>
           </div>
+          
           <Link href="/" className="hidden md:block flex-shrink-0">
-            <Image
-              src="/logo.png"
-              alt="Potent Logo"
-              width={120}
-              height={40}
-              className="h-36 w-auto"
-            />
-          </Link>
-        </div>
-        <div className="md:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <Link href="/">
-            <Image
-              src="/logo.png"
-              alt="Potent Logo"
-              width={110}
-              height={35}
-              className="h-28 w-auto"
-            />
+            <Image src="/logo.png" alt="Logo" width={120} height={40} className="h-36 w-auto" />
           </Link>
         </div>
 
+        <div className="md:hidden absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+          <Link href="/"><Image src="/logo.png" alt="Logo" width={110} height={35} className="h-28 w-auto" /></Link>
+        </div>
+
+        {/* Desktop Links - Hamesha Main Website wali hi rahengi */}
         <div className="hidden space-x-8 md:flex">
           {navLinks.map((link) => (
-            <Link
-              key={link.name}
-              href={link.href}
-              className="text-sm font-medium text-[#1A8D91] transition-colors hover:text-[#146e71]"
-            >
+            <Link key={link.name} href={link.href} className="text-sm font-medium text-[#1A8D91] hover:text-[#146e71]">
               {link.name}
             </Link>
           ))}
         </div>
+
         <div className="flex items-center space-x-3 md:space-x-5 text-[#1A8D91]">
-          <button className="hover:opacity-70">
-            <ShoppingBag className="h-5 w-5" />
-          </button>
-          <button className="hover:opacity-70">
-            <Search className="md:h-5 md:w-5 w-6 h-6 " />
-          </button>
-          <button className="hidden md:block hover:opacity-70">
-            <Heart className="md:h-5 md:w-5 w-6 h-6 " />
-          </button>
-         <Link href="/login">
-          <Button
-            variant="ghost"
-            className="hidden md:flex rounded-full bg-[#D1E9EC] px-6 text-[#1A8D91] hover:bg-[#b8dce1]"
-          >
-            <User className="mr-2 h-4 w-4" />
-            Login
-          </Button></Link>
+          <button><ShoppingBag className="h-5 w-5" /></button>
+          <button><Search className="h-5 w-5" /></button>
+          <Link href="/dashboard/profile">
+             <Button variant="ghost" className="hidden md:flex rounded-full bg-[#D1E9EC] px-6 text-[#1A8D91]">
+               <User className="mr-2 h-4 w-4" /> Account
+             </Button>
+          </Link>
         </div>
       </div>
     </nav>

@@ -1,8 +1,9 @@
 // app/checkout/page.tsx
 import { Navbar } from "@/app/components/common/Navbar";
-import { Footer } from "@/app/components/common/Footer";
+// import { Footer } from "@/app/components/common/Footer";
 import { CheckoutForm } from "../components/common/checkout/CheckoutForm";
 import { CheckoutSummary } from "../components/common/checkout/CheckoutSummary";
+// import Footer from "../components/common/Footer";
 export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-[#FDFCF9]">
@@ -24,7 +25,7 @@ export default function CheckoutPage() {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }

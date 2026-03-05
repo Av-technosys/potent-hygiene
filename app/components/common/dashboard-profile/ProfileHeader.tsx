@@ -21,7 +21,7 @@ export const ProfileHeader = ({ isEditing, onEdit }: HeaderProps) => (
         className="bg-[#168BA0] hover:bg-[#168BA0] text-white rounded-lg px-5 py-2 h-10 font-semibold text-[14px] flex items-center gap-2 transition-colors shadow-none"
       >
         <IconPencil size={18} stroke={2.5} />
-        Edit Profile
+       <span className="md:block hidden"> Edit Profile</span>
       </Button>
     )}
   </Card>
