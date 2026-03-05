@@ -9,7 +9,8 @@ import Image from 'next/image'
 import AboutHero from '../components/common/Product-detail/abouthero'
 import JournalsSection from '../components/common/Product-detail/journal'
 import RelatedProducts from '../components/common/Product-detail/alsolike'
-import { Footer } from '../components/common/Footer'
+import Footer from '../components/common/Footer'
+
 
 const page = () => {
     return (
@@ -38,7 +39,7 @@ const page = () => {
                 <JournalsSection />
                 <RelatedProducts />
             </div>
-            <Footer />
+             <Footer/>
 
         </div>
     )
