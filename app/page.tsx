@@ -10,9 +10,11 @@ import { Testimonials } from "@/app/components/common/homepage/Reviews";
 import { InstagramFeed } from "@/app/components/common/homepage/InstaFeed";
 import { BlogSection } from "@/app/components/common/homepage/Blogs";
 import { Newsletter } from "@/app/components/common/homepage/NewsLetter";
-import { Footer } from "@/app/components/common/Footer";
+
 import StoryTruth from "./components/common/homepage/StoryTruth";
 import AboutStory from "./components/common/homepage/AboutStory";
+import Footer from "./components/common/Footer";
+
 
 export default function Home() {
   return (
@@ -46,7 +48,7 @@ export default function Home() {
       <BlogSection />
 
 
-      <Footer />
+      <Footer/>
     </main>
   );
 }

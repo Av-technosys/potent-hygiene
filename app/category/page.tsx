@@ -3,8 +3,9 @@ import FilterBar from '../components/common/category/filterTopBar'
 import CategoryProducts from '../components/common/category/categoryProduct'
 import FiltersSidebar from '../components/common/category/filterSideBar'
 import { Navbar } from '../components/common/Navbar'
-import { Footer } from '../components/common/Footer'
+
 import CategoryProduct from '../components/common/category/categoryProduct'
+import Footer from '../components/common/Footer'
 
 const page = () => {
     return (
@@ -17,7 +18,7 @@ const page = () => {
 
             </div>
 
-            <Footer />
+             <Footer/>
         </div>
     )
 }

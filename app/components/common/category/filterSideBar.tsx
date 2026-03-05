@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button"
 
 export default function FiltersSidebar() {
     return (
-        <Card className="w-[280px] rounded-2xl shadow-md bg-white">
+       <Card className="hidden md:block w-72 rounded-2xl shadow-md bg-white">
             <CardContent className="p-5 space-y-6">
 
                 {/* Header */}
