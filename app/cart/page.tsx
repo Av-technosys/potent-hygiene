@@ -1,9 +1,10 @@
 import { Navbar } from "@/app/components/common/Navbar";
-// import { Footer } from "@/app/components/common/Footer";
+// 
 import { CartItems } from "../components/common/cart/CartItems";
 import { OrderSummary } from "../components/common/cart/OrderSummary";
 import { WhatsAppWidget } from "../components/common/homepage/WhatsAppWidget";
 import RelatedProducts from "../components/common/Product-detail/alsolike";
+import Footer from "../components/common/Footer";
 
 export default function CartPage() {
   return (

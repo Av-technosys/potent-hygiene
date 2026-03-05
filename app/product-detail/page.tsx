@@ -18,7 +18,7 @@ const page = () => {
             <Navbar />
             <Breadcrumb items={[
                 { label: "Home", href: "/" },
-                { label: "Products", href: "/products" },
+                { label: "Products", href: "/shop" },
                 { label: "Product Detail" }
             ]} />
             <div className='px-10'>

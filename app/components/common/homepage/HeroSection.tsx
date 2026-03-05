@@ -2,6 +2,7 @@ import Image from "next/image";
 import { ArrowRight, CheckCircle2, Leaf, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -10,7 +11,7 @@ export function Hero() {
         <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-2 lg:gap-16">
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-5 lg:pr-10 order-1">
             <Badge className="w-fit border-none bg-white px-3 py-2 text-[10px] font-medium text-gray-500 shadow-sm uppercase tracking-widest">
-              ✨ Comfort. Care. Confidence
+               Comfort. Care. Confidence
             </Badge>
 
             <h1 className="text-3xl sm:text-4xl font-serif font-bold leading-[1.2] text-[#2C5F63] lg:text-5xl xl:text-5xl">
@@ -24,9 +25,10 @@ export function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-2 w-full sm:w-auto">
+              <Link href="/shop">
               <Button className="max-w-5xl sm:min-w-[160px] rounded-full bg-gradient-to-r from-[#168BA0] to-[#AFE7F1] px-10 py-6 text-sm font-semibold text-white transition-all hover:scale-105 shadow-md">
                 Shop Now <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
+              </Button></Link>
             </div>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-6 pt-6 md:pt-4 text-[11px] md:text-[10px] font-semibold text-[#1A8D91] opacity-80">

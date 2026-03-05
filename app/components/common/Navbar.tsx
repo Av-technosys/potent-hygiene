@@ -1,24 +1,24 @@
 "use client"; 
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Search, ShoppingBag, Heart, User } from "lucide-react";
+import { Search, Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { 
   IconBuildingStore, IconHome, IconInfoCircle, IconMenu2, IconNews, 
-  IconPhone, IconSquareRoundedX, IconUser, IconLayoutDashboard,
+  IconPhone, IconShoppingBag, IconSquareRoundedX, IconUser, IconLayoutDashboard,
   IconHistory, IconStar, IconShieldLock, IconAddressBook
 } from "@tabler/icons-react";
 
 const navLinks = [
   { name: "Home", href: "/", icon: <IconHome size={20} /> },
   { name: "Shop", href: "/shop", icon: <IconBuildingStore size={20} /> },
-  { name: "Contact", href: "/content", icon: <IconPhone size={20} /> }, 
-  { name: "Blogs", href: "/blog", icon: <IconNews size={20} /> },
   { name: "About", href: "/about", icon: <IconInfoCircle size={20} /> },
+  { name: "Blog", href: "/blog", icon: <IconNews size={20} /> },
+  { name: "FAQs", href: "/faq", icon: <IconPhone size={20} /> }, 
 ];
 
 const dashboardLinks = [
@@ -31,15 +31,40 @@ const dashboardLinks = [
 ];
 
 export function Navbar() {
+
   const [open, setOpen] = useState(false); 
   const pathname = usePathname();
 
   // Glitch rokne ke liye useMemo use kiya hai
   const isDashboard = useMemo(() => pathname.startsWith("/dashboard"), [pathname]);
+  const [wishlistCount,setWishlistCount] = useState(0)
+  const [cartCount,setCartCount] = useState(0)
+
+  useEffect(()=>{
+
+    const loadData = ()=>{
+      const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]")
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]")
+
+      setWishlistCount(wishlist.length)
+      setCartCount(cart.length)
+    }
+
+    loadData()
+
+    window.addEventListener("storage",loadData)
+
+    return ()=>{
+      window.removeEventListener("storage",loadData)
+    }
+
+  },[])
 
   return (
     <nav className="w-full border-b bg-white relative">
       <div className="container mx-auto max-w-7xl flex h-20 items-center justify-between px-4 md:px-16">
+
+    
         <div className="flex items-center">
           <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
@@ -50,9 +75,11 @@ export function Navbar() {
               </SheetTrigger>
               <SheetContent side="left" className="w-[300px] bg-white p-0 border-r-0 [&>button]:hidden">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
+
                 <div className="flex flex-col h-full">
                   
                   {/* Close Button Section */}
+
                   <div className="px-7 pt-6 pb-6">
                     <button onClick={() => setOpen(false)} className="text-[#1A8D91]">
                       <IconSquareRoundedX size={35} />
@@ -94,7 +121,9 @@ export function Navbar() {
                       <span className="text-[16px]">{isDashboard ? "Main Website" : "Account Dashboard"}</span>
                     </Link>
                   </div>
+
                 </div>
+
               </SheetContent>
             </Sheet>
           </div>
@@ -108,6 +137,7 @@ export function Navbar() {
           <Link href="/"><Image src="/logo.png" alt="Logo" width={110} height={35} className="h-28 w-auto" /></Link>
         </div>
 
+     
         {/* Desktop Links - Hamesha Main Website wali hi rahengi */}
         <div className="hidden space-x-8 md:flex">
           {navLinks.map((link) => (
@@ -118,7 +148,7 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center space-x-3 md:space-x-5 text-[#1A8D91]">
-          <button><ShoppingBag className="h-5 w-5" /></button>
+          <button><IconShoppingBag className="h-5 w-5" /></button>
           <button><Search className="h-5 w-5" /></button>
           <Link href="/dashboard/profile">
              <Button variant="ghost" className="hidden md:flex rounded-full bg-[#D1E9EC] px-6 text-[#1A8D91]">

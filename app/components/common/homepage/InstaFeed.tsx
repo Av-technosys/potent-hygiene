@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { Instagram } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 const feedImages = [
   { id: 1, src: "/dummyLady.png" },
@@ -39,7 +40,8 @@ export function InstagramFeed() {
             className="group rounded-full border border-[#F8F9FA] bg-white px-8 py-6 text-[#1A8D91] shadow-sm hover:bg-[#1A8D91] hover:text-white transition-all duration-300"
           >
             <Instagram className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
-            <span className="font-bold text-sm">Follow us on Instagram</span>
+             <Link href="https://www.instagram.com/potenthygiene" target="_blank">
+            <span className="font-bold text-sm">Follow us on Instagram</span></Link>
           </Button>
         </div>
       </div>

@@ -2,7 +2,7 @@ export const blogs = [
   {
     slug: "managing-period-pain",
     category: "Period care",
-    title: "Managing Period Pain Naturally: Effective Relief Methods",
+    title: "Managing Period Pain Naturally: Effective ",
     description:
       "Explore natural and effective ways to reduce menstrual cramps and discomfort.",
     date: "January 10, 2024",
@@ -79,7 +79,7 @@ Stay hydrated.
   {
     slug: "importance-of-menstrual-hygiene",
     category: "Hygiene Basics",
-    title: "The Importance of Menstrual Hygiene",
+    title: "Explore natural and effective ways to reduce menstrual cramps and discomfort.",
     description:
       "Maintaining hygiene during periods is essential.",
     date: "January 20, 2024",

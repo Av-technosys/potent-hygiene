@@ -2,6 +2,7 @@ import Image from "next/image";
 import { Heart, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 const products = [
   {
@@ -131,12 +132,13 @@ export function BestsellingProducts() {
           })}
         </div>
         <div className="mt-8 flex justify-center">
+         <Link href="/shop">
           <Button
             variant="outline"
             className="rounded-full border-[#1A8D91] px-10 py-6 text-[#1A8D91] hover:bg-[#D1E9EC] transition-colors"
           >
             View All Products
-          </Button>
+          </Button></Link>
         </div>
       </div>
     </section>
