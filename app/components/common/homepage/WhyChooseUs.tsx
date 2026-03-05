@@ -36,16 +36,16 @@ const features = [
 
 export function WhyChooseUs() {
   return (
-    <section className="py-12 md:py-20 md:bg-[#F8F6F1] overflow-hidden">
+    <section className="py-12 md:py-8 md:bg-[#F8F6F1] overflow-hidden">
       {/* Mobile: px-4 | Laptop: px-16 */}
       <div className="container mx-auto px-4 md:px-16">
         
         {/* Header */}
         <div className="text-center mb-10 md:mb-16 space-y-3 md:space-y-4">
-          <h3 className="text-3xl md:text-5xl font-serif font-bold text-gray-900 leading-tight">
+          <h3 className="md:text-4xl text-3xl font-serif font-bold text-[#333333]">
             Why Choose Potent Hygiene?
           </h3>
-          <p className="max-w-2xl mx-auto text-[13px] md:text-sm text-gray-500 leading-relaxed px-2">
+          <p className="max-w-2xl mx-auto text-sm text-black/50 leading-relaxed px-2">
             We are committed to providing products that care for you and the planet. 
             Here is what makes us different.
           </p>
@@ -60,7 +60,7 @@ export function WhyChooseUs() {
               className="bg-white p-6 md:p-8 rounded-[28px] md:rounded-[32px] shadow-sm border border-gray-50 transition-all hover:shadow-md group min-w-[280px] md:min-w-0 snap-start"
             >
               {/* Icon Container with Gradient */}
-              <div className="mb-5 md:mb-6 flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-xl md:rounded-2xl bg-gradient-to-br from-[#1A8D91] to-[#7ED4DB] shadow-inner transform transition-transform group-hover:rotate-6">
+              <div className="mb-5 md:mb-6 flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-xl md:rounded-2xl bg-linear-to-br from-[#168BA0] to-[#AFE7F1] shadow-inner transform transition-transform group-hover:rotate-6">
                 {feature.icon}
               </div>
 

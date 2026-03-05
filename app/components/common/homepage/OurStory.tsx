@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 
 export function OurStory() {
   return (
-    <section className="py-12 md:py-20 md:bg-[#F8F6F1]">
+    <section className="py-12 md:py-16 md:bg-[#F8F6F1]">
       {/* Mobile: px-4 | Laptop: px-16 */}
       <div className="container mx-auto px-4 md:px-16">
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-2 lg:gap-20">
@@ -34,13 +34,13 @@ export function OurStory() {
             </div>
             
             {/* Heading */}
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-serif font-bold leading-tight text-gray-900">
+            <h2 className="md:text-4xl text-3xl font-serif font-bold text-[#333333]">
               Built for Women, <br className="hidden md:block" />
               <span className="text-[#1A8D91]">By Women</span>
             </h2>
 
             {/* Description */}
-            <div className="space-y-4 text-xs md:text-sm leading-relaxed text-gray-500">
+            <div className="space-y-4 max-w-2xl mx-auto text-sm text-black/50 leading-relaxed">
               <p>
                 Potent Hygiene was born from a simple belief — every woman deserves access 
                 to safe, comfortable, and sustainable menstrual care. We witnessed the 
@@ -56,7 +56,7 @@ export function OurStory() {
 
             {/* CTA Button */}
             <div className="pt-2 md:pt-4">
-              <Button className="w-full md:w-fit rounded-full bg-gradient-to-r from-[#1A8D91] to-[#7ED4DB] px-10 py-6 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95">
+              <Button className="w-full md:w-fit rounded-full bg-gradient-to-r from-[#168BA0] to-[#AFE7F1] px-10 py-6 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 active:scale-95">
                 Read Our Full Story
               </Button>
             </div>

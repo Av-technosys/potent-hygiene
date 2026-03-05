@@ -24,7 +24,7 @@ export function Hero() {
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 pt-2 w-full sm:w-auto">
-              <Button className="max-w-5xl sm:min-w-[160px] rounded-full bg-gradient-to-r from-[#1A8D91] to-[#7ED4DB] px-10 py-6 text-sm font-semibold text-white transition-all hover:scale-105 shadow-md">
+              <Button className="max-w-5xl sm:min-w-[160px] rounded-full bg-gradient-to-r from-[#168BA0] to-[#AFE7F1] px-10 py-6 text-sm font-semibold text-white transition-all hover:scale-105 shadow-md">
                 Shop Now <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </div>

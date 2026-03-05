@@ -5,57 +5,41 @@ import { Heart, Star } from "lucide-react";
 
 export default function RelatedProducts() {
     const products = [
-        {
-            title: "Ultra Soft Sanitary Pads",
-            tag: "Bestseller",
-            image: "/product.png",
-        },
-        {
-            title: "Reusable Menstrual Cup",
-            tag: "Eco friendly",
-            image: "/product.png",
-        },
-        {
-            title: "Daily Comfort Pantyliners",
-            tag: "Popular",
-            image: "/product.png",
-        },
-        {
-            title: "Daily Comfort Pantyliners",
-            tag: "Popular",
-            image: "/product.png",
-        },
-        {
-            title: "Daily Comfort Pantyliners",
-            tag: "Popular",
-            image: "/product.png",
-        },
+        { title: "Ultra Soft Sanitary Pads", tag: "Bestseller", image: "/product.png" },
+        { title: "Reusable Menstrual Cup", tag: "Eco friendly", image: "/product.png" },
+        { title: "Daily Comfort Pantyliners", tag: "Popular", image: "/product.png" },
+        { title: "Daily Comfort Pantyliners", tag: "Popular", image: "/product.png" },
+        { title: "Daily Comfort Pantyliners", tag: "Popular", image: "/product.png" },
     ];
 
     return (
-        <section className="w-full bg-gray-100 py-16">
-            <div className="container mx-auto ">
+        <section className="w-full py-16">
+            <div className="container mx-auto px-4">
 
                 {/* Section Title */}
                 <h2 className="text-2xl font-semibold text-gray-900 mb-10">
                     You May Also Like
                 </h2>
 
-                {/* Product Grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+                {/* Laptop: Exact same grid classes as your original code.
+                   Mobile: Added 'flex overflow-x-auto' which gets reset by 'md:grid'
+                */}
+                <div className="flex overflow-x-auto pb-4 gap-6 no-scrollbar md:grid md:grid-cols-3 lg:grid-cols-5 md:gap-6 md:pb-0">
 
                     {products.map((product, index) => (
                         <div
                             key={index}
-                            className="bg-white rounded-2xl shadow-md p-4 relative hover:shadow-lg transition"
+                            // Laptop: 'md:w-auto' ensures grid controls the size.
+                            // Mobile: 'w-[280px]' and 'flex-shrink-0' enables the scroll.
+                            className="bg-white rounded-2xl shadow-md p-4 relative hover:shadow-lg transition flex-shrink-0 w-[280px] md:w-auto md:flex-shrink"
                         >
                             {/* Wishlist */}
-                            <button className="absolute top-4 left-4 bg-white rounded-full p-1 shadow">
+                            <button className="absolute top-2 left-2 bg-white rounded-full p-1 shadow">
                                 <Heart className="w-4 h-4 text-gray-500" />
                             </button>
 
                             {/* Discount Badge */}
-                            <span className="absolute top-4 right-4 bg-purple-500 text-white text-xs px-3 py-1 rounded-full">
+                            <span className="absolute top-2 right-2 bg-[#168BA0] text-white text-xs px-3 py-1 rounded-full">
                                 25% OFF
                             </span>
 
@@ -99,7 +83,7 @@ export default function RelatedProducts() {
                             </div>
 
                             {/* Button */}
-                            <button className="w-full mt-4 bg-teal-600 hover:bg-teal-700 text-white text-sm py-2.5 rounded-lg transition">
+                            <button className="w-full mt-4 bg-[#168BA0] hover:bg-teal-700 text-white text-sm py-2.5 rounded-lg transition">
                                 Add to Cart
                             </button>
                         </div>
