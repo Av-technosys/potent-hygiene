@@ -9,9 +9,11 @@ import { Testimonials } from "@/app/components/common/homepage/Reviews";
 import { InstagramFeed } from "@/app/components/common/homepage/InstaFeed";
 import { BlogSection } from "@/app/components/common/homepage/Blogs";
 import { Newsletter } from "@/app/components/common/homepage/NewsLetter";
-import { Footer } from "@/app/components/common/Footer";
+
 import StoryTruth from "./components/common/homepage/StoryTruth";
 import AboutStory from "./components/common/homepage/AboutStory";
+import Footer from "./components/common/Footer";
+
 import Faq from "./components/common/homepage/Faq";
 import { ProductCategories } from "./components/common/homepage/ProductCategories";
 import { WhatsAppWidget } from "./components/common/homepage/WhatsAppWidget";
@@ -35,7 +37,7 @@ export default function Home() {
       <BlogSection />
       <Faq/>
       <WhatsAppWidget/>
-      <Footer />
+      <Footer/>
     </main>
   );
 }
