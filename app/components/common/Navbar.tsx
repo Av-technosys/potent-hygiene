@@ -6,14 +6,16 @@ import Image from "next/image";
 import { Search, ShoppingBag, Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { IconBuildingStore, IconHome, IconInfoCircle, IconMenu2, IconNews, IconPhone, IconSquareRoundedX, IconUser } from "@tabler/icons-react";
+import { IconBuildingStore, IconHome, IconInfoCircle, IconMenu2, IconNews, IconPhone, IconShoppingBag, IconSquareRoundedX, IconUser } from "@tabler/icons-react";
 
 const navLinks = [
   { name: "Home", href: "/", icon: <IconHome size={20} />, active: true },
   { name: "Shop", href: "/shop", icon: <IconBuildingStore size={20} /> },
-  { name: "Contact", href: "/content", icon: <IconPhone size={20} /> }, 
-  { name: "Blogs", href: "/blog", icon: <IconNews size={20} /> },
   { name: "About", href: "/about", icon: <IconInfoCircle size={20} /> },
+  { name: "Blog", href: "/blog", icon: <IconNews size={20} /> },
+  { name: "FAQs", href: "/faq", icon: <IconPhone size={20} /> }, 
+  
+  
 ];
 
 export function Navbar() {
@@ -107,9 +109,9 @@ export function Navbar() {
           ))}
         </div>
         <div className="flex items-center space-x-3 md:space-x-5 text-[#1A8D91]">
-          <button className="hover:opacity-70">
-            <ShoppingBag className="h-5 w-5" />
-          </button>
+        <Link href="/cart">
+  <IconShoppingBag className="w-6 h-6 cursor-pointer text-[#11879A]" />
+</Link>
           <button className="hover:opacity-70">
             <Search className="md:h-5 md:w-5 w-6 h-6 " />
           </button>

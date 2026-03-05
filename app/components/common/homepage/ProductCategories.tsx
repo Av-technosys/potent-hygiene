@@ -3,6 +3,7 @@
 import { useRef } from "react";
 import { ArrowRight, Play } from "lucide-react";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
+import Link from "next/link";
 
 const categories = [
   { id: 1, title: "Combo", video: "/videos/combo.mp4", thumb: "/thumb1.png" },
@@ -56,9 +57,10 @@ function VideoCard({ category }: { category: any }) {
 
       <div className="p-5 text-center">
         <h3 className="text-lg font-bold text-gray-800">{category.title}</h3>
+       <Link href="/shop">
         <button className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-[#1A8D91]">
           Shop Now <ArrowRight className="h-3 w-3" />
-        </button>
+        </button></Link>
       </div>
     </div>
   );
