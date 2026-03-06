@@ -1,10 +1,11 @@
 
 import { Navbar } from "@/app/components/common/Navbar";
-
+// 
 import { CheckoutForm } from "../components/common/checkout/CheckoutForm";
 
 import Footer from "../components/common/Footer";
 import { OrderSummary } from "../components/common/cart/OrderSummary";
+// import Footer from "../components/common/Footer";
 export default function CheckoutPage() {
   return (
     <div className="min-h-screen bg-[#FDFCF9]">
@@ -27,7 +28,7 @@ export default function CheckoutPage() {
         </div>
       </main>
 
-      <Footer />
+      {/* <Footer /> */}
     </div>
   );
 }
