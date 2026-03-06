@@ -2,13 +2,14 @@ import React from "react";
 import BlogHeader from "../components/common/BlogHeader";
 import { IconBuildingEstate, IconBuildingSkyscraper, IconHome, IconMapPin } from "@tabler/icons-react";
 import Footer from "../components/common/Footer";
+import { Navbar } from "../components/common/Navbar";
 
 const Page = () => {
   return (
     <div className="min-h-screen w-full bg-white">
       
       
-      <BlogHeader />
+      <Navbar />
 
       
       <div className="w-full flex items-start justify-center bg-white py-16 px-0 md:px-8">
