@@ -87,8 +87,8 @@ export default function AboutProduct() {
                             key={tab}
                             onClick={() => setSelectedTab(tab)}
                             className={`px-4 py-2 text-sm rounded-full border transition ${selectedTab === tab
-                                ? "bg-teal-600 text-white border-teal-600"
-                                : "bg-white border-gray-300 hover:border-teal-600"
+                                ? "bg-[#168BA0] text-white border-[#168BA0]"
+                                : "bg-white border-gray-300 hover:border-[#168BA0]"
                                 }`}
                         >
                             {tab}

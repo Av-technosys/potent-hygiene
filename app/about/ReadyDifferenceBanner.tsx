@@ -19,10 +19,10 @@ const ReadyDifferenceBanner = () => {
           </p>
 
           
-        <div className="flex flex-col sm:flex-row items-center gap-4 pt-2">
+        <div className="flex md:flex-col flex-row sm:flex-row items-center gap-4 pt-2">
 
  
-  <button className="group flex items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#1496ad] to-[#9ad7e3] text-white font-semibold text-base px-8 py-3 shadow-md transition hover:opacity-95">
+  <button className="group flex items-center justify-center gap-2 rounded-full bg-linear-to-r from-[#1496ad] to-[#9ad7e3] text-white font-semibold text-base px-8 py-3 shadow-md transition hover:opacity-95">
     Shop Now
     <IconArrowRight className="h-4 w-4 transition group-hover:translate-x-1" />
   </button>

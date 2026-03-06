@@ -99,18 +99,18 @@ export function CartItems() {
 
             <button
               onClick={()=>increaseQty(item.id)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border"
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-[#168BA0]"
             >
               <Plus className="h-4 w-4" />
             </button>
 
-            <div className="flex h-12 w-8 items-center justify-center rounded-full bg-[#168BA0] text-sm font-bold text-white">
+            <div className="flex h-10 w-7 items-center justify-center rounded-full bg-[#168BA0] text-sm font-bold text-white">
               {item.quantity}
             </div>
 
             <button
               onClick={()=>decreaseQty(item.id)}
-              className="flex h-8 w-8 items-center justify-center rounded-full border"
+              className="flex h-7 w-7 items-center justify-center rounded-full border border-[#168BA0]"
             >
               <Minus className="h-4 w-4" />
             </button>
