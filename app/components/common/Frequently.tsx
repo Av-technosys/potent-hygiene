@@ -82,7 +82,7 @@ const Frequently = () => {
             Frequently Asked Questions
           </h2>
 
-          <p className="text-sm text-gray-500 mx-auto whitespace-nowrap">
+          <p className="text-sm text-gray-500 mx-auto ">
             Find answers to common questions about our products, shipping, returns, and more. We're here to help you make informed decisions.
           </p>
         </div>
