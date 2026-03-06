@@ -4,9 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { blogs } from "@/app/data/blogs";
-import BlogHeader from "../components/common/BlogHeader";
+
 import Footer from "../components/common/Footer";
 import { IconArrowRight } from "@tabler/icons-react";
+import { Navbar } from "../components/common/Navbar";
 
 const categories = [
   "All Articles",
@@ -31,7 +32,7 @@ export default function BlogPage() {
 
   return (
     <>
-      <BlogHeader />
+      <Navbar />
 
       <div className="bg-white min-h-screen py-12">
         <div className="max-w-6xl mx-auto px-4">

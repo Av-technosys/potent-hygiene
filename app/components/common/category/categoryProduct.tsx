@@ -9,17 +9,45 @@ import { useState, useEffect } from "react"
 
 const products = [
 
+  // Sanitary Pads (8)
   {id:1,title:"Sanitary Pads",img:"/product.png"},
   {id:2,title:"Sanitary Pads",img:"/product.png"},
+  {id:3,title:"Sanitary Pads",img:"/product.png"},
+  {id:4,title:"Sanitary Pads",img:"/product.png"},
+  {id:5,title:"Sanitary Pads",img:"/product.png"},
+  {id:6,title:"Sanitary Pads",img:"/product.png"},
+  {id:7,title:"Sanitary Pads",img:"/product.png"},
+  {id:8,title:"Sanitary Pads",img:"/product.png"},
 
-  {id:3,title:"Menstrual Cup",img:"/product.png"},
-  {id:4,title:"Menstrual Cup",img:"/product.png"},
+  // Menstrual Cup (8)
+  {id:9,title:"Menstrual Cup",img:"/product.png"},
+  {id:10,title:"Menstrual Cup",img:"/product.png"},
+  {id:11,title:"Menstrual Cup",img:"/product.png"},
+  {id:12,title:"Menstrual Cup",img:"/product.png"},
+  {id:13,title:"Menstrual Cup",img:"/product.png"},
+  {id:14,title:"Menstrual Cup",img:"/product.png"},
+  {id:15,title:"Menstrual Cup",img:"/product.png"},
+  {id:16,title:"Menstrual Cup",img:"/product.png"},
 
-  {id:5,title:"Pantyliners",img:"/product.png"},
-  {id:6,title:"Pantyliners",img:"/product.png"},
+  // Pantyliners (8)
+  {id:17,title:"Pantyliners",img:"/product.png"},
+  {id:18,title:"Pantyliners",img:"/product.png"},
+  {id:19,title:"Pantyliners",img:"/product.png"},
+  {id:20,title:"Pantyliners",img:"/product.png"},
+  {id:21,title:"Pantyliners",img:"/product.png"},
+  {id:22,title:"Pantyliners",img:"/product.png"},
+  {id:23,title:"Pantyliners",img:"/product.png"},
+  {id:24,title:"Pantyliners",img:"/product.png"},
 
-  {id:7,title:"Combo",img:"/product.png"},
-  {id:8,title:"Combo",img:"/product.png"}
+  // Combo (8)
+  {id:25,title:"Combo",img:"/product.png"},
+  {id:26,title:"Combo",img:"/product.png"},
+  {id:27,title:"Combo",img:"/product.png"},
+  {id:28,title:"Combo",img:"/product.png"},
+  {id:29,title:"Combo",img:"/product.png"},
+  {id:30,title:"Combo",img:"/product.png"},
+  {id:31,title:"Combo",img:"/product.png"},
+  {id:32,title:"Combo",img:"/product.png"}
 
 ]
 

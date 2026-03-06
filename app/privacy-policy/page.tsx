@@ -1,6 +1,6 @@
 import React from "react";
-import BlogHeader from "../components/common/BlogHeader";
 import Footer from "../components/common/Footer";
+import { Navbar } from "../components/common/Navbar";
 
 const Page = () => {
   return (
@@ -8,7 +8,7 @@ const Page = () => {
       
 
      
-      <BlogHeader />
+      <Navbar/>
 
       
       <div className="w-full flex items-start justify-center bg-white py-16 px-0 md:px-8">

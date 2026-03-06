@@ -1,6 +1,7 @@
 import React from "react";
-import BlogHeader from "../components/common/BlogHeader";
+
 import Footer from "../components/common/Footer";
+import { Navbar } from "../components/common/Navbar";
 
 
 const Page = () => {
@@ -8,7 +9,7 @@ const Page = () => {
     <div className="min-h-screen w-full bg-white">
 
      
-      <BlogHeader />
+      <Navbar />
 
      
            <div className="w-full flex items-start justify-center bg-white py-16 px-0 md:px-8">

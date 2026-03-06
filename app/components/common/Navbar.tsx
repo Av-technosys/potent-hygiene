@@ -35,27 +35,37 @@ export function Navbar() {
   const [open, setOpen] = useState(false); 
   const pathname = usePathname();
 
-  // Glitch rokne ke liye useMemo use kiya hai
   const isDashboard = useMemo(() => pathname.startsWith("/dashboard"), [pathname]);
+
   const [wishlistCount,setWishlistCount] = useState(0)
   const [cartCount,setCartCount] = useState(0)
 
   useEffect(()=>{
 
     const loadData = ()=>{
+
       const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]")
       const cart = JSON.parse(localStorage.getItem("cart") || "[]")
 
       setWishlistCount(wishlist.length)
-      setCartCount(cart.length)
+
+      // total quantity count (better UX)
+      const totalCart = cart.reduce((acc:any,item:any)=>acc + (item.quantity || 1),0)
+      setCartCount(totalCart)
+
     }
 
     loadData()
 
+    // listen all events
     window.addEventListener("storage",loadData)
+    window.addEventListener("cartUpdated",loadData)
+    window.addEventListener("wishlistUpdated",loadData)
 
     return ()=>{
       window.removeEventListener("storage",loadData)
+      window.removeEventListener("cartUpdated",loadData)
+      window.removeEventListener("wishlistUpdated",loadData)
     }
 
   },[])
@@ -64,7 +74,6 @@ export function Navbar() {
     <nav className="w-full border-b bg-white relative">
       <div className="container mx-auto max-w-7xl flex h-20 items-center justify-between px-4 md:px-16">
 
-    
         <div className="flex items-center">
           <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
@@ -73,12 +82,11 @@ export function Navbar() {
                   <IconMenu2 size={28} />
                 </button>
               </SheetTrigger>
+
               <SheetContent side="left" className="w-[300px] bg-white p-0 border-r-0 [&>button]:hidden">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
                 <div className="flex flex-col h-full">
-                  
-                  {/* Close Button Section */}
 
                   <div className="px-7 pt-6 pb-6">
                     <button onClick={() => setOpen(false)} className="text-[#1A8D91]">
@@ -86,7 +94,6 @@ export function Navbar() {
                     </button>
                   </div>
 
-                  {/* Menu Section - Key lagayi hai glitch rokne ke liye */}
                   <div className="flex-1 space-y-1 px-3" key={isDashboard ? "dash-menu" : "main-menu"}>
                     {(isDashboard ? dashboardLinks : navLinks).map((link) => {
                       const isActive = pathname === link.href;
@@ -110,7 +117,6 @@ export function Navbar() {
                     })}
                   </div>
 
-                  {/* Bottom Logic: Toggle between Dashboard and Home */}
                   <div className="px-3 mb-6">
                     <Link
                       href={isDashboard ? "/" : "/dashboard"}
@@ -118,16 +124,17 @@ export function Navbar() {
                       className="flex items-center space-x-4 px-4 py-4 rounded-r-xl bg-[#D1E9EC] text-[#1A8D91] border-l-[8px] rounded-md border-[#1A8D91] font-semibold"
                     >
                       {isDashboard ? <IconHome size={20} /> : <IconUser size={20} />}
-                      <span className="text-[16px]">{isDashboard ? "Main Website" : "Account Dashboard"}</span>
+                      <span className="text-[16px]">
+                        {isDashboard ? "Main Website" : "Account Dashboard"}
+                      </span>
                     </Link>
                   </div>
 
                 </div>
-
               </SheetContent>
             </Sheet>
           </div>
-          
+
           <Link href="/" className="hidden md:block flex-shrink-0">
             <Image src="/logo.png" alt="Logo" width={120} height={40} className="h-36 w-auto" />
           </Link>
@@ -137,8 +144,6 @@ export function Navbar() {
           <Link href="/"><Image src="/logo.png" alt="Logo" width={110} height={35} className="h-28 w-auto" /></Link>
         </div>
 
-     
-        {/* Desktop Links - Hamesha Main Website wali hi rahengi */}
         <div className="hidden space-x-8 md:flex">
           {navLinks.map((link) => (
             <Link key={link.name} href={link.href} className="text-sm font-medium text-[#1A8D91] hover:text-[#146e71]">
@@ -147,14 +152,45 @@ export function Navbar() {
           ))}
         </div>
 
+        {/* Right Icons */}
         <div className="flex items-center space-x-3 md:space-x-5 text-[#1A8D91]">
-          <button><IconShoppingBag className="h-5 w-5" /></button>
-          <button><Search className="h-5 w-5" /></button>
+
+          {/* Cart */}
+          <div className="relative">
+            <Link href="/cart">
+              <IconShoppingBag className="h-5 w-5 cursor-pointer" />
+            </Link>
+
+            {cartCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                {cartCount}
+              </span>
+            )}
+          </div>
+
+          {/* Wishlist */}
+          <div className="relative">
+            <Link href="/wishlist">
+              <Heart className="h-5 w-5 cursor-pointer" />
+            </Link>
+
+            {wishlistCount > 0 && (
+              <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
+                {wishlistCount}
+              </span>
+            )}
+          </div>
+
+          <button>
+            <Search className="h-5 w-5" />
+          </button>
+
           <Link href="/dashboard/profile">
-             <Button variant="ghost" className="hidden md:flex rounded-full bg-[#D1E9EC] px-6 text-[#1A8D91]">
-               <User className="mr-2 h-4 w-4" /> Account
-             </Button>
+            <Button variant="ghost" className="hidden md:flex rounded-full bg-[#D1E9EC] px-6 text-[#1A8D91]">
+              <User className="mr-2 h-4 w-4" /> Account
+            </Button>
           </Link>
+
         </div>
       </div>
     </nav>

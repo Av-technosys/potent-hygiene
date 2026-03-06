@@ -6,8 +6,9 @@ import { WhatsAppWidget } from "../components/common/homepage/WhatsAppWidget";
 import RelatedProducts from "../components/common/Product-detail/alsolike";
 import Footer from "../components/common/Footer";
 
+
 export default function CartPage() {
-  return (
+  return (<>
     <div className="min-h-screen bg-[#FDFCF9]">
       <Navbar />
       <main className="container mx-auto px-4 py-10 md:px-16">
@@ -23,6 +24,8 @@ export default function CartPage() {
       </main>
       {/* <Footer /> */}
       <WhatsAppWidget />
+     
     </div>
-  );
+     <Footer/>
+ </> );
 }
