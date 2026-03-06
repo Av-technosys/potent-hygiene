@@ -25,7 +25,7 @@ export const RecentRewards = () => (
               <p className="text-[11px] text-[#666666] font-medium">{reward.date}</p>
             </div>
           </div>
-          <span className="font-bold text-[#DD7706] text-sm">{reward.amount}</span>
+          <span className="font-bold text-[#DD7706] ml-5 text-sm">{reward.amount}</span>
         </div>
       ))}
     </div>
