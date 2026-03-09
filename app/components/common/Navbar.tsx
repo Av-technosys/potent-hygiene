@@ -48,16 +48,12 @@ export function Navbar() {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]")
 
       setWishlistCount(wishlist.length)
-
-      // total quantity count (better UX)
       const totalCart = cart.reduce((acc:any,item:any)=>acc + (item.quantity || 1),0)
       setCartCount(totalCart)
 
     }
 
     loadData()
-
-    // listen all events
     window.addEventListener("storage",loadData)
     window.addEventListener("cartUpdated",loadData)
     window.addEventListener("wishlistUpdated",loadData)
@@ -83,7 +79,7 @@ export function Navbar() {
                 </button>
               </SheetTrigger>
 
-              <SheetContent side="left" className="w-[300px] bg-white p-0 border-r-0 [&>button]:hidden">
+              <SheetContent side="left" className="w-75 bg-white p-0 border-r-0 [&>button]:hidden">
                 <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
 
                 <div className="flex flex-col h-full">
@@ -104,7 +100,7 @@ export function Navbar() {
                           onClick={() => setOpen(false)} 
                           className={`flex items-center space-x-4 px-4 py-4 rounded-r-xl transition-all ${
                             isActive 
-                            ? "bg-[#D1E9EC] text-[#1A8D91] border-l-[8px] border-[#1A8D91] rounded-md font-semibold" 
+                            ? "bg-[#D1E9EC] text-[#1A8D91] border-l-8 border-[#1A8D91] rounded-md font-semibold" 
                             : "text-gray-600 hover:bg-gray-50"
                           }`}
                         >
@@ -121,7 +117,7 @@ export function Navbar() {
                     <Link
                       href={isDashboard ? "/" : "/dashboard"}
                       onClick={() => setOpen(false)}
-                      className="flex items-center space-x-4 px-4 py-4 rounded-r-xl bg-[#D1E9EC] text-[#1A8D91] border-l-[8px] rounded-md border-[#1A8D91] font-semibold"
+                      className="flex items-center space-x-4 px-4 py-4 rounded-r-xl bg-[#D1E9EC] text-[#1A8D91] border-l-8 rounded-md border-[#1A8D91] font-semibold"
                     >
                       {isDashboard ? <IconHome size={20} /> : <IconUser size={20} />}
                       <span className="text-[16px]">
@@ -135,7 +131,7 @@ export function Navbar() {
             </Sheet>
           </div>
 
-          <Link href="/" className="hidden md:block flex-shrink-0">
+          <Link href="/" className="hidden md:block shrink-0">
             <Image src="/logo.png" alt="Logo" width={120} height={40} className="h-36 w-auto" />
           </Link>
         </div>
@@ -151,11 +147,7 @@ export function Navbar() {
             </Link>
           ))}
         </div>
-
-        {/* Right Icons */}
         <div className="flex items-center space-x-3 md:space-x-5 text-[#1A8D91]">
-
-          {/* Cart */}
           <div className="relative">
             <Link href="/cart">
               <IconShoppingBag className="h-5 w-5 cursor-pointer" />
@@ -167,8 +159,6 @@ export function Navbar() {
               </span>
             )}
           </div>
-
-          {/* Wishlist */}
           <div className="relative">
             <Link href="/wishlist">
               <Heart className="h-5 w-5 cursor-pointer" />

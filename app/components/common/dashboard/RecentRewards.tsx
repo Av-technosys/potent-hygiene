@@ -17,7 +17,7 @@ export const RecentRewards = () => (
       {rewards.map((reward) => (
         <div key={reward.id} className="flex justify-between items-center p-4 border border-gray-100 rounded-xl">
           <div className="flex items-center gap-4">
-            <div className={`${reward.color} p-2.5 rounded-[12px]`}>
+            <div className={`${reward.color} p-2.5 rounded-2xl`}>
               <reward.icon size={20} stroke={2} />
             </div>
             <div>
