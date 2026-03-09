@@ -4,6 +4,7 @@ import {
   timestamp,
   uuid,
   varchar,
+  text, // Text import kiya bade content ke liye
 } from "drizzle-orm/pg-core";
 
 export const blog = pgTable("blog", {
@@ -15,20 +16,10 @@ export const blog = pgTable("blog", {
   tags: varchar("tags").array(),
   date: varchar("date"),
 
-  // Data-> blog content
-  data: varchar("data"),
+  // Blog Content - varchar ki jagah text use kiya taaki error na aaye
+  data: text("data"), 
   userImage: varchar("user_image"),
   userName: varchar("user_name"),
   slug: varchar("slug"),
   isVisible: boolean("is_visible").default(true),
-});
-
-export const blogForm = pgTable("blogForm", {
-  id: uuid("id").primaryKey().defaultRandom(),
-  name: varchar("name"),
-  email: varchar("email"),
-  message: varchar("message"),
-  number: varchar("number"),
-  refrenceBlogLink: varchar("refrence_blog_link"),
-  createdAt: timestamp("created_at").defaultNow(),
 });

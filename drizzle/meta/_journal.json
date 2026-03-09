@@ -8,6 +8,13 @@
       "when": 1772776499363,
       "tag": "0000_hard_black_tom",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1773051913661,
+      "tag": "0001_abnormal_kang",
+      "breakpoints": true
     }
   ]
 }
