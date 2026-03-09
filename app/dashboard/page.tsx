@@ -6,7 +6,7 @@ import { RecentRewards } from '../components/common/dashboard/RecentRewards';
 export default function DashboardPage() {
   return (
     <>
-      <div className="max-w-[1300px] mx-auto flex items-start gap-8">
+      <div className="max-w-325 mx-auto flex items-start gap-8">
         <div className="flex-1 w-full">
           <div className="bg-linear-to-r from-[#168BA0] to-[#AFE7F1] rounded-2xl p-10 mb-8 text-white shadow-sm relative overflow-hidden">
             <div className="relative z-10">

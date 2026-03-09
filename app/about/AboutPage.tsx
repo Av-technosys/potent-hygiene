@@ -10,13 +10,13 @@ const AboutPage = () => {
           About Potent Hygiene
         </h2>
 
-          <p className="text-sm sm:text-base text-gray-600 leading-relaxed max-w-screen-xl mx-auto">
+          <p className="text-sm sm:text-base text-gray-600 leading-relaxed max-w-7xl mx-auto">
     Potent Hygiene was built to make feminine care safer, sustainable, and more comfortable.
     We believe every woman deserves access to hygiene products that prioritize her health,
     comfort, and the planet&apos;s well-being.
   </p>
 
-  <p className="mt-5 text-sm sm:text-base text-gray-600 leading-relaxed max-w-screen-xl mx-auto">
+  <p className="mt-5 text-sm sm:text-base text-gray-600 leading-relaxed max-w-7xl mx-auto">
     Our products are thoughtfully designed with care, backed by research, and crafted to empower
     women to live confidently through every phase of their menstrual cycle.
   </p>
@@ -41,7 +41,7 @@ const AboutPage = () => {
 
          
           <div className="space-y-4 sm:space-y-5">
-            <h2 className="text-3xl sm:text-4xl xl:text-5xl font-bold text-cyan-700 leading-tight">
+            <h2 className="text-3xl sm:text-4xl xl:text-5xl md:text-left text-center font-bold text-cyan-700 leading-tight">
               How It All Started
             </h2>
 
@@ -76,7 +76,7 @@ const AboutPage = () => {
         </div>
       </div>
     </section>
-  );    </section>
+   </section>
   );
 };
 

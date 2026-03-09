@@ -36,8 +36,6 @@ export default function BlogPage() {
 
       <div className="bg-white min-h-screen py-12">
         <div className="max-w-6xl mx-auto px-4">
-
-          {/* Heading */}
           <div className="text-center mb-10">
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold">
               Hygiene Knowledge Hub
@@ -46,8 +44,6 @@ export default function BlogPage() {
               Learn, understand, and make healthier wellness choices
             </p>
           </div>
-
-          {/* Filter Pills — Mobile single line x-scroll */}
           <div className="flex overflow-x-auto whitespace-nowrap gap-3 mb-10 sm:flex-wrap sm:justify-center">
             {categories.map((item) => (
               <button
@@ -63,8 +59,6 @@ export default function BlogPage() {
               </button>
             ))}
           </div>
-
-          {/* Top Section */}
           {firstBlog && (
             <div className="grid md:grid-cols-3 gap-6 mb-10">
 
@@ -133,8 +127,6 @@ export default function BlogPage() {
 
             </div>
           )}
-
-          {/* Bottom Grid */}
           <div className="grid md:grid-cols-3 gap-6">
             {remainingBlogs.map((blog) => (
               <div

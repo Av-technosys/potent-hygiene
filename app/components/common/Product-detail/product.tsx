@@ -36,7 +36,7 @@ export default function ProductDetailPage() {
                     </div>
 
                     {/* Thumbnails */}
-                    <div className="flex gap-6 mt-8">
+                    <div className="flex gap-2 mt-8">
                         {[1, 2, 3, 4, 5].map((i) => (
                             <div
                                 key={i}
@@ -95,7 +95,7 @@ export default function ProductDetailPage() {
                         ].map((feature) => (
                             <span
                                 key={feature}
-                                className="bg-teal-50 text-teal-700 text-xs px-3 py-1 rounded-full"
+                                className="bg-[#F0FDFA] text-[#168BA0] text-xs px-3 py-1 rounded-full"
                             >
                                 {feature}
                             </span>
@@ -106,7 +106,7 @@ export default function ProductDetailPage() {
                     <div className="flex items-center gap-3">
                         <span className="text-2xl font-bold">₹299</span>
                         <span className="line-through text-gray-400">₹399</span>
-                        <span className="bg-green-100 text-green-600 text-xs px-2 py-1 rounded-md">
+                        <span className="bg-[#DCFCE7] text-[#15803D] text-xs px-2 py-1 rounded-md">
                             Save 17%
                         </span>
                     </div>
@@ -120,8 +120,8 @@ export default function ProductDetailPage() {
                                     key={size}
                                     onClick={() => setSelectedSize(size)}
                                     className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === size
-                                        ? "bg-teal-600 text-white border-teal-600"
-                                        : "bg-white border-gray-300 hover:border-teal-600"
+                                        ? "bg-[#168BA0] text-white border-[#168BA0]"
+                                        : "bg-white border-gray-300 hover:border-[#168BA0]"
                                         }`}
                                 >
                                     {size}
@@ -139,8 +139,8 @@ export default function ProductDetailPage() {
                                     key={flow}
                                     onClick={() => setSelectedFlow(flow)}
                                     className={`px-4 py-2 text-sm rounded-full border transition ${selectedFlow === flow
-                                        ? "bg-teal-600 text-white border-teal-600"
-                                        : "bg-white border-gray-300 hover:border-teal-600"
+                                        ? "bg-[#168BA0] text-white border-[#168BA0]"
+                                        : "bg-white border-gray-300 hover:border-[#168BA0]"
                                         }`}
                                 >
                                     {flow}
@@ -173,7 +173,7 @@ export default function ProductDetailPage() {
 
                     {/* Buttons */}
                     <div className="flex gap-4">
-                        <button className="flex-1 bg-teal-600 hover:bg-teal-700 text-white py-3 rounded-xl">
+                        <button className="flex-1 bg-[#168BA0] hover:bg-[#44a4b5] text-white py-3 rounded-xl">
                             Add to Cart
                         </button>
                         <button className="flex-1 bg-black text-white py-3 rounded-xl">
@@ -215,7 +215,7 @@ export default function ProductDetailPage() {
 
                         <div className="flex justify-between items-center pt-4">
                             <span className="text-xl font-bold">₹239</span>
-                            <button className="bg-teal-600 text-white px-6 py-3 rounded-xl">
+                            <button className="bg-[#168BA0] text-white px-6 py-3 rounded-xl">
                                 Add to Cart
                             </button>
                         </div>

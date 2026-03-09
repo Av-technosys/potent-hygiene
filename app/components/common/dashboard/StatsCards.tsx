@@ -12,15 +12,15 @@ const stats = [
     label: "Rewards Coins", 
     value: "450", 
     icon: IconCoin, 
-    bg: "bg-[#FEF3C7]", // Image match: soft yellow
-    iconCol: "text-[#FFCC00]" // Image match: orange-yellow
+    bg: "bg-[#FEF3C7]", 
+    iconCol: "text-[#FFCC00]"
   },
   { 
     label: "Total Spent", 
     value: "₹3,500", 
     icon: IconWallet, 
-    bg: "bg-[#DCFCE7]", // Image match: soft green
-    iconCol: "text-[#00A137]" // Image match: green
+    bg: "bg-[#DCFCE7]", 
+    iconCol: "text-[#00A137]" 
   },
 ];
 
@@ -29,11 +29,10 @@ export const StatsCards = () => (
     {stats.map((stat) => (
       <div 
         key={stat.label} 
-        className="bg-white p-6 rounded-[20px] shadow-sm border border-gray-50 flex flex-col justify-between hover:shadow-md transition-all cursor-pointer group"
+        className="bg-white p-6 rounded-4xl shadow-sm border border-gray-50 flex flex-col justify-between hover:shadow-md transition-all cursor-pointer group"
       >
         <div className="flex justify-between items-start">
-          {/* Icon Container: Matching the exact padding and radius */}
-          <div className={`${stat.bg} ${stat.iconCol} p-2.5 rounded-[12px] flex items-center justify-center`}>
+          <div className={`${stat.bg} ${stat.iconCol} p-2.5 rounded-2xl flex items-center justify-center`}>
             <stat.icon size={22} stroke={2} />
           </div>
           <IconChevronRight size={18} className="text-gray-400 group-hover:translate-x-1 transition-transform" />

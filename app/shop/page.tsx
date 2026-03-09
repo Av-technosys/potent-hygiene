@@ -15,7 +15,6 @@ const page = () => {
         <FiltersSidebar />
         <CategoryProducts />
       </div>
-
       <Footer />
     </div>
   );
