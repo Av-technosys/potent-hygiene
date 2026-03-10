@@ -38,15 +38,15 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
   return (
     <>
       {/* Category Tabs */}
-      <div className="flex overflow-x-auto whitespace-nowrap gap-3 mb-10 sm:flex-wrap sm:justify-center no-scrollbar">
+      <div className="flex gap-3 overflow-x-auto whitespace-nowrap no-scrollbar select-none mb-10 sm:flex-wrap sm:justify-center">
         {categories.map((item) => (
           <button
             key={item}
             onClick={() => setActiveCategory(item)}
             className={`shrink-0 px-5 py-2 rounded-full border text-sm transition ${
               activeCategory === item
-                ? "bg-[#168ba0] text-white border-[#168ba0]"
-                : "bg-white text-[#168ba0] border-[#168ba0] hover:bg-teal-50"
+                ? "bg-[#168BA0] text-white border-[#168BA0]"
+                : "bg-white text-[#168BA0] border-[#168BA0] hover:bg-teal-50"
             }`}
           >
             {item}
@@ -58,11 +58,11 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
       {filteredBlogs.length > 0 ? (
         <>
           {firstBlog && (
-            <div className="grid md:grid-cols-3 gap-6 mb-10">
+            <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-6xl mx-auto">
               {/* Big Featured Card */}
               <div className="md:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition">
                 <Image
-                  src={firstBlog.image || "/placeholder.jpg"}
+                  src={firstBlog.image}
                   alt={firstBlog.title}
                   width={900}
                   height={500}
@@ -74,7 +74,7 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
                   <p className="text-neutral-600 text-sm line-clamp-2">{firstBlog.metaDescription}</p>
                   <div className="flex justify-between text-sm text-neutral-500 pt-2 border-t">
                     <span>{firstBlog.date}</span>
-                    <Link href={`/blog/${firstBlog.slug}`} className="text-teal-600 font-medium flex items-center gap-2">
+                    <Link href={`/blog/${firstBlog.slug}`} className="text-[#168BA0] font-medium flex items-center gap-2">
                       Read More <IconArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
@@ -83,7 +83,7 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
 
               {/* Side Small Card */}
               {secondBlog && (
-                <div className="bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition">
+                <div className="bg-white  rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition">
                   <Image
                     src={secondBlog.image || "/placeholder.jpg"}
                     alt={secondBlog.title}
@@ -96,7 +96,7 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
                     <h2 className="text-base font-semibold line-clamp-2">{secondBlog.title}</h2>
                     <div className="flex justify-between text-sm text-neutral-500 pt-2 border-t">
                       <span>{secondBlog.date}</span>
-                      <Link href={`/blog/${secondBlog.slug}`} className="text-teal-600 font-medium">Read More →</Link>
+                      <Link href={`/blog/${secondBlog.slug}`} className="text-[#168BA0] font-medium">Read More →</Link>
                     </div>
                   </div>
                 </div>
@@ -105,7 +105,7 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
           )}
 
           {/* Remaining Grid */}
-          <div className="grid md:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-3 gap-6  max-w-6xl mx-auto">
             {remainingBlogs.map((blog) => (
               <div key={blog.slug} className="bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition">
                 <Image
@@ -120,7 +120,7 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
                   <h2 className="text-sm md:text-base font-semibold line-clamp-2">{blog.title}</h2>
                   <div className="flex justify-between text-sm text-neutral-500 pt-2 border-t">
                     <span>{blog.date}</span>
-                    <Link href={`/blog/${blog.slug}`} className="text-teal-600 font-medium">Read More →</Link>
+                    <Link href={`/blog/${blog.slug}`} className="text-[#168BA0] font-medium">Read More →</Link>
                   </div>
                 </div>
               </div>

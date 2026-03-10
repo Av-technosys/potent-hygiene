@@ -4,7 +4,7 @@ import {
   timestamp,
   uuid,
   varchar,
-  text, // Text import kiya bade content ke liye
+  text, 
 } from "drizzle-orm/pg-core";
 
 export const blog = pgTable("blog", {
