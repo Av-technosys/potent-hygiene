@@ -17,16 +17,12 @@ export default async function BlogDetailPage({
 
   if (!blog) return notFound();
 
-  // Robust Alt Text Logic: Title fallback to 'Blog Post'
   const imageAlt = blog.title || "Blog Post Details";
-
-  // Image Fallback Logic: Database URL or Placeholder
 
   return (
     <div className=" min-h-screen">
       <BlogHeader />
 
-      {/* Heading Section with Absolute Back Button */}
       <div className="max-w-4xl mx-auto pt-16 pb-10 px-6 relative text-center">
         <Link
           href="/blog"
@@ -42,10 +38,8 @@ export default async function BlogDetailPage({
 
       <div className="max-w-4xl mx-auto px-4 ">
         <div className="bg-[#F8F6F1] mb-10 rounded-[24px] shadow-sm border border-neutral-100 p-6 md:p-12 space-y-8">
-          {/* Metadata Row */}
           <div className="flex items-center gap-3 text-sm text-neutral-500 font-medium border-b border-neutral-50 pb-6">
             <Avatar className="h-8 w-8">
-              {/* Author Image Logic with Alt */}
               <AvatarImage
                 src={blog.userImage || "/author-placeholder.jpg"}
                 alt={blog.userName || "Author"}
@@ -61,18 +55,17 @@ export default async function BlogDetailPage({
             </div>
           </div>
 
-          {/* Main Featured Image Logic */}
-          <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-neutral-100">
+          <div className="relative rounded-2xl overflow-hidden bg-neutral-100 group">
             <Image
-              src="/"
-              alt={imageAlt}
-              fill
-              className="object-cover"
+              src={blog.image || "/placeholder.jpg"}
+              alt={blog.title || "Blog Image"}
+              width={600}
+              height={400}
+              className={`w-full object-cover h-72 md:h-112.5`}
               unoptimized
             />
           </div>
 
-          {/* Content Body */}
           <article className="prose prose-neutral max-w-none text-[#4a4a4a]">
             <div className="whitespace-pre-line leading-relaxed text-[17px]">
               {blog.data}

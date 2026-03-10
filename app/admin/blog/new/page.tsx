@@ -168,7 +168,7 @@ export default function BlogForm() {
           <div className="space-y-2">
             <Label className="font-medium">Main Blog Content</Label>
             <Textarea 
-              className="min-h-[300px] leading-relaxed" 
+              className="min-h-75 leading-relaxed" 
               placeholder="Start writing your masterpiece here..."
               value={formData.data} 
               onChange={(e) => setFormData({...formData, data: e.target.value})} 

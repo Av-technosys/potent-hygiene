@@ -43,13 +43,6 @@ export default async function AdminBlogPage() {
               </div>
               
               <div className="flex gap-2">
-                {/* VIEW */}
-                <Link href={`/blog/${blog.slug}`}>
-                  <Button variant="outline" size="sm" className="flex items-center gap-1">
-                    <Eye className="w-4 h-4" /> View
-                  </Button>
-                </Link>
-
                 {/* EDIT - Yeh user ko edit page pe le jayega */}
                 <Link href={`/admin/blog/edit/${blog.id}`}>
                   <Button variant="outline" size="sm" className="flex items-center gap-1 border-amber-200 hover:bg-amber-50 text-amber-600">
