@@ -14,36 +14,42 @@ const categories = [
   "Wellness Tips",
 ];
 
-export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }) {
+export default function BlogListClient({
+  initialBlogs,
+}: {
+  initialBlogs: any[];
+}) {
   const [activeCategory, setActiveCategory] = useState("All Articles");
 
-  // Filter based on 'blogCategory' field from schema
-  const filteredBlogs = activeCategory === "All Articles"
-    ? initialBlogs
-    : initialBlogs.filter((b) => b.blogCategory === activeCategory);
+  const filteredBlogs =
+    activeCategory === "All Articles"
+      ? initialBlogs
+      : initialBlogs.filter((b) => b.blogCategory === activeCategory);
 
-  const firstBlog = filteredBlogs[0];
-  const secondBlog = filteredBlogs[1];
-  const remainingBlogs = filteredBlogs.slice(2);
+  const getPreviewText = (html: string, limit: number) => {
+    if (!html) return "";
+    const cleanText = html.replace(/<\/?[^>]+(>|$)/g, "");
+    return cleanText.length > limit
+      ? cleanText.substring(0, limit) + "..."
+      : cleanText;
+  };
 
-  // Empty state check
   if (!initialBlogs || initialBlogs.length === 0) {
     return (
       <div className="text-center py-20 border-2 border-dashed rounded-2xl bg-gray-50 text-gray-400">
-        No blogs available yet. Start by adding one from admin!
+        No blogs available yet.
       </div>
     );
   }
 
   return (
-    <>
-      {/* Category Tabs */}
+    <div className="max-w-6xl mx-auto px-4 py-10">
       <div className="flex gap-3 overflow-x-auto whitespace-nowrap no-scrollbar select-none mb-10 sm:flex-wrap sm:justify-center">
         {categories.map((item) => (
           <button
             key={item}
             onClick={() => setActiveCategory(item)}
-            className={`shrink-0 px-5 py-2 rounded-full border text-sm transition ${
+            className={`shrink-0 px-5 py-2 rounded-full border text-sm transition font-medium ${
               activeCategory === item
                 ? "bg-[#168BA0] text-white border-[#168BA0]"
                 : "bg-white text-[#168BA0] border-[#168BA0] hover:bg-teal-50"
@@ -54,82 +60,71 @@ export default function BlogListClient({ initialBlogs }: { initialBlogs: any[] }
         ))}
       </div>
 
-      {/* Featured Grid (Alignment Fixed) */}
       {filteredBlogs.length > 0 ? (
-        <>
-          {firstBlog && (
-            <div className="grid md:grid-cols-3 gap-6 mb-10 max-w-6xl mx-auto">
-              {/* Big Featured Card */}
-              <div className="md:col-span-2 bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition">
-                <Image
-                  src={firstBlog.image}
-                  alt={firstBlog.title}
-                  width={900}
-                  height={500}
-                  className="w-full h-72 object-cover"
-                  unoptimized
-                />
-                <div className="p-6 space-y-4">
-                  <h2 className="text-lg md:text-xl font-semibold">{firstBlog.title}</h2>
-                  <p className="text-neutral-600 text-sm line-clamp-2">{firstBlog.metaDescription}</p>
-                  <div className="flex justify-between text-sm text-neutral-500 pt-2 border-t">
-                    <span>{firstBlog.date}</span>
-                    <Link href={`/blog/${firstBlog.slug}`} className="text-[#168BA0] font-medium flex items-center gap-2">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          {filteredBlogs.map((blog, index) => {
+            const isFeatured = index === 0;
+
+            return (
+              <div
+                key={blog.slug || index}
+                className={`rounded-2xl h-full shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col ${
+                  isFeatured ? "md:col-span-2" : "col-span-1"
+                }`}
+              >
+                {/* Image Wrapper - Parent must be relative and have a height */}
+                <div
+                  className={`relative w-full overflow-hidden rounded-t-2xl bg-neutral-100 ${
+                    isFeatured ? "h-72 md:h-[300px]" : "h-64"
+                  }`}
+                >
+                  <Image
+                    src={blog.image || "/placeholder.jpg"}
+                    alt={blog.title}
+                    fill // Ab ye upar wale parent ki height (h-72 ya h-64) ko pakad lega
+                    className="object-cover transition-transform duration-500 hover:scale-105"
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority={isFeatured} // Featured card ko fast load karne ke liye
+                    unoptimized
+                  />
+                </div>
+
+                <div className="p-6 flex flex-col flex-1">
+                  <h2
+                    className={`font-bold text-gray-900 leading-tight mb-3 ${
+                      isFeatured
+                        ? "text-2xl md:text-3xl"
+                        : "text-lg line-clamp-2"
+                    }`}
+                  >
+                    {blog.title}
+                  </h2>
+
+                  <p className="text-neutral-500 text-sm leading-relaxed mb-6">
+                    {isFeatured
+                      ? getPreviewText(blog.data || blog.metaDescription, 180)
+                      : getPreviewText(blog.data || blog.metaDescription, 90)}
+                  </p>
+
+                  <div className="mt-auto pt-4 border-t border-gray-50 flex justify-between items-center text-xs font-medium text-neutral-400">
+                    <span>{blog.date}</span>
+                    <Link
+                      href={`/blog/${blog.slug}`}
+                      className="text-[#168BA0] font-bold flex items-center gap-1 hover:gap-2 transition-all"
+                    >
                       Read More <IconArrowRight className="w-4 h-4" />
                     </Link>
                   </div>
                 </div>
               </div>
-
-              {/* Side Small Card */}
-              {secondBlog && (
-                <div className="bg-white  rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition">
-                  <Image
-                    src={secondBlog.image || "/placeholder.jpg"}
-                    alt={secondBlog.title}
-                    width={500}
-                    height={500}
-                    className="w-full h-72 object-cover"
-                    unoptimized
-                  />
-                  <div className="p-6 space-y-4">
-                    <h2 className="text-base font-semibold line-clamp-2">{secondBlog.title}</h2>
-                    <div className="flex justify-between text-sm text-neutral-500 pt-2 border-t">
-                      <span>{secondBlog.date}</span>
-                      <Link href={`/blog/${secondBlog.slug}`} className="text-[#168BA0] font-medium">Read More →</Link>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Remaining Grid */}
-          <div className="grid md:grid-cols-3 gap-6  max-w-6xl mx-auto">
-            {remainingBlogs.map((blog) => (
-              <div key={blog.slug} className="bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition">
-                <Image
-                  src={blog.image || "/placeholder.jpg"}
-                  alt={blog.title}
-                  width={500}
-                  height={400}
-                  className="w-full h-60 object-cover"
-                  unoptimized
-                />
-                <div className="p-5 space-y-3">
-                  <h2 className="text-sm md:text-base font-semibold line-clamp-2">{blog.title}</h2>
-                  <div className="flex justify-between text-sm text-neutral-500 pt-2 border-t">
-                    <span>{blog.date}</span>
-                    <Link href={`/blog/${blog.slug}`} className="text-[#168BA0] font-medium">Read More →</Link>
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </>
+            );
+          })}
+        </div>
       ) : (
-        <div className="text-center py-20 text-neutral-500">No articles found in this category.</div>
+        <div className="text-center py-20 text-neutral-500 font-medium">
+          No articles found in this category.
+        </div>
       )}
-    </>
+    </div>
   );
 }

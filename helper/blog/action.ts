@@ -5,11 +5,6 @@ import { db } from "@/lib/db";
 
 import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
-
-/**
- * 1. GET ALL BLOGS (With Search)
- * Listing page aur Search bar ke liye
- */
 export async function getBlogs(search = "") {
   const filters = [];
   if (search && search.trim() !== "") {
@@ -35,10 +30,6 @@ export async function getBlogs(search = "") {
   }
 }
 
-/**
- * 2. GET SINGLE BLOG BY SLUG
- * Detail page (/blog/[slug]) ke liye
- */
 export async function getBlogBySlug(slug: string) {
   try {
     const result = await db
@@ -54,13 +45,8 @@ export async function getBlogBySlug(slug: string) {
   }
 }
 
-/**
- * 3. CREATE NEW BLOG
- * Admin form se data save karne ke liye
- */
 export async function createBlog(blogData: any) {
   try {
-    // URL friendly slug generation
     const slug = blogData.title
       .toLowerCase()
       .trim()
@@ -75,16 +61,13 @@ export async function createBlog(blogData: any) {
       userImage: blogData.userImage,
       userName: blogData.userName,
       date: blogData.date,
-      data: blogData.data, // Long blog content
+      data: blogData.data, 
       slug: slug,
-      // Tags format safety: string to array conversion
       tags: Array.isArray(blogData.tags) 
         ? blogData.tags 
         : (blogData.tags ? blogData.tags.split(',').map((t: string) => t.trim()) : []),
       isVisible: true,
     });
-
-    // Cache clear karna taaki naya blog turant dikhe
     revalidatePath("/admin/blog");
     revalidatePath("/blog"); 
     
@@ -94,11 +77,6 @@ export async function createBlog(blogData: any) {
     return { success: false, message: error.message };
   }
 }
-
-/**
- * 4. UPDATE EXISTING BLOG
- * Admin edit functionality ke liye
- */
 export async function updateBlog(blogId: string, blogData: any) {
   try {
     const slug = blogData.title
@@ -143,5 +121,19 @@ export async function deleteBlog(id: string) {
   } catch (error) {
     console.error("Delete Blog Error:", error);
     return { success: false };
+  }
+}
+export async function getBlogById(id: string) {
+  try {
+    const result = await db
+      .select()
+      .from(blog)
+      .where(eq(blog.id, id))
+      .limit(1);
+    
+    return result[0] || null;
+  } catch (error) {
+    console.error("Fetch Blog By ID Error:", error);
+    return null;
   }
 }
