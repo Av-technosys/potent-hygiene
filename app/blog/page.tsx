@@ -1,32 +1,32 @@
-// import { getBlogs } from "@/helper/blog/action"; // Aapka final action
-import Footer from "../components/common/Footer";
-import { Navbar } from "../components/common/Navbar";
-import BlogListClient from "./BlogListClient"; // Niche wala component
+import BlogHeader from "@/app/components/common/BlogHeader";
+import Footer from "@/app/components/common/Footer";
+import BlogListClient from "./BlogListClient"; // Aapka client component
+import { getBlogs } from "@/helper/blog/action";
 
 export default async function BlogPage() {
-  // Database se data fetch ho raha hai
-  // const allBlogs = await getBlogs(); 
+  // Database se live blogs fetch kar rahe hain
+  const allBlogs = await getBlogs(); 
 
   return (
-    <>
-      <Navbar />
-      <div className="bg-white min-h-screen py-12">
-        <div className="max-w-6xl mx-auto px-4">
-          <div className="text-center mb-10">
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold">
-              Hygiene Knowledge Hub
-            </h1>
-            <p className="text-sm mt-3">
-              Learn, understand, and make healthier wellness choices
-            </p>
-          </div>
-          
-          {/* Filtering ka logic is client component mein pass kar diya */}
-          {/* <BlogListClient initialBlogs={allBlogs} /> */}
-
+    <div className="min-h-screen bg-[#FDFCF9]">
+      <BlogHeader />
+      
+      <main className="max-w-7xl mx-auto px-6 py-12">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl md:text-5xl font-bold text-[#333333] mb-4">
+            Our Journal Hygiene Knowledge Hub
+          </h1>
+          <p className="text-black/50 max-w-2xl mx-auto">
+           Learn, understand, and make healthier wellness choices
+          </p>
         </div>
-      </div>
+
+        {/* Aapka pura purana UI logic BlogListClient ke andar hai */}
+        {/* Humne bas database wala data props mein bhej diya hai */}
+        <BlogListClient initialBlogs={allBlogs} />
+      </main>
+
       <Footer />
-    </>
+    </div>
   );
 }

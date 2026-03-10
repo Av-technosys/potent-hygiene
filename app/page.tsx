@@ -17,6 +17,7 @@ import Footer from "./components/common/Footer";
 import Faq from "./components/common/homepage/Faq";
 import { ProductCategories } from "./components/common/homepage/ProductCategories";
 import { WhatsAppWidget } from "./components/common/homepage/WhatsAppWidget";
+import ImageUpload from "@/components/ImageUpload";
 
 export default function Home() {
   return (
@@ -37,6 +38,7 @@ export default function Home() {
       <BlogSection />
       <Faq/>
       <WhatsAppWidget/>
+      <ImageUpload/>
       <Footer/>
     </main>
   );

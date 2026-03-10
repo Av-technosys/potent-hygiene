@@ -1,11 +1,87 @@
-import React from 'react'
+import BlogHeader from "@/app/components/common/BlogHeader";
+import Footer from "@/app/components/common/Footer";
+import { getBlogBySlug } from "@/helper/blog/action";
+import Image from "next/image";
+import Link from "next/link";
+import { IconArrowLeft } from "@tabler/icons-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { notFound } from "next/navigation";
 
-const page = () => {
+export default async function BlogDetailPage({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}) {
+  const { slug } = await params;
+  const blog = await getBlogBySlug(slug);
+
+  if (!blog) return notFound();
+
+  // Robust Alt Text Logic: Title fallback to 'Blog Post'
+  const imageAlt = blog.title || "Blog Post Details";
+
+  // Image Fallback Logic: Database URL or Placeholder
+
   return (
-    <div>
-      
-    </div>
-  )
-}
+    <div className=" min-h-screen">
+      <BlogHeader />
 
-export default page
+      {/* Heading Section with Absolute Back Button */}
+      <div className="max-w-4xl mx-auto pt-16 pb-10 px-6 relative text-center">
+        <Link
+          href="/blog"
+          className="absolute left-0 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-black transition-all p-2"
+        >
+          <IconArrowLeft size={24} stroke={1.5} />
+        </Link>
+
+        <h1 className="text-3xl md:text-4xl font-bold text-[#1a1a1a] leading-tight px-10 py-10">
+          {blog.title}
+        </h1>
+      </div>
+
+      <div className="max-w-4xl mx-auto px-4 ">
+        <div className="bg-[#F8F6F1] mb-10 rounded-[24px] shadow-sm border border-neutral-100 p-6 md:p-12 space-y-8">
+          {/* Metadata Row */}
+          <div className="flex items-center gap-3 text-sm text-neutral-500 font-medium border-b border-neutral-50 pb-6">
+            <Avatar className="h-8 w-8">
+              {/* Author Image Logic with Alt */}
+              <AvatarImage
+                src={blog.userImage || "/author-placeholder.jpg"}
+                alt={blog.userName || "Author"}
+              />
+              <AvatarFallback>{blog.userName?.charAt(0) || "U"}</AvatarFallback>
+            </Avatar>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-black font-semibold">{blog.userName}</span>
+              <span>|</span>
+              <span>{blog.date}</span>
+              <span>|</span>
+              <span>{blog.blogCategory}</span>
+            </div>
+          </div>
+
+          {/* Main Featured Image Logic */}
+          <div className="relative w-full aspect-[16/10] rounded-2xl overflow-hidden bg-neutral-100">
+            <Image
+              src="/"
+              alt={imageAlt}
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          </div>
+
+          {/* Content Body */}
+          <article className="prose prose-neutral max-w-none text-[#4a4a4a]">
+            <div className="whitespace-pre-line leading-relaxed text-[17px]">
+              {blog.data}
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <Footer />
+    </div>
+  );
+}
