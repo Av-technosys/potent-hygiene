@@ -1,5 +1,7 @@
+"use client";
+
 import Image from "next/image";
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Dialog,
@@ -8,8 +10,46 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [isVerified, setIsVerified] = useState(false);
+  const router = useRouter();
+
+  // Get email from localStorage
+  const email = typeof window !== "undefined" ? localStorage.getItem("signupEmail") || "user@example.com" : "user@example.com";
+
+  const handleVerifyOtp = async () => {
+    if (!otp.trim()) {
+      setError("Please enter OTP");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/verify-otp", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, otp }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setIsVerified(true);
+        setError("");
+      } else {
+        setError(data.error || "Verification failed");
+      }
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      setError("Network error. Please try again.");
+    }
+  };
+
   return (
    <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
 
@@ -59,7 +99,7 @@ const Page = () => {
           </h2>
 
           <p className="text-center text-sm text-[#168ba0] mt-2">
-            OTP sent to your mail id xyz@gmail.com
+            OTP sent to your mail id {email}
           </p>
 
           
@@ -67,8 +107,13 @@ const Page = () => {
             <input
               type="text"
               placeholder="Enter OTP"
+              value={otp}
+              onChange={(e) => setOtp(e.target.value)}
               className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
             />
+            {error && (
+              <p className="text-red-500 text-xs mt-1">{error}</p>
+            )}
           </div>
 
           
@@ -78,9 +123,12 @@ const Page = () => {
           </div>
 
           
-          <Dialog>
+          <Dialog open={isVerified} onOpenChange={setIsVerified}>
             <DialogTrigger asChild>
-             <button className="w-full bg-[#168ba0] text-white py-2 text-sm rounded-full mt-6 font-medium">
+             <button
+               onClick={handleVerifyOtp}
+               className="w-full bg-[#168ba0] text-white py-2 text-sm rounded-full mt-6 font-medium"
+             >
                 Confirm
               </button>
             </DialogTrigger>
@@ -111,7 +159,7 @@ const Page = () => {
                   Your email verification is successfully completed.
                 </p>
 
-                <Link href="/">
+                <Link href="/login">
                 <button className="w-full bg-[#168ba0] text-white py-2 rounded-full mt-6 font-medium">
                   Login
                 </button></Link>

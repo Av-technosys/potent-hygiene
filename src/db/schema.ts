@@ -5,13 +5,21 @@ import {
   uuid,
   varchar,
   text,
-  serial // Text import kiya bade content ke liye
+  serial,
+  integer // Text import kiya bade content ke liye
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
-  name: text("name"),
-  email: text("email"),
+  name: text("name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: varchar("phone", { length: 15 }).notNull(),
+  password: text("password").notNull(), // Will store hashed password
+  emailVerified: boolean("email_verified").default(false),
+  otp: varchar("otp", { length: 6 }),
+  otpExpiresAt: timestamp("otp_expires_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 export const blog = pgTable("blog", {

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 
 import {
@@ -10,6 +10,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -18,23 +19,57 @@ const Page = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [error, setError] = useState(false);
+  const [error, setError] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const router = useRouter();
 
-const handleReset = () => {
-  if (password !== confirmPassword || !password || !confirmPassword) {
-    setError(true);
+  useEffect(() => {
+    const resetEmail = localStorage.getItem("resetEmail");
+    if (!resetEmail) {
+      router.push("/reset-password-email");
+    } else {
+      setEmail(resetEmail);
+    }
+  }, [router]);
 
-    
-    setPassword("");
-    setConfirmPassword("");
+  const handleReset = async () => {
+    setError("");
+    if (!password || !confirmPassword) {
+      setError("Both fields are required");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
 
-    return;
-  }
-
-  setError(false);
-  setOpenPopup(true);
-};
+    setLoading(true);
+    try {
+      const res = await fetch("/api/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, confirmPassword }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.removeItem("resetEmail");
+        setOpenPopup(true);
+      } else {
+        setError(data.error || "Failed to reset password");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
 <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
@@ -117,7 +152,7 @@ const handleReset = () => {
            
             {error && (
               <p className="text-red-500 text-xs">
-                Password didn’t match, please check.
+                {error}
               </p>
             )}
           </div>
@@ -125,9 +160,10 @@ const handleReset = () => {
          
           <button
             onClick={handleReset}
-            className="w-full bg-cyan-700 text-white py-2 text-sm rounded-full mt-4 font-medium"
+            disabled={loading}
+            className="w-full bg-cyan-700 text-white py-2 text-sm rounded-full mt-4 font-medium disabled:opacity-50"
           >
-            Reset
+            {loading ? "Resetting..." : "Reset"}
           </button>
         </div>
       </div>
@@ -159,12 +195,14 @@ const handleReset = () => {
   now login with your new credentials
 </p>
 
-           <Link href="/login">    <button
+           <Link href="/login">
+             <button
       onClick={() => setOpenPopup(false)}
       className="mt-4 w-full bg-cyan-700 text-white py-2 rounded-full text-sm"
     >
       Login
-    </button></Link>
+    </button>
+    </Link>
 
 
   </DialogContent>

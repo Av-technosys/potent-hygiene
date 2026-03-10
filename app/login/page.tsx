@@ -1,8 +1,65 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const router = useRouter();
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errors, setErrors] = useState({ email: "", password: "", general: "" });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    if (errors[name as keyof typeof errors]) {
+      setErrors({ ...errors, [name]: "" });
+    }
+    if (errors.general) {
+      setErrors({ ...errors, general: "" });
+    }
+  };
+
+  const validate = () => {
+    let valid = true;
+    const newErrors = { email: "", password: "", general: "" };
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+      valid = false;
+    }
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+      valid = false;
+    }
+    setErrors(newErrors);
+    return valid;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!validate()) return;
+
+    try {
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        // store token or user info if returned
+        localStorage.setItem("userEmail", formData.email);
+        router.push("/dashboard");
+      } else {
+        setErrors({ ...errors, general: data.error || "Login failed" });
+      }
+    } catch (err) {
+      console.error("Login error", err);
+      setErrors({ ...errors, general: "Network error" });
+    }
+  };
+
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
 
@@ -56,28 +113,54 @@ const Page = () => {
             Enter your details below
           </p>
 
-          <div className="space-y-2">
-  <input
-    type="email"
-    placeholder="Email"
-    className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
-  />
+          <form onSubmit={handleSubmit} className="space-y-2">
+            <div>
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                value={formData.email}
+                onChange={handleChange}
+                className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
+              />
+              {errors.email && (
+                <p className="text-red-500 text-xs mt-1">{errors.email}</p>
+              )}
+            </div>
 
-  <input
-    type="password"
-    placeholder="Password"
-    className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
-  />
-</div>
+            <div>
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
+              />
+              {errors.password && (
+                <p className="text-red-500 text-xs mt-1">{errors.password}</p>
+              )}
+            </div>
 
-          <div className="text-right text-xs mt-2">
-          <Link href="/reset-password-email"><button className="text-black font-semibold mb-5">Forgot Password?</button></Link>
-          </div>
+            {errors.general && (
+              <p className="text-red-500 text-xs mt-1">{errors.general}</p>
+            )}
 
-          <Link href="/">
-          <button className="w-full bg-cyan-700 text-white py-2 text-sm rounded-lg mt-2 mb-2 font-medium">
-            Login
-          </button></Link>
+            <div className="text-right text-xs mt-2">
+              <Link href="/reset-password-email">
+                <button className="text-black font-semibold mb-5">
+                  Forgot Password?
+                </button>
+              </Link>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full bg-cyan-700 text-white py-2 text-sm rounded-lg mt-2 mb-2 font-medium"
+            >
+              Login
+            </button>
+          </form>
 
          <button className="w-full border border-cyan-700 text-cyan-700 py-2 text-sm rounded-full mt-1 font-medium flex items-center justify-center gap-2 bg-white ">
   

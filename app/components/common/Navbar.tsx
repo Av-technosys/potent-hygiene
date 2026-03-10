@@ -39,6 +39,7 @@ export function Navbar() {
 
   const [wishlistCount,setWishlistCount] = useState(0)
   const [cartCount,setCartCount] = useState(0)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(()=>{
 
@@ -53,15 +54,23 @@ export function Navbar() {
 
     }
 
+    const checkLogin = () => {
+      const userEmail = localStorage.getItem("userEmail");
+      setIsLoggedIn(!!userEmail);
+    };
+
     loadData()
+    checkLogin()
     window.addEventListener("storage",loadData)
     window.addEventListener("cartUpdated",loadData)
     window.addEventListener("wishlistUpdated",loadData)
+    window.addEventListener("storage", checkLogin); // listen for login/logout changes
 
     return ()=>{
       window.removeEventListener("storage",loadData)
       window.removeEventListener("cartUpdated",loadData)
       window.removeEventListener("wishlistUpdated",loadData)
+      window.removeEventListener("storage", checkLogin);
     }
 
   },[])
@@ -175,9 +184,9 @@ export function Navbar() {
             <Search className="h-5 w-5" />
           </button>
 
-          <Link href="/dashboard/profile">
+          <Link href={isLoggedIn ? "/dashboard/profile" : "/login"}>
             <Button variant="ghost" className="hidden md:flex rounded-full bg-[#D1E9EC] px-6 text-[#1A8D91]">
-              <User className="mr-2 h-4 w-4" /> Account
+              <User className="mr-2 h-4 w-4" /> {isLoggedIn ? "Account" : "Login"}
             </Button>
           </Link>
 
