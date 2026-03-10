@@ -1,38 +1,41 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 
-export const AddressEditForm = ({ address }: any) => {
+export const AddressNewForm = ({ onCancel }: { onCancel: () => void }) => {
 
-  const router = useRouter();
+  const [form, setForm] = useState({
+    fullName: "",
+    phone: "",
+    street: "",
+    locality: "",
+    city: "",
+    state: "",
+    pincode: "",
+    country: "",
+    isDefault: false
+  });
 
-  const [form, setForm] = useState(address);
-
-  const handleChange = (e: any) => {
+  const handleChange = (e:any) => {
     setForm({
       ...form,
       [e.target.name]: e.target.value
     });
   };
 
-  const updateAddress = async () => {
+  const saveAddress = async () => {
 
-    await fetch("/api/address/edit", {
+    await fetch("/api/add-address", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify(form)
     });
 
-    router.push("/dashboard/address");
-    router.refresh();
+    window.location.href="/dashboard/address"
   };
 
   return (
@@ -40,7 +43,7 @@ export const AddressEditForm = ({ address }: any) => {
 <Card className="p-8 border-gray-200 shadow-sm bg-white rounded-[20px]">
 
 <h3 className="text-[14px] font-bold text-[#2D3748] mb-8 uppercase tracking-widest">
-Edit Address
+Add Address
 </h3>
 
 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -49,60 +52,35 @@ Edit Address
 <Label className="text-[12px] font-bold text-gray-400 uppercase">
 Full Name
 </Label>
-<Input
-name="fullName"
-value={form.fullName}
-onChange={handleChange}
-className="border-gray-200 rounded-xl h-12"
-/>
+<Input name="fullName" onChange={handleChange} className="border-gray-200 rounded-xl h-12"/>
 </div>
 
 <div className="space-y-2">
 <Label className="text-[12px] font-bold text-gray-400 uppercase">
 Phone
 </Label>
-<Input
-name="phone"
-value={form.phone}
-onChange={handleChange}
-className="border-gray-200 rounded-xl h-12"
-/>
+<Input name="phone" onChange={handleChange} className="border-gray-200 rounded-xl h-12"/>
 </div>
 
 <div className="md:col-span-2 space-y-2">
 <Label className="text-[12px] font-bold text-gray-400 uppercase">
 Address / Street
 </Label>
-<Input
-name="street"
-value={form.street}
-onChange={handleChange}
-className="border-gray-200 rounded-xl h-12"
-/>
+<Input name="street" onChange={handleChange} className="border-gray-200 rounded-xl h-12"/>
 </div>
 
 <div className="md:col-span-2 space-y-2">
 <Label className="text-[12px] font-bold text-gray-400 uppercase">
 Locality
 </Label>
-<Input
-name="locality"
-value={form.locality}
-onChange={handleChange}
-className="border-gray-200 rounded-xl h-12"
-/>
+<Input name="locality" onChange={handleChange} className="border-gray-200 rounded-xl h-12"/>
 </div>
 
 <div className="space-y-2">
 <Label className="text-[12px] font-bold text-gray-400 uppercase">
 City
 </Label>
-<Input
-name="city"
-value={form.city}
-onChange={handleChange}
-className="border-gray-200 rounded-xl h-12"
-/>
+<Input name="city" onChange={handleChange} className="border-gray-200 rounded-xl h-12"/>
 </div>
 
 <div className="grid grid-cols-2 gap-4">
@@ -111,24 +89,14 @@ className="border-gray-200 rounded-xl h-12"
 <Label className="text-[12px] font-bold text-gray-400 uppercase">
 State
 </Label>
-<Input
-name="state"
-value={form.state}
-onChange={handleChange}
-className="border-gray-200 rounded-xl h-12"
-/>
+<Input name="state" onChange={handleChange} className="border-gray-200 rounded-xl h-12"/>
 </div>
 
 <div className="space-y-2">
 <Label className="text-[12px] font-bold text-gray-400 uppercase">
 Pincode
 </Label>
-<Input
-name="pincode"
-value={form.pincode}
-onChange={handleChange}
-className="border-gray-200 rounded-xl h-12"
-/>
+<Input name="pincode" onChange={handleChange} className="border-gray-200 rounded-xl h-12"/>
 </div>
 
 </div>
@@ -137,12 +105,7 @@ className="border-gray-200 rounded-xl h-12"
 <Label className="text-[12px] font-bold text-gray-400 uppercase">
 Country
 </Label>
-<Input
-name="country"
-value={form.country}
-onChange={handleChange}
-className="border-gray-200 rounded-xl h-12"
-/>
+<Input name="country" onChange={handleChange} className="border-gray-200 rounded-xl h-12"/>
 </div>
 
 </div>
@@ -150,7 +113,6 @@ className="border-gray-200 rounded-xl h-12"
 <div className="flex items-center space-x-2 mb-8">
 
 <Checkbox
-checked={form.isDefault}
 onCheckedChange={(v)=>setForm({...form,isDefault:Boolean(v)})}
 />
 
@@ -163,15 +125,15 @@ Set as default shipping address
 <div className="flex gap-4">
 
 <Button
-onClick={updateAddress}
+onClick={saveAddress}
 className="flex-1 bg-[#168BA0] hover:bg-[#168BA0] h-14 rounded-xl font-bold text-lg"
 >
-Update Address
+Save Address
 </Button>
 
 <Button
 variant="outline"
-onClick={()=>router.push("/dashboard/address")}
+onClick={onCancel}
 className="flex-1 border-[#168BA0] text-[#168BA0] h-14 rounded-xl font-bold text-lg"
 >
 Cancel

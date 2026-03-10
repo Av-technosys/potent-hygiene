@@ -6,7 +6,7 @@ import {
   varchar,
   text,
   serial,
-  integer // Text import kiya bade content ke liye
+  integer
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -30,11 +30,29 @@ export const blog = pgTable("blog", {
   image: varchar("image"),
   tags: varchar("tags").array(),
   date: varchar("date"),
-
-  // Blog Content - varchar ki jagah text use kiya taaki error na aaye
-  data: text("data"), 
+  data: text("data"),
   userImage: varchar("user_image"),
   userName: varchar("user_name"),
   slug: varchar("slug"),
   isVisible: boolean("is_visible").default(true),
+});
+
+
+export const address = pgTable("address", {
+  id: serial("id").primaryKey(),
+
+  fullName: varchar("full_name"),
+  phone: varchar("phone"),
+  email: varchar("email"),
+
+  street: text("street"),
+  locality: varchar("locality"),
+  city: varchar("city"),
+  state: varchar("state"),
+  pincode: varchar("pincode"),
+  country: varchar("country"),
+
+  isDefault: boolean("is_default").default(false),
+
+  createdAt: timestamp("created_at").defaultNow(),
 });
