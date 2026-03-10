@@ -1,8 +1,52 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const [otp, setOtp] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState("");
+  const router = useRouter();
+
+  useEffect(() => {
+    const resetEmail = localStorage.getItem("resetEmail");
+    if (!resetEmail) {
+      router.push("/reset-password-email");
+    } else {
+      setEmail(resetEmail);
+    }
+  }, [router]);
+
+  const handleVerify = async () => {
+    setError("");
+    if (!otp.trim()) {
+      setError("Please enter OTP");
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch("/api/reset-password-verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, otp }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        router.push("/reset-password-confirm");
+      } else {
+        setError(data.error || "Invalid OTP");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
 
@@ -50,8 +94,13 @@ const Page = () => {
   <input
     type="text"
     placeholder="Enter OTP"
+    value={otp}
+    onChange={(e) => setOtp(e.target.value)}
     className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
   />
+  {error && (
+    <p className="text-red-500 text-xs mt-1">{error}</p>
+  )}
 </div>
 
           <div className="flex items-center justify-between text-xs mt-2">
@@ -64,10 +113,14 @@ const Page = () => {
   </button>
 </div>
 
-<Link href="/reset-password-confirm"> 
-<button className="w-full bg-cyan-700 text-white py-2 text-sm rounded-lg mt-5 font-medium">
-            Confirm
-          </button></Link>
+<button
+  type="button"
+  onClick={handleVerify}
+  disabled={loading}
+  className="w-full bg-cyan-700 text-white py-2 text-sm rounded-lg mt-5 font-medium disabled:opacity-50"
+>
+  {loading ? "Verifying..." : "Confirm"}
+</button>
 
           <p className="text-center text-xs mt-2">
             Back to{" "}

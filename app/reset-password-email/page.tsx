@@ -1,8 +1,47 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Page = () => {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+
+    if (!email.trim()) {
+      setError("Email is required");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        localStorage.setItem("resetEmail", email);
+        router.push("/reset-password-otp");
+      } else {
+        setError(data.error || "Failed to send OTP");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
 
@@ -60,20 +99,27 @@ const Page = () => {
           </p>
 
         
-          <div className="space-y-3">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
-            />
-          </div>
-
-          
-        
-           <Link href="/reset-password-otp"> 
-          <button className="w-full bg-cyan-700 text-white py-2 text-sm rounded-full mt-6 font-medium">
-            Confirm
-          </button></Link>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <div>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
+              />
+              {error && (
+                <p className="text-red-500 text-xs mt-1">{error}</p>
+              )}
+            </div>
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-cyan-700 text-white py-2 text-sm rounded-full mt-6 font-medium disabled:opacity-50"
+            >
+              {loading ? "Sending..." : "Confirm"}
+            </button>
+          </form>
 
        
           <p className="text-center text-xs mt-4 text-gray-600">
