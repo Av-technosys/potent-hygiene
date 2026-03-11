@@ -154,9 +154,9 @@ checked={form.isDefault}
 onCheckedChange={(v)=>setForm({...form,isDefault:Boolean(v)})}
 />
 
-<label className="text-[13px] text-gray-500 font-medium">
+{/* <label className="text-[13px] text-gray-500 font-medium">
 Set as default shipping address
-</label>
+</label> */}
 
 </div>
 
