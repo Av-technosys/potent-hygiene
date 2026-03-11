@@ -56,3 +56,15 @@ export const address = pgTable("address", {
 
   createdAt: timestamp("created_at").defaultNow(),
 });
+
+export const category: any = pgTable("categories", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name").notNull(),
+  slug: varchar("slug").unique().notNull(),
+  bannerImage: varchar("banner_image"),
+  parentId: uuid("parent_id").references(() => category.id),
+  parentCount: integer("parent_count").notNull().default(0),
+  description: varchar("description"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
