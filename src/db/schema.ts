@@ -68,3 +68,21 @@ export const category: any = pgTable("categories", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
+
+  userId: integer("user_id").notNull(),
+
+  productName: varchar("product_name", { length: 255 }).notNull(),
+
+  orderId: varchar("order_id", { length: 100 }),
+
+  rating: integer("rating").notNull(),
+
+  comment: text("comment"),
+
+  deliveredDate: varchar("delivered_date", { length: 100 }),
+
+  createdAt: timestamp("created_at").defaultNow(),
+});
