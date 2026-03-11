@@ -5,7 +5,8 @@ import FilterBar from "../components/common/category/filterTopBar";
 import FiltersSidebar from "../components/common/category/filterSideBar";
 import CategoryProducts from "../components/common/category/categoryProduct";
 
-export default function CategoryPageClient() {
+// initialCategories prop add kiya jo server page se aayega
+export default function CategoryPageClient({ initialCategories }: { initialCategories: any[] }) {
   return (
     <Suspense
       fallback={
@@ -18,7 +19,9 @@ export default function CategoryPageClient() {
 
       <div className="max-w-7xl mx-auto py-8 px-6 flex gap-8">
         <FiltersSidebar />
-        <CategoryProducts />
+        
+        {/* Yahan humne initialCategories ko pass kar diya */}
+        <CategoryProducts categories={initialCategories} />
       </div>
     </Suspense>
   );

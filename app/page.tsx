@@ -38,7 +38,6 @@ export default function Home() {
       <BlogSection />
       <Faq/>
       <WhatsAppWidget/>
-      <ImageUpload/>
       <Footer/>
     </main>
   );

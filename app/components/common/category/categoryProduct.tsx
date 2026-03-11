@@ -7,51 +7,54 @@ import { Heart } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 
-const products = [
+// const products = [
 
-  // Sanitary Pads (8)
-  {id:1,title:"Sanitary Pads",img:"/product.png"},
-  {id:2,title:"Sanitary Pads",img:"/product.png"},
-  {id:3,title:"Sanitary Pads",img:"/product.png"},
-  {id:4,title:"Sanitary Pads",img:"/product.png"},
-  {id:5,title:"Sanitary Pads",img:"/product.png"},
-  {id:6,title:"Sanitary Pads",img:"/product.png"},
-  {id:7,title:"Sanitary Pads",img:"/product.png"},
-  {id:8,title:"Sanitary Pads",img:"/product.png"},
+//   // Sanitary Pads (8)
+//   {id:1,title:"Sanitary Pads",img:"/product.png"},
+//   {id:2,title:"Sanitary Pads",img:"/product.png"},
+//   {id:3,title:"Sanitary Pads",img:"/product.png"},
+//   {id:4,title:"Sanitary Pads",img:"/product.png"},
+//   {id:5,title:"Sanitary Pads",img:"/product.png"},
+//   {id:6,title:"Sanitary Pads",img:"/product.png"},
+//   {id:7,title:"Sanitary Pads",img:"/product.png"},
+//   {id:8,title:"Sanitary Pads",img:"/product.png"},
 
-  // Menstrual Cup (8)
-  {id:9,title:"Menstrual Cup",img:"/product.png"},
-  {id:10,title:"Menstrual Cup",img:"/product.png"},
-  {id:11,title:"Menstrual Cup",img:"/product.png"},
-  {id:12,title:"Menstrual Cup",img:"/product.png"},
-  {id:13,title:"Menstrual Cup",img:"/product.png"},
-  {id:14,title:"Menstrual Cup",img:"/product.png"},
-  {id:15,title:"Menstrual Cup",img:"/product.png"},
-  {id:16,title:"Menstrual Cup",img:"/product.png"},
+//   // Menstrual Cup (8)
+//   {id:9,title:"Menstrual Cup",img:"/product.png"},
+//   {id:10,title:"Menstrual Cup",img:"/product.png"},
+//   {id:11,title:"Menstrual Cup",img:"/product.png"},
+//   {id:12,title:"Menstrual Cup",img:"/product.png"},
+//   {id:13,title:"Menstrual Cup",img:"/product.png"},
+//   {id:14,title:"Menstrual Cup",img:"/product.png"},
+//   {id:15,title:"Menstrual Cup",img:"/product.png"},
+//   {id:16,title:"Menstrual Cup",img:"/product.png"},
 
-  // Pantyliners (8)
-  {id:17,title:"Pantyliners",img:"/product.png"},
-  {id:18,title:"Pantyliners",img:"/product.png"},
-  {id:19,title:"Pantyliners",img:"/product.png"},
-  {id:20,title:"Pantyliners",img:"/product.png"},
-  {id:21,title:"Pantyliners",img:"/product.png"},
-  {id:22,title:"Pantyliners",img:"/product.png"},
-  {id:23,title:"Pantyliners",img:"/product.png"},
-  {id:24,title:"Pantyliners",img:"/product.png"},
+//   // Pantyliners (8)
+//   {id:17,title:"Pantyliners",img:"/product.png"},
+//   {id:18,title:"Pantyliners",img:"/product.png"},
+//   {id:19,title:"Pantyliners",img:"/product.png"},
+//   {id:20,title:"Pantyliners",img:"/product.png"},
+//   {id:21,title:"Pantyliners",img:"/product.png"},
+//   {id:22,title:"Pantyliners",img:"/product.png"},
+//   {id:23,title:"Pantyliners",img:"/product.png"},
+//   {id:24,title:"Pantyliners",img:"/product.png"},
 
-  // Combo (8)
-  {id:25,title:"Combo",img:"/product.png"},
-  {id:26,title:"Combo",img:"/product.png"},
-  {id:27,title:"Combo",img:"/product.png"},
-  {id:28,title:"Combo",img:"/product.png"},
-  {id:29,title:"Combo",img:"/product.png"},
-  {id:30,title:"Combo",img:"/product.png"},
-  {id:31,title:"Combo",img:"/product.png"},
-  {id:32,title:"Combo",img:"/product.png"}
+//   // Combo (8)
+//   {id:25,title:"Combo",img:"/product.png"},
+//   {id:26,title:"Combo",img:"/product.png"},
+//   {id:27,title:"Combo",img:"/product.png"},
+//   {id:28,title:"Combo",img:"/product.png"},
+//   {id:29,title:"Combo",img:"/product.png"},
+//   {id:30,title:"Combo",img:"/product.png"},
+//   {id:31,title:"Combo",img:"/product.png"},
+//   {id:32,title:"Combo",img:"/product.png"}
 
-]
-
-export default function CategoryProducts(){
+// ]
+// Prop interface define ki hai
+interface CategoryProductsProps {
+  categories: any[]; 
+}
+export default function CategoryProducts({ categories }: CategoryProductsProps){
 
   const router = useRouter()
 
@@ -88,7 +91,7 @@ export default function CategoryProducts(){
 
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 flex-1">
 
-      {products.map((product)=>(
+      {categories.map((product)=>(
 
         <Card key={product.id} className="rounded-3xl bg-white shadow-sm">
 
@@ -118,10 +121,12 @@ export default function CategoryProducts(){
               </span>
 
               <Image
-                src={product.img}
+              className="object-cover"
+                src={product.bannerImage}
                 alt={product.title}
                 width={160}
                 height={160}
+                unoptimized
               />
 
               {/* Badge */}
@@ -135,7 +140,7 @@ export default function CategoryProducts(){
             <div className="mt-5 space-y-3">
 
               <h3 className="font-semibold text-gray-800">
-                {product.title}
+                {product.name}
               </h3>
 
               <Button
