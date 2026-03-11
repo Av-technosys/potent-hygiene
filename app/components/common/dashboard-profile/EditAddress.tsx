@@ -70,12 +70,12 @@ export const EditAddressForm = ({
 
     {isEditing && (
       <div className="space-y-6">
-        <div className="flex items-center space-x-2 ml-1">
+        {/* <div className="flex items-center space-x-2 ml-1">
           <Checkbox id="default-address" className="border-gray-300 data-[state=checked]:bg-[#1B8392]" />
           <label htmlFor="default-address" className="text-[13px] text-gray-500 font-medium cursor-pointer">
             Set as default shipping address
           </label>
-        </div>
+        </div> */}
 
         <div className="flex flex-col md:flex-row gap-4">
           <Button
