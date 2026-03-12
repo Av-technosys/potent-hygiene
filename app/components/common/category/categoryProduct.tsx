@@ -1,59 +1,15 @@
 "use client"
 
 import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
 import { Heart } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { useRouter } from "next/navigation"
 import { useState, useEffect } from "react"
 
-// const products = [
-
-//   // Sanitary Pads (8)
-//   {id:1,title:"Sanitary Pads",img:"/product.png"},
-//   {id:2,title:"Sanitary Pads",img:"/product.png"},
-//   {id:3,title:"Sanitary Pads",img:"/product.png"},
-//   {id:4,title:"Sanitary Pads",img:"/product.png"},
-//   {id:5,title:"Sanitary Pads",img:"/product.png"},
-//   {id:6,title:"Sanitary Pads",img:"/product.png"},
-//   {id:7,title:"Sanitary Pads",img:"/product.png"},
-//   {id:8,title:"Sanitary Pads",img:"/product.png"},
-
-//   // Menstrual Cup (8)
-//   {id:9,title:"Menstrual Cup",img:"/product.png"},
-//   {id:10,title:"Menstrual Cup",img:"/product.png"},
-//   {id:11,title:"Menstrual Cup",img:"/product.png"},
-//   {id:12,title:"Menstrual Cup",img:"/product.png"},
-//   {id:13,title:"Menstrual Cup",img:"/product.png"},
-//   {id:14,title:"Menstrual Cup",img:"/product.png"},
-//   {id:15,title:"Menstrual Cup",img:"/product.png"},
-//   {id:16,title:"Menstrual Cup",img:"/product.png"},
-
-//   // Pantyliners (8)
-//   {id:17,title:"Pantyliners",img:"/product.png"},
-//   {id:18,title:"Pantyliners",img:"/product.png"},
-//   {id:19,title:"Pantyliners",img:"/product.png"},
-//   {id:20,title:"Pantyliners",img:"/product.png"},
-//   {id:21,title:"Pantyliners",img:"/product.png"},
-//   {id:22,title:"Pantyliners",img:"/product.png"},
-//   {id:23,title:"Pantyliners",img:"/product.png"},
-//   {id:24,title:"Pantyliners",img:"/product.png"},
-
-//   // Combo (8)
-//   {id:25,title:"Combo",img:"/product.png"},
-//   {id:26,title:"Combo",img:"/product.png"},
-//   {id:27,title:"Combo",img:"/product.png"},
-//   {id:28,title:"Combo",img:"/product.png"},
-//   {id:29,title:"Combo",img:"/product.png"},
-//   {id:30,title:"Combo",img:"/product.png"},
-//   {id:31,title:"Combo",img:"/product.png"},
-//   {id:32,title:"Combo",img:"/product.png"}
-
-// ]
-// Prop interface define ki hai
 interface CategoryProductsProps {
-  categories: any[]; 
+  categories: any[];
 }
+
 export default function CategoryProducts({ categories }: CategoryProductsProps){
 
   const router = useRouter()
@@ -81,7 +37,6 @@ export default function CategoryProducts({ categories }: CategoryProductsProps){
 
     localStorage.setItem("wishlist",JSON.stringify(updated))
 
-    // navbar instant update
     window.dispatchEvent(new StorageEvent("storage",{key:"wishlist"}))
 
     setWishlist(updated.map((p:any)=>p.id))
@@ -89,72 +44,76 @@ export default function CategoryProducts({ categories }: CategoryProductsProps){
 
   return(
 
-    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 flex-1">
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 h-full gap-6 flex-1">
 
       {categories.map((product)=>(
 
-        <Card key={product.id} className="rounded-3xl bg-white shadow-sm">
+        <div
+          key={product.id}
+          className="flex relative flex-col rounded-md p-3 shadow-md bg-white"
+        >
 
-          <CardContent className="p-4">
+          {/* Wishlist */}
 
-            <div className="relative aspect-square bg-[#EADCF3] rounded-xl flex items-center justify-center overflow-hidden">
+          <button
+            onClick={()=>toggleWishlist(product)}
+            className="absolute left-2 top-2 z-10 rounded-full bg-white p-1.5 text-gray-400 shadow-sm"
+          >
+            <Heart
+              className={`h-4 w-4 ${
+                wishlist.includes(product.id)
+                ? "fill-red-500 text-red-500"
+                : ""
+              }`}
+            />
+          </button>
 
-              {/* Wishlist */}
+          {/* Discount */}
 
-              <button
-                onClick={()=>toggleWishlist(product)}
-                className="absolute top-2 left-2 bg-white rounded-full p-1 shadow"
-              >
-                <Heart
-                  className={`w-4 h-4 ${
-                    wishlist.includes(product.id)
-                    ? "fill-red-500 text-red-500"
-                    : "text-gray-500"
-                  }`}
-                />
-              </button>
-
-              {/* Discount */}
-
-              <span className="absolute top-2 right-2 bg-[#1A8D91] text-white text-xs px-2 py-1 rounded-full">
-                25% OFF
-              </span>
-
-              <Image
-              className="object-cover"
-                src={product.bannerImage}
-                alt={product.title}
-                width={160}
-                height={160}
-                unoptimized
-              />
-
-              {/* Badge */}
-
-              <span className="absolute bottom-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                Best Seller
-              </span>
-
+          <div className="absolute right-2 top-2 z-10">
+            <div className="rounded-xl bg-[#168BA0] px-2 py-1 text-[10px] font-bold text-white">
+              25% OFF
             </div>
+          </div>
 
-            <div className="mt-5 space-y-3">
+          {/* Image */}
 
-              <h3 className="font-semibold text-gray-800">
-                {product.name}
-              </h3>
+          <div
+            className="relative aspect-square w-full overflow-hidden rounded-md bg-gray-50 cursor-pointer"
+            onClick={()=>router.push(`/shop?type=${product.title}`)}
+          >
+            <Image
+              src={product.bannerImage}
+              alt={product.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              unoptimized
+            />
+          </div>
+  <span className="w-fit absolute bottom-23 left-1 rounded-full bg-[#10B981] px-2 py-0.5 text-[10px] text-white">
+              Bestseller  
+            </span>
+          {/* Content */}
 
-              <Button
-                className="w-full rounded-xl bg-[#1A8D91]"
-                onClick={()=>router.push(`/shop?type=${product.title}`)}
-              >
-                View all
-              </Button>
+          <div className="mt-4 flex flex-col space-y-3 px-1 rounded-lg">
 
-            </div>
+          
 
-          </CardContent>
+            <h3 className="text-sm font-bold text-gray-800 line-clamp-1">
+              {product.name}
+            </h3>
 
-        </Card>
+            <Button
+              className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]"
+              onClick={()=>router.push(`/shop?type=${product.title}`)}
+            >
+              View all
+            </Button>
+
+          </div>
+
+        </div>
+
       ))}
 
     </div>

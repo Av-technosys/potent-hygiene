@@ -17,7 +17,7 @@ export default function CategoryPageClient({ initialCategories }: { initialCateg
     >
       <FilterBar />
 
-      <div className="max-w-7xl mx-auto py-8 px-6 flex gap-8">
+      <div className="max-w-7xl mx-auto py-8 px-6 flex gap-8 md:bg-white bg-[#F8F6F1] ">
         <FiltersSidebar />
         
         {/* Yahan humne initialCategories ko pass kar diya */}
