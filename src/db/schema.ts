@@ -9,7 +9,9 @@ import {
   integer,
   index,
   primaryKey
+       
 } from "drizzle-orm/pg-core";
+import {} from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: serial("id").primaryKey(),
@@ -22,6 +24,16 @@ export const users = pgTable("users", {
   otpExpiresAt: timestamp("otp_expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+
+export const admins = pgTable("admins", {
+  id: serial("id").primaryKey(),
+  fullName: text("full_name").notNull(),
+  email: text("email").notNull().unique(),
+  phone: text("phone").notNull(),
+  cognitoId: text("cognito_id"),
+  createdAt: timestamp("created_at").defaultNow()
 });
 
 export const blog = pgTable("blog", {
