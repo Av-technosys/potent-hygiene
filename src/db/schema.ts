@@ -6,7 +6,9 @@ import {
   varchar,
   text,
   serial,
-  integer
+  integer,
+  index,
+  primaryKey
 } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
@@ -68,6 +70,60 @@ export const category: any = pgTable("categories", {
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
+
+
+export const product = pgTable(
+  "products",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    // timestamp
+    createdAt: timestamp("created_at").notNull().defaultNow(),
+    updatedAt: timestamp("updated_at").notNull().defaultNow(),
+  }
+);
+
+
+export const productVariant = pgTable("product_variant", {
+  // about product
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name"),
+  sku: varchar("sku").notNull().unique(),
+  productId: uuid("product_id").references(() => product.id),
+  description: varchar("description"),
+  shortDescription: varchar("short_description"),
+  basePrice: integer("base_price"),
+  strikethroughPrice: integer("strikethrough_price"),
+  slug: varchar("slug").unique().notNull(),
+  bannerImage: varchar("banner_image"),
+  isInStock: boolean("is_in_stock").notNull().default(true),
+  isReturnable: boolean("is_returnable").notNull().default(false),
+  isCancelable: boolean("is_cancelable").notNull().default(false),
+  isReplacement: boolean("is_replacement").notNull().default(false),
+  returnDays: integer("return_days").notNull().default(0),
+  replacementDays: integer("replacement_days").notNull().default(0),
+  rating: integer("rating").notNull().default(0),
+  reviewCount: integer("review_count").notNull().default(0),
+
+  //   all the filters
+  isFreeDelivery: boolean("is_free_delivery").notNull().default(false),
+
+  // timestamp
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+},
+  (table) => [
+    index("name_idx").on(table.name),
+    index("slug_idx").on(table.slug),
+  ]
+);
+
+export const productCategory = pgTable("product_category", {
+  productId: uuid("product_id").notNull().references(() => product.id),
+  categoryId: uuid("category_id").notNull().references(() => category.id),
+}, (table) => ({
+  pk: primaryKey({ columns: [table.productId, table.categoryId] }),
+}));
+
 
 export const reviews = pgTable("reviews", {
   id: serial("id").primaryKey(),

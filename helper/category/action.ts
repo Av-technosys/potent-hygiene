@@ -10,8 +10,8 @@ import { desc, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
-import { category, productCategory, productVariant } from "@/db/productSchema";
 import { paginate } from "@/lib/pagination";
+import { category, productCategory, productVariant } from "@/db/schema";
 
 
 interface GetCategoriesOptions {

@@ -2,8 +2,8 @@
 import React from "react";
 import EditCategory from "./editClient";
 import { eq } from "drizzle-orm";
-import { category } from "@/db/productSchema";
 import { db } from "@/db";
+import { category } from "@/db/schema";
 
 interface PageProps {
   params: {

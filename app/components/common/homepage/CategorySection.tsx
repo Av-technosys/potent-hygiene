@@ -1,45 +1,48 @@
 // components/sections/category-grid.tsx
 
+import { getCategories } from "@/helper";
 import Image from "next/image"
 import Link from "next/link"
 
-const categories = [
+// const categories = [
 
-  {
-    id:1,
-    title:"Sanitary Pads",
-    description:"Ultra Soft Protection",
-    image:"/category1.png",
-    type:"Sanitary Pads"
-  },
+//   {
+//     id:1,
+//     title:"Sanitary Pads",
+//     description:"Ultra Soft Protection",
+//     image:"/category1.png",
+//     type:"Sanitary Pads"
+//   },
 
-  {
-    id:2,
-    title:"Menstrual Cup",
-    description:"Reusable Comfort",
-    image:"/category2.png",
-    type:"Menstrual Cup"
-  },
+//   {
+//     id:2,
+//     title:"Menstrual Cup",
+//     description:"Reusable Comfort",
+//     image:"/category2.png",
+//     type:"Menstrual Cup"
+//   },
 
-  {
-    id:3,
-    title:"Pantyliners",
-    description:"Daily Freshness",
-    image:"/category3.png",
-    type:"Pantyliners"
-  },
+//   {
+//     id:3,
+//     title:"Pantyliners",
+//     description:"Daily Freshness",
+//     image:"/category3.png",
+//     type:"Pantyliners"
+//   },
 
-  {
-    id:4,
-    title:"Combo Pack",
-    description:"Complete Care Kit",
-    image:"/category4.png",
-    type:"Combo"
-  }
+//   {
+//     id:4,
+//     title:"Combo Pack",
+//     description:"Complete Care Kit",
+//     image:"/category4.png",
+//     type:"Combo"
+//   }
 
-]
+// ]
 
-export function CategoryGrid(){
+export async function CategoryGrid(){
+
+ const allCategories = await getCategories();
 
   return(
 
@@ -66,18 +69,19 @@ export function CategoryGrid(){
 
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4">
 
-          {categories.map((category)=>(
+          {allCategories.slice(0,4).map((category)=>(
 
             <Link
               key={category.id}
-              href={`/shop?type=${category.type}`}
+             href={`/shop?type=${category.slug}`}
               className="group block bg-white rounded-md p-3 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
             >
 
               <div className="relative aspect-square w-full overflow-hidden rounded-md mb-4 flex items-center justify-center">
 
                 <Image
-                  src={category.image}
+                unoptimized
+                  src={category.bannerImage}
                   alt={category.title}
                   width={350}
                   height={350}
@@ -89,7 +93,7 @@ export function CategoryGrid(){
               <div className="px-2 pb-2">
 
                 <h3 className="text-lg font-semibold text-gray-600">
-                  {category.title}
+                  {category.name}
                 </h3>
 
                 <p className="text-xs text-gray-500">
