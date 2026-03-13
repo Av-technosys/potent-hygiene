@@ -1,181 +1,132 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Heart } from "lucide-react"
-import { useSearchParams, useRouter } from "next/navigation"
-import { useState, useEffect } from "react"
+import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import { Heart } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
-const products = [
+export default function CategoryProducts({ products }: any) {
+  const router = useRouter();
 
-  { id:1,title:"Sanitary Pads",price:299,oldPrice:399,image:"/product.png",flow:"Regular",size:"Medium",material:"Organic Cotton",stock:true,badge:"Bestseller"},
-  { id:2,title:"Sanitary Pads",price:259,oldPrice:359,image:"/product.png",flow:"Heavy",size:"Large",material:"Organic Cotton",stock:true,badge:"Bestseller"},
+  const [wishlist, setWishlist] = useState<string[]>([]);
 
-  { id:3,title:"Menstrual Cup",price:399,oldPrice:499,image:"/product.png",flow:"Heavy",size:"Large",material:"Medical Grade Silicon",stock:true,badge:"Eco friendly"},
-  { id:4,title:"Menstrual Cup",price:349,oldPrice:449,image:"/product.png",flow:"Regular",size:"Medium",material:"Medical Grade Silicon",stock:true,badge:"Eco friendly"},
+  useEffect(() => {
+    const data = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    setWishlist(data.map((p: any) => p.id));
+  }, []);
 
-  { id:5,title:"Pantyliners",price:199,oldPrice:299,image:"/product.png",flow:"Light",size:"Small",material:"Synthetic Blend",stock:true,badge:"Popular"},
-  { id:6,title:"Pantyliners",price:189,oldPrice:249,image:"/product.png",flow:"Regular",size:"Medium",material:"Synthetic Blend",stock:true,badge:"Popular"},
+  const toggleWishlist = (product: any) => {
+    const list = JSON.parse(localStorage.getItem("wishlist") || "[]");
 
-  { id:7,title:"Combo",price:499,oldPrice:699,image:"/product.png",flow:"Regular",size:"Medium",material:"Organic Cotton",stock:true,badge:"Popular"},
-  { id:8,title:"Combo",price:549,oldPrice:749,image:"/product.png",flow:"Heavy",size:"Large",material:"Organic Cotton",stock:true,badge:"Popular"}
+    const exists = list.find((item: any) => item.id === product.id);
 
-]
+    let updated;
 
-export default function CategoryProducts(){
-
-  const params = useSearchParams()
-  const router = useRouter()
-
-  const [wishlist,setWishlist] = useState<number[]>([])
-
-  useEffect(()=>{
-    const data = JSON.parse(localStorage.getItem("wishlist") || "[]")
-    setWishlist(data.map((p:any)=>p.id))
-  },[])
-
-  const toggleWishlist = (product:any)=>{
-
-    const list = JSON.parse(localStorage.getItem("wishlist") || "[]")
-
-    const exists = list.find((item:any)=>item.id === product.id)
-
-    let updated
-
-    if(exists){
-      updated = list.filter((item:any)=>item.id !== product.id)
-    }else{
-      updated = [...list,product]
+    if (exists) {
+      updated = list.filter((item: any) => item.id !== product.id);
+    } else {
+      updated = [...list, product];
     }
 
-    localStorage.setItem("wishlist",JSON.stringify(updated))
+    localStorage.setItem("wishlist", JSON.stringify(updated));
 
-    // ✅ navbar instantly update
-    window.dispatchEvent(new StorageEvent("storage",{key:"wishlist"}))
+    window.dispatchEvent(new StorageEvent("storage", { key: "wishlist" }));
 
-    setWishlist(updated.map((p:any)=>p.id))
-  }
+    setWishlist(updated.map((p: any) => p.id));
+  };
 
-  const type = params.get("type")
-  const flow = params.get("flow")
-  const size = params.get("size")
-  const material = params.get("material")
-  const stock = params.get("stock")
-  const min = Number(params.get("min"))
-  const max = Number(params.get("max"))
-  const sort = params.get("sort")
+  const addToCart = (product: any) => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-  let filteredProducts = products.filter((p)=>{
+    const existing = cart.find((item: any) => item.id === product.id);
 
-    if(type && p.title !== type) return false
-    if(flow && p.flow !== flow) return false
-    if(size && p.size !== size) return false
-    if(material && p.material !== material) return false
-    if(stock && !p.stock) return false
-    if(min && p.price < min) return false
-    if(max && p.price > max) return false
-
-    return true
-  })
-
-  if(sort === "low") filteredProducts.sort((a,b)=>a.price - b.price)
-  if(sort === "high") filteredProducts.sort((a,b)=>b.price - a.price)
-  if(sort === "new") filteredProducts.sort((a,b)=>b.id - a.id)
-
-  const addToCart = (product:any)=>{
-
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]")
-
-    const existing = cart.find((item:any)=>item.id === product.id)
-
-    if(existing){
-      existing.quantity += 1
-    }else{
-      cart.push({...product,quantity:1})
+    if (existing) {
+      existing.quantity += 1;
+    } else {
+      cart.push({ ...product, quantity: 1 });
     }
 
-    localStorage.setItem("cart",JSON.stringify(cart))
+    localStorage.setItem("cart", JSON.stringify(cart));
 
-    router.push("/cart")
-  }
+    router.push("/cart");
+  };
 
-  return(
+  return (
+    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 h-full gap-6 flex-1">
+      {products?.map((value: any) => (
+        <div
+          key={value.id}
+          className="flex relative flex-col rounded-md p-3 shadow-md bg-white"
+        >
+          {/* Wishlist */}
+          <button
+            onClick={() => toggleWishlist(value)}
+            className="absolute left-2 top-2 z-10 rounded-full bg-white p-1.5 text-gray-400 shadow-sm"
+          >
+            <Heart
+              className={`h-4 w-4 ${
+                wishlist.includes(value.id)
+                  ? "fill-red-500 text-red-500"
+                  : ""
+              }`}
+            />
+          </button>
 
-   <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 items-start">
-
-      {filteredProducts.map((product)=>(
-
-        <Card key={product.id} className="rounded-3xl bg-white shadow-sm">
-
-          <CardContent className="p-3 md:p-4">
-
-            <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-[#EADCF3] flex items-center justify-center">
-
-              <button
-                onClick={()=>toggleWishlist(product)}
-                className="absolute top-2 left-2 bg-white rounded-full p-1 shadow"
-              >
-                <Heart
-                  className={`w-4 h-4 ${
-                    wishlist.includes(product.id)
-                    ? "fill-red-500 text-red-500"
-                    : "text-gray-500"
-                  }`}
-                />
-              </button>
-
-              <span className="absolute top-2 right-2 bg-[#1A8D91] text-white text-xs px-2 py-1 rounded-full">
-                25% OFF
-              </span>
-
-              <Image
-                src={product.image}
-                alt={product.title}
-                width={180}
-                height={180}
-              />
-
-              <span className="absolute bottom-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
-                {product.badge}
-              </span>
-
-            </div>
-
-            <div className="mt-4 space-y-3">
-
-              <h3 className="text-base font-semibold text-gray-800">
-                {product.title}
-              </h3>
-
-              <div className="flex gap-2 items-center">
-
-                <span className="font-bold">
-                  ₹{product.price}
-                </span>
-
-                <span className="text-xs line-through text-gray-400">
-                  ₹{product.oldPrice}
-                </span>
-
+          {/* Discount */}
+          {value.strikethroughPrice && (
+            <div className="absolute right-2 top-2 z-10">
+              <div className="rounded-xl bg-[#168BA0] px-2 py-1 text-[10px] font-bold text-white">
+                SALE
               </div>
+            </div>
+          )}
 
-              <Button
-                onClick={()=>addToCart(product)}
-                className="w-full rounded-xl bg-[#1A8D91] text-white"
-              >
-                Add to Cart
-              </Button>
+          {/* Image */}
+          <div className="relative aspect-square w-full overflow-hidden rounded-md bg-gray-50"
+              onClick={() => router.push(`/product-detail/${value.slug}`)}
+          >
+            <Image
+              src={value.bannerImage || "/product.png"}
+              alt={value.name}
+              fill
+              className="object-cover transition-transform duration-500 hover:scale-105"
+              unoptimized
+            />
+          </div>
 
+          {/* Badge */}
+          <span className="w-fit absolute bottom-31 left-1 rounded-full bg-[#10B981] px-2 py-0.5 text-[10px] text-white">
+            Bestseller
+          </span>
+
+          {/* Content */}
+          <div className="mt-4 flex flex-col space-y-3 px-1 rounded-lg">
+            <h3 className="text-sm font-bold text-gray-800 line-clamp-1">
+              {value.name}
+            </h3>
+
+            <div className="flex items-center gap-2 text-sm">
+              <span className="font-bold text-gray-900">
+                ₹{value.basePrice}
+              </span>
+
+              {value.strikethroughPrice && (
+                <span className="text-xs line-through text-gray-400">
+                  ₹{value.strikethroughPrice}
+                </span>
+              )}
             </div>
 
-          </CardContent>
-
-        </Card>
-
+            <Button
+              className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]"
+              onClick={() => addToCart(value)}
+            >
+              Add to Cart
+            </Button>
+          </div>
+        </div>
       ))}
-
     </div>
-
-  )
+  );
 }

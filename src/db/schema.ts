@@ -118,7 +118,9 @@ export const productVariant = pgTable("product_variant", {
 
   //   all the filters
   isFreeDelivery: boolean("is_free_delivery").notNull().default(false),
-
+// Naye attributes jo aapne soche hain
+  size: varchar("size"), // Example: "Medium (280mm)"
+  flowType: varchar("flow_type"), // Example: "Regular Flow"
   // timestamp
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
@@ -135,6 +137,32 @@ export const productCategory = pgTable("product_category", {
 }, (table) => ({
   pk: primaryKey({ columns: [table.productId, table.categoryId] }),
 }));
+
+export const productVarientMedia = pgTable("product_varient_media", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productVarientId: uuid("product_varient_id").notNull().references(() => productVariant.id),
+  mediaType: varchar("media_type").notNull(),
+  mediaURL: varchar("media_url").notNull(),
+});
+
+export const productVarientAttribute = pgTable("product_varient_attribute", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productVarientId: uuid("product_varient_id").notNull().references(() => productVariant.id),
+  attribute: varchar("attribute").notNull(),
+  value: varchar("value").notNull(),
+});
+
+export const featuredProductVarient = pgTable("featured_product_varient", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productVarientId: uuid("product_varient_id").notNull().references(() => productVariant.id),
+});
+
+export const featuredCategory = pgTable("featured_category", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  categoryId: uuid("category_id").references(() => category.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
 
 
 export const reviews = pgTable("reviews", {
