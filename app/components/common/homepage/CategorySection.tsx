@@ -73,7 +73,7 @@ export async function CategoryGrid(){
 
             <Link
               key={category.id}
-             href={`/shop?type=${category.slug}`}
+            href={`/shop?category=${category.slug}`}
               className="group block bg-white rounded-md p-3 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
             >
 

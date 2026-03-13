@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Star, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 
-export default function ProductDetailPage() {
+export default function ProductDetailPage({ variants }: any ) {
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
     const [selectedFlow, setSelectedFlow] = useState("Regular Flow");
@@ -112,23 +112,32 @@ export default function ProductDetailPage() {
                     </div>
 
                     {/* Size */}
-                    <div>
-                        <p className="text-sm font-medium mb-2">Select size</p>
-                        <div className="flex flex-wrap gap-2">
-                            {sizes.map((size) => (
-                                <button
-                                    key={size}
-                                    onClick={() => setSelectedSize(size)}
-                                    className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === size
-                                        ? "bg-[#168BA0] text-white border-[#168BA0]"
-                                        : "bg-white border-gray-300 hover:border-[#168BA0]"
-                                        }`}
-                                >
-                                    {size}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
+                   {/* Size Selection - DYNAMIC FROM VARIANTS */}
+<div>
+    <p className="text-sm font-medium mb-2">Select size</p>
+    <div className="flex flex-wrap gap-2">
+        {Array.from(new Set(
+            variants?.flatMap((v: any) => {
+                const sizeAttr = v.attributes?.find((a: any) => a.attribute === "size");
+                // Agar value "Small,Medium" hai, toh ye usko ["Small", "Medium"] bana dega
+                return sizeAttr ? sizeAttr.value.split(",").map((s: string) => s.trim()) : [];
+            }).filter(Boolean)
+        )).map((size: any) => (
+            <button
+                key={size}
+                type="button"
+                onClick={() => setSelectedSize(size)}
+                className={`px-4 py-2 text-sm rounded-full border transition ${
+                    selectedSize === size
+                    ? "bg-[#168BA0] text-white border-[#168BA0]"
+                    : "bg-white border-gray-300 hover:border-[#168BA0]"
+                }`}
+            >
+                {size}
+            </button>
+        ))}
+    </div>
+</div>
 
                     {/* Flow Type */}
                     <div>
