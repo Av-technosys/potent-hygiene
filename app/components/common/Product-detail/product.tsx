@@ -1,33 +1,50 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
 import { Star, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 
-export default function ProductDetailPage({ variants }: any ) {
+export default function ProductDetailPage({ variants,product}: any ) {
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
     const [selectedFlow, setSelectedFlow] = useState("Regular Flow");
     const [selectedPlan, setSelectedPlan] = useState("2");
 
-    const sizes = [
-        "Small (240mm)",
-        "Medium (280mm)",
-        "Large (320mm)",
-        "Extra Large (360mm)",
-    ];
 
-    const flows = ["Light Flow", "Regular Flow", "Heavy Flow", "Overnight"];
+const selectedVariant = product?.variants?.[0];
+    // Size extraction logic (Aapne jo pehle likha tha)
+    const dynamicSizes = Array.from(new Set(
+        variants?.flatMap((v: any) => {
+            const sizeAttr = v.attributes?.find((a: any) => a.attribute === "size");
+            return sizeAttr ? sizeAttr.value.split(",").map((s: string) => s.trim()) : [];
+        }).filter(Boolean)
+    ));
 
+    // Flow extraction logic (Ab dynamic hai)
+    const dynamicFlows = Array.from(new Set(
+        variants?.flatMap((v: any) => {
+            const flowAttr = v.attributes?.find((a: any) => a.attribute === "flow");
+            return flowAttr ? flowAttr.value.split(",").map((s: string) => s.trim()) : [];
+        }).filter(Boolean)
+    ));
+
+    // Discount percentage calculate karne ke liye
+    const discount = selectedVariant?.strikethroughPrice && selectedVariant?.basePrice 
+        ? Math.round(((selectedVariant.strikethroughPrice - selectedVariant.basePrice) / selectedVariant.strikethroughPrice) * 100)
+        : 0;
+
+        
     return (
         <div className="min-h-screen py-10">
-            <div className="container mx-auto  grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
 
                 {/* LEFT SIDE */}
                 <div>
-                    <div className="  ">
+                    <div className=" ">
                         <Image
-                            src="/product.png"
+                        unoptimized
+                            src={selectedVariant?.bannerImage}
                             alt="Product"
                             width={600}
                             height={500}
@@ -44,7 +61,7 @@ export default function ProductDetailPage({ variants }: any ) {
                             >
                                 <Image
                                     className="rounded-lg"
-                                    src="/product.png"
+                                    src={"/product.png"}
                                     alt="thumb"
                                     width={100}
                                     height={100}
@@ -70,10 +87,10 @@ export default function ProductDetailPage({ variants }: any ) {
                     {/* Title */}
                     <div>
                         <h1 className="text-2xl font-semibold">
-                            Organic Cotton Sanitary Pads - Heavy Flow
+                           {variants?.[0]?.name}
                         </h1>
                         <p className="text-gray-500 text-sm">
-                            Ultra-Soft, Rash-Free Protection
+                            {variants?.[0]?.description}
                         </p>
                     </div>
 
@@ -103,54 +120,52 @@ export default function ProductDetailPage({ variants }: any ) {
                     </div>
 
                     {/* Price */}
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl font-bold">₹299</span>
-                        <span className="line-through text-gray-400">₹399</span>
-                        <span className="bg-[#DCFCE7] text-[#15803D] text-xs px-2 py-1 rounded-md">
-                            Save 17%
-                        </span>
+                   <div className="flex items-center gap-3">
+                        <span className="text-2xl font-bold text-[#168BA0]">₹{selectedVariant?.basePrice}</span>
+                        {selectedVariant?.strikethroughPrice && (
+                            <>
+                                <span className="line-through text-gray-400">₹{selectedVariant?.strikethroughPrice}</span>
+                                <span className="bg-[#DCFCE7] text-[#15803D] text-xs px-2 py-1 rounded-md">
+                                    Save {discount} %
+                                </span>
+                            </>
+                        )}
+                    </div>
+                    {/* Size Selection */}
+                    <div>
+                        <p className="text-sm font-medium mb-2">Select size</p>
+                        <div className="flex flex-wrap gap-2">
+                            {dynamicSizes.map((size: any) => (
+                                <button
+                                    key={size}
+                                    type="button"
+                                    onClick={() => setSelectedSize(size)}
+                                    className={`px-4 py-2 text-sm rounded-full border transition ${
+                                        selectedSize === size
+                                        ? "bg-[#168BA0] text-white border-[#168BA0]"
+                                        : "bg-white border-gray-300 hover:border-[#168BA0]"
+                                    }`}
+                                >
+                                    {size}
+                                </button>
+                            ))}
+                        </div>
                     </div>
 
-                    {/* Size */}
-                   {/* Size Selection - DYNAMIC FROM VARIANTS */}
-<div>
-    <p className="text-sm font-medium mb-2">Select size</p>
-    <div className="flex flex-wrap gap-2">
-        {Array.from(new Set(
-            variants?.flatMap((v: any) => {
-                const sizeAttr = v.attributes?.find((a: any) => a.attribute === "size");
-                // Agar value "Small,Medium" hai, toh ye usko ["Small", "Medium"] bana dega
-                return sizeAttr ? sizeAttr.value.split(",").map((s: string) => s.trim()) : [];
-            }).filter(Boolean)
-        )).map((size: any) => (
-            <button
-                key={size}
-                type="button"
-                onClick={() => setSelectedSize(size)}
-                className={`px-4 py-2 text-sm rounded-full border transition ${
-                    selectedSize === size
-                    ? "bg-[#168BA0] text-white border-[#168BA0]"
-                    : "bg-white border-gray-300 hover:border-[#168BA0]"
-                }`}
-            >
-                {size}
-            </button>
-        ))}
-    </div>
-</div>
-
-                    {/* Flow Type */}
+                    {/* Flow Type - NOW DYNAMIC */}
                     <div>
                         <p className="text-sm font-medium mb-2">Flow Type</p>
                         <div className="flex flex-wrap gap-2">
-                            {flows.map((flow) => (
+                            {dynamicFlows.map((flow: any) => (
                                 <button
                                     key={flow}
+                                    type="button"
                                     onClick={() => setSelectedFlow(flow)}
-                                    className={`px-4 py-2 text-sm rounded-full border transition ${selectedFlow === flow
+                                    className={`px-4 py-2 text-sm rounded-full border transition ${
+                                        selectedFlow === flow
                                         ? "bg-[#168BA0] text-white border-[#168BA0]"
                                         : "bg-white border-gray-300 hover:border-[#168BA0]"
-                                        }`}
+                                    }`}
                                 >
                                     {flow}
                                 </button>
@@ -205,10 +220,11 @@ export default function ProductDetailPage({ variants }: any ) {
                             <div
                                 key={plan.id}
                                 onClick={() => setSelectedPlan(plan.id)}
-                                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan === plan.id
+                                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
+                                    selectedPlan === plan.id
                                     ? "border-teal-600 bg-teal-50"
                                     : "border-gray-200"
-                                    }`}
+                                }`}
                             >
                                 <div className="flex items-center gap-3">
                                     <input
@@ -232,6 +248,6 @@ export default function ProductDetailPage({ variants }: any ) {
 
                 </div>
             </div>
-        </div >
+        </div>
     );
 }

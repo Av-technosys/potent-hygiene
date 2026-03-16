@@ -14,11 +14,14 @@ import { getFullProduct } from '@/helper/product/action'
 
 
 
+
 export default async function Page({ params }: any) {    
     
       const { slug } = await params;   // ✅ important fix
 
   const product = await getFullProduct(slug);
+  console.log( "products", product);
+
      
 if (!product) {
     return <div className="text-center py-20">Product not found</div>;
@@ -33,7 +36,7 @@ if (!product) {
             ]} />
             <div className='px-10'>
                 <Product 
-        variants={product.variants}
+        variants={product.variants} product={product}
       />
                 <TrustBadges />
                 <AboutProduct />
