@@ -9,3 +9,12 @@ export {
   getCategoriesPagination,
   deleteCategory,
 } from "./category/action";
+
+// order
+export {
+  fetchOrders,
+  fetchOrderDetails,
+  changeOrderStatus,
+  updateOrderStatus,
+  createOrder,
+} from "./order/action";
