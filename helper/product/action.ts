@@ -579,3 +579,4 @@ export async function saveProductAttributes(productId: string, payload: any) {
   // Deprecated in favor of nested variant handling in updateProduct
   return { success: true };
 }
+
