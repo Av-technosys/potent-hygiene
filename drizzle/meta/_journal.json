@@ -92,6 +92,83 @@
       "when": 1773317916439,
       "tag": "0011_loving_angel",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1773638263502,
+      "tag": "0012_smart_the_hood",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1773638485489,
+      "tag": "0013_little_spectrum",
+      "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1773641754088,
+      "tag": "0014_elite_star_brand",
+      "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "7",
+      "when": 1773642423293,
+      "tag": "0015_panoramic_leopardon",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "7",
+      "when": 1773644965673,
+      "tag": "0016_sharp_captain_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 17,
+      "version": "7",
+      "when": 1773653200754,
+      "tag": "0017_perfect_prodigy",
+      "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1773654096919,
+      "tag": "0018_public_zaran",
+      "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1773659373338,
+      "tag": "0019_elite_weapon_omega",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1773662685042,
+      "tag": "0020_powerful_captain_universe",
+      "breakpoints": true
+    },
+    {
+      "idx": 21,
+      "version": "7",
+      "when": 1773662794527,
+      "tag": "0021_damp_colossus",
+      "breakpoints": true
+    },
+    {
+      "idx": 22,
+      "version": "7",
+      "when": 1773664938402,
+      "tag": "0022_mighty_puff_adder",
+      "breakpoints": true
     }
   ]
 }

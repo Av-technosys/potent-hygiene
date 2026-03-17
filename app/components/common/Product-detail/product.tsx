@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import { useState } from "react";
+import { useRouter } from "next/navigation"
 import { Star, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 
@@ -9,7 +9,7 @@ export default function ProductDetailPage({ variants,product}: any ) {
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
     const [selectedFlow, setSelectedFlow] = useState("Regular Flow");
-    const [selectedPlan, setSelectedPlan] = useState("2");
+    const [selectedPlan, setSelectedPlan] = useState("1");
 
 
 const selectedVariant = product?.variants?.[0];
@@ -34,7 +34,33 @@ const selectedVariant = product?.variants?.[0];
         ? Math.round(((selectedVariant.strikethroughPrice - selectedVariant.basePrice) / selectedVariant.strikethroughPrice) * 100)
         : 0;
 
-        
+         const router = useRouter()
+
+
+    const productId = product.id
+const addToCart = async () => {
+
+  const userId = "557230dc-7792-43ce-bf4f-2efd3c48a95c"
+
+  const res = await fetch("/api/cart/add", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      userId,
+      productVariantId: selectedVariant?.id,
+      subscriptionPlanId: selectedPlan,
+      quantity
+    })
+  })
+
+  const data = await res.json()
+
+  if (data?.success) {
+    router.push("/cart")
+  }
+}
     return (
         <div className="min-h-screen py-10">
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -197,16 +223,19 @@ const selectedVariant = product?.variants?.[0];
 
                     {/* Buttons */}
                     <div className="flex gap-4">
-                        <button className="flex-1 bg-[#168BA0] hover:bg-[#44a4b5] text-white py-3 rounded-xl">
-                            Add to Cart
-                        </button>
+                    <button
+  onClick={addToCart}
+  className="flex-1 bg-[#168BA0] hover:bg-[#44a4b5] text-white py-3 rounded-xl"
+>
+  Add to Cart
+</button>
                         <button className="flex-1 bg-black text-white py-3 rounded-xl">
                             Buy Now
                         </button>
                     </div>
 
                     {/* Subscription Section */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+                    {/* <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
                         <h2 className="font-semibold text-lg">Choose your Frequency</h2>
                         <p className="text-sm text-gray-500">
                             Subscribe & Get more discount
@@ -244,8 +273,71 @@ const selectedVariant = product?.variants?.[0];
                                 Add to Cart
                             </button>
                         </div>
+                    </div> */}
+                       <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+
+            <h2 className="font-semibold text-lg">
+                Choose your Frequency
+            </h2>
+
+            <p className="text-sm text-gray-500">
+                Subscribe & Get more discount
+            </p>
+
+            {[
+                { id: "1", label: "Monthly Subscription", price: "₹239" },
+                { id: "2", label: "Every 2 Months", price: "₹229" },
+                { id: "3", label: "Every 3 Months", price: "₹219" },
+            ].map((plan) => (
+
+                <div
+                    key={plan.id}
+                    onClick={() => setSelectedPlan(plan.id)}
+                    className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
+                        selectedPlan === plan.id
+                            ? "border-teal-600 bg-teal-50"
+                            : "border-gray-200"
+                    }`}
+                >
+
+                    <div className="flex items-center gap-3">
+
+                        <input
+                            type="radio"
+                            checked={selectedPlan === plan.id}
+                            readOnly
+                        />
+
+                        <span className="text-sm">
+                            {plan.label}
+                        </span>
+
                     </div>
 
+                    <span className="font-medium">
+                        {plan.price}
+                    </span>
+
+                </div>
+
+            ))}
+
+            <div className="flex justify-between items-center pt-4">
+
+                <span className="text-xl font-bold">
+                    ₹239
+                </span>
+
+                <button
+                    onClick={addToCart}
+                    className="bg-[#168BA0] text-white px-6 py-3 rounded-xl"
+                >
+                    Add to Cart
+                </button>
+
+            </div>
+
+        </div>
                 </div>
             </div>
         </div>

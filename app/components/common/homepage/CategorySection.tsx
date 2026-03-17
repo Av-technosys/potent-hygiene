@@ -81,8 +81,8 @@ export async function CategoryGrid(){
 
                 <Image
                 unoptimized
-                  src={category.bannerImage}
-                  alt={category.title}
+                  src={category.bannerImage || "/placeholder.jpg"}
+                  alt={category.name || "Category"}
                   width={350}
                   height={350}
                   className="object-contain transition-transform duration-500 group-hover:scale-110"

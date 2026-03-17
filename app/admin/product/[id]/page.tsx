@@ -20,7 +20,7 @@ const Page = async ({ params }: PageProps) => {
     <EditProduct
       productId={product.id}
       initialVariants={product.variants}
-      initialCategoryIds={product.categoryIds}
+      initialCategoryIds={product.categoryIds.filter((id): id is string => id !== null)}
       targetVariantId={product.targetVariant?.id}
     />
   );

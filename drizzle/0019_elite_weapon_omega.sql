@@ -1,0 +1,2 @@
+ALTER TABLE "cart" ALTER COLUMN "product_id" SET DATA TYPE uuid;--> statement-breakpoint
+ALTER TABLE "cart" ADD CONSTRAINT "cart_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;

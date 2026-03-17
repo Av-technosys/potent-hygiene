@@ -28,7 +28,7 @@ export async function createCategory(categoryData: any) {
       name,
       slug,
       description,
-      parrentId: parentId || null,
+      parentId: parentId || null,
       bannerImage: bannerImage || null,
     });
 
@@ -52,7 +52,7 @@ export async function updateCategory(categoryData: any) {
         name,
         slug: slugify(name, { lower: true }),
         description,
-        parrentId: parentId || null,
+        parentId: parentId || null,
         bannerImage: bannerImage || null,
 
       })

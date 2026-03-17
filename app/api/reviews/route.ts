@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
-import { reviews } from "@/src/db/schema";
+import { review } from "@/src/db/schema";
 
 
 // GET REVIEWS
@@ -8,7 +8,7 @@ export async function GET() {
 
   try {
 
-    const data = await db.select().from(reviews);
+    const data = await db.select().from(review);
 
     return NextResponse.json(data);
 
@@ -34,14 +34,14 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
 
     const newReview = await db
-      .insert(reviews)
+      .insert(review)
       .values({
         userId: body.userId,
-        productName: body.productName,
-        orderId: body.orderId,
+        name: body.name,
+        email: body.email,
+        productVariantId: body.productVariantId,
         rating: body.rating,
-        comment: body.comment,
-        deliveredDate: body.deliveredDate,
+        message: body.message,
       })
       .returning();
 

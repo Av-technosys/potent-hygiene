@@ -58,7 +58,7 @@ export const fetchOrderDetails = async (orderId: string) => {
         productVariant: productVariant,
       })
       .from(orderItem)
-      .leftJoin(productVariant, eq(orderItem.productVarientId, productVariant.id))
+      .leftJoin(productVariant, eq(orderItem.productVariantId, productVariant.id))
       .where(eq(orderItem.orderId, orderId));
 
 
@@ -102,7 +102,7 @@ export async function createOrder({
   razorpayPaymentId,
   razorpayOrderId,
 }: {
-  items: { productVarientId: string; quantity: number }[];
+  items: { productVariantId: string; quantity: number }[];
   userId: string;
   fixedAmount: number;
   address: any;
@@ -114,7 +114,7 @@ export async function createOrder({
       throw new Error("Order items are required");
     }
 
-    const productIds = items.map((i) => (i as any).productVarientId || (i as any).productId);
+    const productIds = items.map((i) => (i as any).productVariantId || (i as any).productId);
 
     const products = await db
       .select()
@@ -143,8 +143,6 @@ export async function createOrder({
           city: address.city,
           state: address.state,
           pincode: address.pincode,
-          latitude: address.latitude ?? null,
-          longitude: address.longitude ?? null,
         })
         .returning({ id: order.id });
 
@@ -152,7 +150,7 @@ export async function createOrder({
 
 
       const orderItemsToInsert = items.map((item) => {
-        const variantId = (item as any).productVarientId || (item as any).productId;
+        const variantId = (item as any).productVariantId || (item as any).productId;
         const p = productMap.get(variantId);
 
         if (!p || !p.name || !p.slug || p.basePrice == null) {
@@ -161,7 +159,7 @@ export async function createOrder({
 
         return {
           orderId,
-          productVarientId: p.id,
+          productVariantId: p.id,
           quantity: item.quantity,
           productName: p.name,
           productSlug: p.slug,
@@ -180,8 +178,6 @@ export async function createOrder({
           paymentMethod: "razorpay",
           paymentAmount: safeAmount,
           paymentCurrency: "INR",
-          paymentDescription: "Order Payment",
-          paymentGatewayOrderId: razorpayOrderId,
         }),
       ]);
 
@@ -237,7 +233,7 @@ export async function getOrderById(orderId: string) {
     })
     .from(order)
     .leftJoin(orderItem, eq(order.id, orderItem.orderId))
-    .leftJoin(productVariant, eq(orderItem.productVarientId, productVariant.id))
+    .leftJoin(productVariant, eq(orderItem.productVariantId, productVariant.id))
     .leftJoin(payment, eq(order.id, payment.orderId))
     .where(eq(order.id, orderId));
 

@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 
-import { category, product, productCategory, productVariant, productVarientAttribute, productVarientMedia } from "@/db/schema";
+import { category, product, productCategory, productVariant, productVariantAttribute, productVariantMedia } from "@/db/schema";
 import { isUUID } from "@/const/globalconst";
 
 interface GetProductsOptions {
@@ -114,13 +114,13 @@ export async function createProduct(formData: FormData) {
 
 
       const allMediaRows: {
-        productVarientId: string;
+        productVariantId: string;
         mediaType: string;
         mediaURL: string;
       }[] = [];
 
       const allAttributeRows: {
-        productVarientId: string;
+        productVariantId: string;
         attribute: string;
         value: string;
       }[] = [];
@@ -133,7 +133,7 @@ export async function createProduct(formData: FormData) {
         if (v.media?.length) {
           for (const url of v.media) {
             allMediaRows.push({
-              productVarientId: variantId,
+              productVariantId: variantId,
               mediaType: "image",
               mediaURL: url,
             });
@@ -144,7 +144,7 @@ export async function createProduct(formData: FormData) {
         if (v.attributes?.length) {
           for (const attr of v.attributes) {
             allAttributeRows.push({
-              productVarientId: variantId,
+              productVariantId: variantId,
               attribute: attr.attribute,
               value: attr.value,
             });
@@ -153,11 +153,11 @@ export async function createProduct(formData: FormData) {
       }
 
       if (allMediaRows.length) {
-        await tx.insert(productVarientMedia).values(allMediaRows);
+        await tx.insert(productVariantMedia).values(allMediaRows);
       }
 
       if (allAttributeRows.length) {
-        await tx.insert(productVarientAttribute).values(allAttributeRows);
+        await tx.insert(productVariantAttribute).values(allAttributeRows);
       }
       return pId;
     });
@@ -214,11 +214,11 @@ export async function updateProduct(formData: FormData): Promise<void> {
 
       for (const v of variantsToDelete) {
         await tx
-          .delete(productVarientMedia)
-          .where(eq(productVarientMedia.productVarientId, v.id));
+          .delete(productVariantMedia)
+          .where(eq(productVariantMedia.productVariantId, v.id));
         await tx
-          .delete(productVarientAttribute)
-          .where(eq(productVarientAttribute.productVarientId, v.id));
+          .delete(productVariantAttribute)
+          .where(eq(productVariantAttribute.productVariantId, v.id));
         await tx.delete(productVariant).where(eq(productVariant.id, v.id));
       }
       // Update or Insert variants
@@ -280,12 +280,12 @@ export async function updateProduct(formData: FormData): Promise<void> {
 
         // Update Media
         await tx
-          .delete(productVarientMedia)
-          .where(eq(productVarientMedia.productVarientId, vId!));
+          .delete(productVariantMedia)
+          .where(eq(productVariantMedia.productVariantId, vId!));
         if (v.media?.length) {
-          await tx.insert(productVarientMedia).values(
+          await tx.insert(productVariantMedia).values(
             v.media.map((url) => ({
-              productVarientId: vId!,
+              productVariantId: vId!,
               mediaType: "image",
               mediaURL: url,
             })),
@@ -294,12 +294,12 @@ export async function updateProduct(formData: FormData): Promise<void> {
 
         // Update Attributes
         await tx
-          .delete(productVarientAttribute)
-          .where(eq(productVarientAttribute.productVarientId, vId!));
+          .delete(productVariantAttribute)
+          .where(eq(productVariantAttribute.productVariantId, vId!));
         if (v.attributes?.length) {
-          await tx.insert(productVarientAttribute).values(
+          await tx.insert(productVariantAttribute).values(
             v.attributes.map((attr) => ({
-              productVarientId: vId!,
+              productVariantId: vId!,
               attribute: attr.attribute,
               value: attr.value,
             })),
@@ -362,8 +362,8 @@ export async function getFullProduct(identifier: string) {
 
     if (variantIds.length > 0) {
       [allMedia, allAttributes] = await Promise.all([
-        db.select().from(productVarientMedia).where(inArray(productVarientMedia.productVarientId, variantIds)),
-        db.select().from(productVarientAttribute).where(inArray(productVarientAttribute.productVarientId, variantIds)),
+        db.select().from(productVariantMedia).where(inArray(productVariantMedia.productVariantId, variantIds)),
+        db.select().from(productVariantAttribute).where(inArray(productVariantAttribute.productVariantId, variantIds)),
       ]);
     }
 
@@ -372,13 +372,13 @@ export async function getFullProduct(identifier: string) {
     const mediaMap = new Map();
 
     allAttributes.forEach(a => {
-      if (!attributeMap.has(a.productVarientId)) attributeMap.set(a.productVarientId, []);
-      attributeMap.get(a.productVarientId).push(a);
+      if (!attributeMap.has(a.productVariantId)) attributeMap.set(a.productVariantId, []);
+      attributeMap.get(a.productVariantId).push(a);
     });
 
     allMedia.forEach(m => {
-      if (!mediaMap.has(m.productVarientId)) mediaMap.set(m.productVarientId, []);
-      mediaMap.get(m.productVarientId).push(m);
+      if (!mediaMap.has(m.productVariantId)) mediaMap.set(m.productVariantId, []);
+      mediaMap.get(m.productVariantId).push(m);
     });
 
     const variantsWithDetails = variants.map(v => ({
@@ -412,11 +412,11 @@ export async function deleteProduct(id: string) {
 
       for (const v of variants) {
         await tx
-          .delete(productVarientMedia)
-          .where(eq(productVarientMedia.productVarientId, v.id));
+          .delete(productVariantMedia)
+          .where(eq(productVariantMedia.productVariantId, v.id));
         await tx
-          .delete(productVarientAttribute)
-          .where(eq(productVarientAttribute.productVarientId, v.id));
+          .delete(productVariantAttribute)
+          .where(eq(productVariantAttribute.productVariantId, v.id));
       }
 
       await tx.delete(productVariant).where(eq(productVariant.productId, id));
@@ -555,14 +555,15 @@ export async function getProductsForCart(productIds: string[]) {
 
     const media = await db
       .select()
-      .from(productVarientMedia)
-      .where(inArray(productVarientMedia.productVarientId, safeIds));
+      .from(productVariantMedia)
+      .where(inArray(productVariantMedia.productVariantId, safeIds));
 
     const mediaMap = new Map<string, typeof media>();
     for (const m of media) {
-      if (!mediaMap.has(m.productVarientId))
-        mediaMap.set(m.productVarientId, []);
-      mediaMap.get(m.productVarientId)!.push(m);
+      if (!m.productVariantId) continue;
+      if (!mediaMap.has(m.productVariantId))
+        mediaMap.set(m.productVariantId, []);
+      mediaMap.get(m.productVariantId)!.push(m);
     }
 
     return products.map((p) => ({
