@@ -7,7 +7,7 @@ import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 
-import { category, product, productCategory, productVariant, productVariantAttribute, productVariantMedia } from "@/db/schema";
+import { category, product, productCategory, productVariant, productVariantAttribute, productVariantMedia, productVariantSubscriptionPlan } from "@/db/schema";
 import { isUUID } from "@/const/globalconst";
 
 interface GetProductsOptions {
@@ -47,6 +47,7 @@ interface VariantInput {
   returnDays: number;
   replacementDays: number;
   attributes: { attribute: string; value: string }[];
+  subscriptionPlans?: number[];
 }
 
 export async function createProduct(formData: FormData) {
@@ -125,6 +126,11 @@ export async function createProduct(formData: FormData) {
         value: string;
       }[] = [];
 
+      const allSubscriptionRows: {
+        productVariantId: string;
+        subscriptionPlanId: number;
+      }[] = [];
+
       for (let i = 0; i < variants.length; i++) {
         const variantId = insertedVariants[i].id;
         const v = variants[i];
@@ -150,6 +156,16 @@ export async function createProduct(formData: FormData) {
             });
           }
         }
+
+        // Subscriptions
+        if (v.subscriptionPlans?.length) {
+            for (const planId of v.subscriptionPlans) {
+                allSubscriptionRows.push({
+                    productVariantId: variantId,
+                    subscriptionPlanId: planId
+                });
+            }
+        }
       }
 
       if (allMediaRows.length) {
@@ -158,6 +174,10 @@ export async function createProduct(formData: FormData) {
 
       if (allAttributeRows.length) {
         await tx.insert(productVariantAttribute).values(allAttributeRows);
+      }
+
+      if (allSubscriptionRows.length) {
+        await tx.insert(productVariantSubscriptionPlan).values(allSubscriptionRows);
       }
       return pId;
     });
@@ -214,6 +234,9 @@ export async function updateProduct(formData: FormData): Promise<void> {
 
       for (const v of variantsToDelete) {
         await tx
+          .delete(productVariantSubscriptionPlan)
+          .where(eq(productVariantSubscriptionPlan.productVariantId, v.id));
+        await tx
           .delete(productVariantMedia)
           .where(eq(productVariantMedia.productVariantId, v.id));
         await tx
@@ -221,6 +244,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
           .where(eq(productVariantAttribute.productVariantId, v.id));
         await tx.delete(productVariant).where(eq(productVariant.id, v.id));
       }
+
       // Update or Insert variants
       for (const v of variants) {
         let vId = v.id;
@@ -305,6 +329,19 @@ export async function updateProduct(formData: FormData): Promise<void> {
             })),
           );
         }
+
+        // Update Subscriptions
+        await tx
+          .delete(productVariantSubscriptionPlan)
+          .where(eq(productVariantSubscriptionPlan.productVariantId, vId!));
+        if (v.subscriptionPlans?.length) {
+             await tx.insert(productVariantSubscriptionPlan).values(
+                v.subscriptionPlans.map((planId) => ({
+                    productVariantId: vId!,
+                    subscriptionPlanId: planId
+                }))
+             )
+        }
       }
     });
 
@@ -359,17 +396,22 @@ export async function getFullProduct(identifier: string) {
 
     let allMedia: any[] = [];
     let allAttributes: any[] = [];
+    let allSubscriptions: any[] = [];
 
     if (variantIds.length > 0) {
-      [allMedia, allAttributes] = await Promise.all([
+      [allMedia, allAttributes, allSubscriptions] = await Promise.all([
         db.select().from(productVariantMedia).where(inArray(productVariantMedia.productVariantId, variantIds)),
         db.select().from(productVariantAttribute).where(inArray(productVariantAttribute.productVariantId, variantIds)),
+        db.select()
+          .from(productVariantSubscriptionPlan)
+          .where(inArray(productVariantSubscriptionPlan.productVariantId, variantIds))
       ]);
     }
 
     // 3. Mapping data for UI
     const attributeMap = new Map();
     const mediaMap = new Map();
+    const subMap = new Map();
 
     allAttributes.forEach(a => {
       if (!attributeMap.has(a.productVariantId)) attributeMap.set(a.productVariantId, []);
@@ -381,10 +423,16 @@ export async function getFullProduct(identifier: string) {
       mediaMap.get(m.productVariantId).push(m);
     });
 
+    allSubscriptions.forEach(s => {
+       if (!subMap.has(s.productVariantId)) subMap.set(s.productVariantId, []);
+       subMap.get(s.productVariantId).push(s.subscriptionPlanId);
+    });
+
     const variantsWithDetails = variants.map(v => ({
       ...v,
       media: mediaMap.get(v.id) || [],
-      attributes: attributeMap.get(v.id) || []
+      attributes: attributeMap.get(v.id) || [],
+      subscriptionPlans: subMap.get(v.id) || []
     }));
 
     return {
@@ -411,6 +459,9 @@ export async function deleteProduct(id: string) {
         .where(eq(productVariant.productId, id));
 
       for (const v of variants) {
+        await tx
+          .delete(productVariantSubscriptionPlan)
+          .where(eq(productVariantSubscriptionPlan.productVariantId, v.id));
         await tx
           .delete(productVariantMedia)
           .where(eq(productVariantMedia.productVariantId, v.id));

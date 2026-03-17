@@ -39,7 +39,7 @@ if (!product) {
         variants={product.variants} product={product}
       />
                 <TrustBadges />
-                <AboutProduct />
+                <AboutProduct variant={product.targetVariant} />
                 <ProductReviews />
                 <div className='container mx-auto '>
                     <Image

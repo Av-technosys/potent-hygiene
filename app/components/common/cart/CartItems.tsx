@@ -52,7 +52,7 @@ export function CartItems() {
         <div key={item.id} className="relative flex items-center gap-3 rounded-md border border-gray-100 p-2 shadow-sm bg-white md:p-4 md:rounded-xl">
           
           <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-md bg-[#F8F8F8] md:h-32 md:w-32 md:rounded-lg">
-            <Image src={item.image} alt={item.title} fill className="object-cover" />
+            <Image src={item.image} alt={item.title} fill className="object-cover" unoptimized/>
           </div>
 
           <div className="flex flex-1 flex-col pr-12 md:pr-0">

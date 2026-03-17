@@ -477,7 +477,7 @@ export const productVariantAttribute = pgTable("product_variant_attribute", {
   id: uuid("id").primaryKey().defaultRandom(),
   productVariantId: uuid("product_variant_id").references(() => productVariant.id),
   attribute: varchar("attribute"),
-  value: varchar("value"),
+  value: text("value"),
 });
 
 
@@ -524,6 +524,17 @@ export const subscriptionPlans = pgTable("subscription_plans", {
   price: integer("price")
 });
 
+export const productVariantSubscriptionPlan = pgTable(
+  "product_variant_subscription_plan",
+  {
+    productVariantId: uuid("product_variant_id").references(() => productVariant.id),
+    subscriptionPlanId: integer("subscription_plan_id").references(() => subscriptionPlans.id),
+    discountPercentage: integer("discount_percentage").default(0),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.productVariantId, table.subscriptionPlanId] }),
+  })
+);
 
 // ================= SUBSCRIPTIONS =================
 

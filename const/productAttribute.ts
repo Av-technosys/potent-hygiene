@@ -2,17 +2,17 @@ export const PRODUCT_ATTRIBUTES = [
     {
         title: "Common",
         elements: [
-            "Product Title",
-            "Brand",
-            "SKU",
-            "Price",
-            "MRP",
-            "Stock",
-            "Description",
-            "Images",
-            "Category",
-            "Weight",
-            "Dimensions"
+            "Material",
+            "Type",
+            // "SKU",
+            // "Price",
+            // "MRP",
+            // "Stock",
+            // "Description",
+            // "Images",
+            // "Category",
+            // "Weight",
+            // "Dimensions"
         ]
     },
     {

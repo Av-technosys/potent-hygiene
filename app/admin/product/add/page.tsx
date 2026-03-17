@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import {
   Card, CardContent, CardDescription, CardHeader, CardTitle
 } from "@/components/ui/card";
@@ -40,6 +40,7 @@ type Variant = {
   banner: ImageItem | null;
   gallery: ImageItem[];
   attributes: Record<string, AttributeValue>;
+  subscriptionPlans: number[];
   isInStock: boolean;
   isReturnable: boolean;
   isCancelable: boolean;
@@ -51,6 +52,7 @@ type Variant = {
 export default function AddProductForm() {
   const router = useRouter();
 
+  const [availablePlans, setAvailablePlans] = useState<any[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [variants, setVariants] = useState<Variant[]>([{
     id: crypto.randomUUID(),
@@ -62,6 +64,7 @@ export default function AddProductForm() {
     banner: null,
     gallery: [],
     attributes: {},
+    subscriptionPlans: [],
     isInStock: true,
     isReturnable: false,
     isCancelable: false,
@@ -69,6 +72,14 @@ export default function AddProductForm() {
     returnDays: 0,
     replacementDays: 0
   }]);
+
+  useEffect(() => {
+    fetch("/api/subscription-plans")
+      .then(r => r.json())
+      .then(res => {
+         if(res?.success) setAvailablePlans(res.data);
+      });
+  }, []);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -81,7 +92,8 @@ export default function AddProductForm() {
       banner: null,
       gallery: [],
       isInStock: true,
-      attributes: {} 
+      attributes: {},
+      subscriptionPlans: [] 
     };
     setVariants([...variants, newVariant]);
     setActiveIndex(variants.length);
@@ -137,6 +149,7 @@ export default function AddProductForm() {
       ...v,
       bannerImage: v.banner?.preview,
       media: v.gallery.map(g => g.preview),
+      subscriptionPlans: v.subscriptionPlans, // Send the selected plan IDs to backend
       attributes: Object.entries(v.attributes)
         .map(([attr, val]) => ({ attribute: attr, value: val.value }))
         .filter(a => a.value.trim().length > 0)
@@ -281,7 +294,38 @@ export default function AddProductForm() {
               </CardContent>
             </Card>
 
-       
+            {/* --- SUBSCRIPTION PLANS --- */}
+            <Card>
+              <CardHeader><CardTitle className="text-sm">Available Subscription Plans</CardTitle></CardHeader>
+              <CardContent>
+                 <div className="space-y-3">
+                  <Label>Select Plans (Multi-select)</Label>
+                  <div className="flex flex-wrap gap-2">
+                    {availablePlans.map((plan: any) => {
+                      const isSelected = activeVariant.subscriptionPlans.includes(plan.id);
+                      return (
+                        <Button 
+                          key={plan.id} 
+                          type="button" 
+                          variant={isSelected ? "default" : "outline"} 
+                          className="rounded-full" 
+                          onClick={() => {
+                              const currentPlans = activeVariant.subscriptionPlans;
+                              const newPlans = isSelected 
+                                ? currentPlans.filter(id => id !== plan.id)
+                                : [...currentPlans, plan.id];
+                              updateVariant(activeIndex, { subscriptionPlans: newPlans });
+                          }}
+                        >
+                          {plan.name} (₹{plan.price}) {isSelected && <X size={12} className="ml-1" />}
+                        </Button>
+                      );
+                    })}
+                    {availablePlans.length === 0 && <span className="text-sm text-gray-500">No subscription plans found in database.</span>}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
 
             <AttributeSection productAttributes={activeVariant.attributes} handleValueChange={(k, v) => {
               const current = activeVariant.attributes;

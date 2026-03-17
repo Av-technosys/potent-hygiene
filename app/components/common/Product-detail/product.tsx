@@ -5,14 +5,15 @@ import { useRouter } from "next/navigation"
 import { Star, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 
-export default function ProductDetailPage({ variants,product}: any ) {
+export default function ProductDetailPage({ variants, product }: any) {
     const [quantity, setQuantity] = useState(1);
     const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
     const [selectedFlow, setSelectedFlow] = useState("Regular Flow");
+    const [isSubscribed, setIsSubscribed] = useState(false);
     const [selectedPlan, setSelectedPlan] = useState("1");
 
 
-const selectedVariant = product?.variants?.[0];
+    const selectedVariant = product?.variants?.[0];
     // Size extraction logic (Aapne jo pehle likha tha)
     const dynamicSizes = Array.from(new Set(
         variants?.flatMap((v: any) => {
@@ -30,37 +31,95 @@ const selectedVariant = product?.variants?.[0];
     ));
 
     // Discount percentage calculate karne ke liye
-    const discount = selectedVariant?.strikethroughPrice && selectedVariant?.basePrice 
+    const discount = selectedVariant?.strikethroughPrice && selectedVariant?.basePrice
         ? Math.round(((selectedVariant.strikethroughPrice - selectedVariant.basePrice) / selectedVariant.strikethroughPrice) * 100)
         : 0;
 
-         const router = useRouter()
+    const router = useRouter()
 
 
     const productId = product.id
-const addToCart = async () => {
+    const addToCart = async () => {
+        // Update localStorage first (since CartItems.tsx purely reads from localStorage)
+        const currentCart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-  const userId = "557230dc-7792-43ce-bf4f-2efd3c48a95c"
+        let newItem;
 
-  const res = await fetch("/api/cart/add", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      userId,
-      productVariantId: selectedVariant?.id,
-      subscriptionPlanId: selectedPlan,
-      quantity
-    })
-  })
+        if (isSubscribed) {
+            // Find the chosen subscription plan to get its correct price
+            const plans = [
+                { id: "1", label: "Monthly Subscription", price: 239 },
+                { id: "2", label: "Every 2 Months", price: 229 },
+                { id: "3", label: "Every 3 Months", price: 219 },
+            ];
+            const chosenPlan = plans.find(p => p.id === selectedPlan) || plans[0];
 
-  const data = await res.json()
+            // Subscription Variant Structure
+            newItem = {
+                id: `${selectedVariant?.id || productId}_sub_${selectedPlan}`, 
+                title: `${variants?.[0]?.name || "Sanitary Pads"} - ${chosenPlan.label}`,
+                image: selectedVariant?.bannerImage || "/product.png",
+                price: chosenPlan.price,
+                quantity: quantity, 
+                size: selectedSize,
+                flow: selectedFlow,
+                subscriptionPlanId: selectedPlan,
+                isSubscription: true
+            };
+        } else {
+            // Normal Purchase
+            newItem = {
+                id: selectedVariant?.id || productId,
+                title: variants?.[0]?.name || "Sanitary Pads",
+                image: selectedVariant?.bannerImage || "/product.png",
+                price: selectedVariant?.basePrice || 0,
+                quantity: quantity,
+                size: selectedSize,
+                flow: selectedFlow,
+                subscriptionPlanId: null
+            };
+        }
 
-  if (data?.success) {
-    router.push("/cart")
-  }
-}
+        // Check if item already exists
+        const existingIndex = currentCart.findIndex((item: any) => item.id === newItem.id);
+        if (existingIndex > -1) {
+            currentCart[existingIndex].quantity += quantity;
+        } else {
+            currentCart.push(newItem);
+        }
+
+        localStorage.setItem("cart", JSON.stringify(currentCart));
+        window.dispatchEvent(new Event("cartUpdated"));
+
+        // Optional: Try syncing with the backend if an API exists
+        try {
+            const userId = "557230dc-7792-43ce-bf4f-2efd3c48a95c"
+            fetch("/api/cart/add", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    userId,
+                    productVariantId: selectedVariant?.id,
+                    subscriptionPlanId: isSubscribed ? parseInt(selectedPlan) : null,
+                    quantity
+                })
+            }).catch(e => console.error("Database Cart Sync Error:", e));
+        } catch (e) {
+            console.error("Failed to sync with API");
+        }
+
+        // Redirect to cart regardless of backend status, using the local state
+        router.push("/cart");
+    }
+
+    const subscribeToCart = (e: React.MouseEvent) => {
+        e.preventDefault();
+        setIsSubscribed(true);
+        // Do not redirect to /cart. Wait for user to click Add to Cart.
+    };
+
     return (
         <div className="min-h-screen py-10">
             <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -69,7 +128,7 @@ const addToCart = async () => {
                 <div>
                     <div className=" ">
                         <Image
-                        unoptimized
+                            unoptimized
                             src={selectedVariant?.bannerImage}
                             alt="Product"
                             width={600}
@@ -113,7 +172,7 @@ const addToCart = async () => {
                     {/* Title */}
                     <div>
                         <h1 className="text-2xl font-semibold">
-                           {variants?.[0]?.name}
+                            {variants?.[0]?.name}
                         </h1>
                         <p className="text-gray-500 text-sm">
                             {variants?.[0]?.description}
@@ -146,7 +205,7 @@ const addToCart = async () => {
                     </div>
 
                     {/* Price */}
-                   <div className="flex items-center gap-3">
+                    <div className="flex items-center gap-3">
                         <span className="text-2xl font-bold text-[#168BA0]">₹{selectedVariant?.basePrice}</span>
                         {selectedVariant?.strikethroughPrice && (
                             <>
@@ -166,11 +225,10 @@ const addToCart = async () => {
                                     key={size}
                                     type="button"
                                     onClick={() => setSelectedSize(size)}
-                                    className={`px-4 py-2 text-sm rounded-full border transition ${
-                                        selectedSize === size
-                                        ? "bg-[#168BA0] text-white border-[#168BA0]"
-                                        : "bg-white border-gray-300 hover:border-[#168BA0]"
-                                    }`}
+                                    className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === size
+                                            ? "bg-[#168BA0] text-white border-[#168BA0]"
+                                            : "bg-white border-gray-300 hover:border-[#168BA0]"
+                                        }`}
                                 >
                                     {size}
                                 </button>
@@ -187,11 +245,10 @@ const addToCart = async () => {
                                     key={flow}
                                     type="button"
                                     onClick={() => setSelectedFlow(flow)}
-                                    className={`px-4 py-2 text-sm rounded-full border transition ${
-                                        selectedFlow === flow
-                                        ? "bg-[#168BA0] text-white border-[#168BA0]"
-                                        : "bg-white border-gray-300 hover:border-[#168BA0]"
-                                    }`}
+                                    className={`px-4 py-2 text-sm rounded-full border transition ${selectedFlow === flow
+                                            ? "bg-[#168BA0] text-white border-[#168BA0]"
+                                            : "bg-white border-gray-300 hover:border-[#168BA0]"
+                                        }`}
                                 >
                                     {flow}
                                 </button>
@@ -223,12 +280,12 @@ const addToCart = async () => {
 
                     {/* Buttons */}
                     <div className="flex gap-4">
-                    <button
-  onClick={addToCart}
-  className="flex-1 bg-[#168BA0] hover:bg-[#44a4b5] text-white py-3 rounded-xl"
->
-  Add to Cart
-</button>
+                        <button
+                            onClick={addToCart}
+                            className="flex-1 bg-[#168BA0] hover:bg-[#44a4b5] text-white py-3 rounded-xl"
+                        >
+                            Add to Cart
+                        </button>
                         <button className="flex-1 bg-black text-white py-3 rounded-xl">
                             Buy Now
                         </button>
@@ -274,70 +331,70 @@ const addToCart = async () => {
                             </button>
                         </div>
                     </div> */}
-                       <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+                    <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
 
-            <h2 className="font-semibold text-lg">
-                Choose your Frequency
-            </h2>
+                        <h2 className="font-semibold text-lg">
+                            Choose your Frequency
+                        </h2>
 
-            <p className="text-sm text-gray-500">
-                Subscribe & Get more discount
-            </p>
+                        <p className="text-sm text-gray-500">
+                            Subscribe & Get more discount
+                        </p>
 
-            {[
-                { id: "1", label: "Monthly Subscription", price: "₹239" },
-                { id: "2", label: "Every 2 Months", price: "₹229" },
-                { id: "3", label: "Every 3 Months", price: "₹219" },
-            ].map((plan) => (
+                        {[
+                            { id: "1", label: "Monthly Subscription", price: "₹239" },
+                            { id: "2", label: "Every 2 Months", price: "₹229" },
+                            { id: "3", label: "Every 3 Months", price: "₹219" },
+                        ].map((plan) => (
 
-                <div
-                    key={plan.id}
-                    onClick={() => setSelectedPlan(plan.id)}
-                    className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
-                        selectedPlan === plan.id
-                            ? "border-teal-600 bg-teal-50"
-                            : "border-gray-200"
-                    }`}
-                >
+                            <div
+                                key={plan.id}
+                                onClick={() => setSelectedPlan(plan.id)}
+                                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan === plan.id
+                                        ? "border-teal-600 bg-teal-50"
+                                        : "border-gray-200"
+                                    }`}
+                            >
 
-                    <div className="flex items-center gap-3">
+                                <div className="flex items-center gap-3">
 
-                        <input
-                            type="radio"
-                            checked={selectedPlan === plan.id}
-                            readOnly
-                        />
+                                    <input
+                                        type="radio"
+                                        checked={selectedPlan === plan.id}
+                                        readOnly
+                                    />
 
-                        <span className="text-sm">
-                            {plan.label}
-                        </span>
+                                    <span className="text-sm">
+                                        {plan.label}
+                                    </span>
+
+                                </div>
+
+                                <span className="font-medium">
+                                    {plan.price}
+                                </span>
+
+                            </div>
+
+                        ))}
+
+                        <div className="flex justify-between items-center pt-4">
+
+                            <span className="text-xl font-bold">
+                                ₹239
+                            </span>
+
+                            <button
+                                onClick={subscribeToCart}
+                                disabled={isSubscribed}
+                                className={`${isSubscribed ? "bg-gray-400 cursor-not-allowed" : "bg-[#168BA0]"} text-white px-6 py-3 rounded-xl transition duration-200`}
+                            >
+                                {isSubscribed ? "Subscribed!" : "Subscribe"}
+                            </button>
+
+                        </div>
 
                     </div>
-
-                    <span className="font-medium">
-                        {plan.price}
-                    </span>
-
-                </div>
-
-            ))}
-
-            <div className="flex justify-between items-center pt-4">
-
-                <span className="text-xl font-bold">
-                    ₹239
-                </span>
-
-                <button
-                    onClick={addToCart}
-                    className="bg-[#168BA0] text-white px-6 py-3 rounded-xl"
-                >
-                    Add to Cart
-                </button>
-
-            </div>
-
-        </div>
                 </div>
             </div>
         </div>
