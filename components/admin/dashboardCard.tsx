@@ -1,8 +1,12 @@
 // components/dashboard-cards.tsx
 import { ShoppingCart, Package, Users, DollarSign } from "lucide-react"
 import { StatCard } from "./statCard"
+import { getProductsCount } from "@/helper/product/action"
 
-export function DashboardCards() {
+export async function DashboardCards() {
+
+  const totalProducts = await getProductsCount(); // ✅ add
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
       <StatCard
@@ -15,7 +19,7 @@ export function DashboardCards() {
       />
       <StatCard 
         title="Total Products" 
-        value="89" 
+        value={totalProducts.toString()} // ✅ change
         subtitle="78 Active Products" 
         icon={<Package className="text-purple-500" size={24} />}
         iconBg="bg-purple-100/50"

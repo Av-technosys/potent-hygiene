@@ -8,25 +8,26 @@ import {
 
 const faqData = [
   {
-    question: "What makes your products different from traditional drugstore brands?",
-    answer: "Our products focus on \"Modern Comfort,\" meaning we use hypoallergenic materials, are eco-friendly, and are designed by experts to ensure they are as gentle on your skin as they are on the planet."
+    question: "I placed an order by mistake. How to cancel my order and get a refund?",
+    answer: "If you want to cancel your order, you just need to drop an email to care@potenthygiene.com within 12 hours of placing the order. You will receive an email confirming the cancellation of your order in 24–48 business hours. The money will be refunded as per the payment mode within 6–8 working days of the confirmation. Please note that orders that have already been shipped from our side cannot be canceled."
   },
   {
-    question: "Are Potent Hygiene products safe for sensitive skin?",
-    answer: "Yes, all our products are dermatologically tested and free from harsh chemicals, fragrances, and toxins to ensure maximum safety."
+    question: "I cancelled my order but didn’t get the refund. What should I do?",
+    answer: "Refunds are processed within 6–8 working days after cancellation confirmation. If you still haven't received it, please contact our support team with your order details."
   },
   {
-    question: "How do I choose the right product for my flow?",
-    answer: "We offer a variety of sizes and absorbency levels. Check our 'Product Guide' on each product page to find your perfect match."
+    question: "My order has not been delivered. What should I do?",
+    answer: "If your order is delayed, please check the tracking link shared with you. If the issue persists, contact our support team for assistance."
   },
   {
-    question: "Do you offer international shipping?",
-    answer: "Currently, we ship pan-India, but we are working hard to bring Potent Hygiene to women across the globe very soon!"
+    question: "Are there any shipping charges?",
+    answer: "Shipping charges may vary depending on your location and order value. Any applicable charges will be shown at checkout."
   },
   {
-    question: "Do you offer international shipping?",
-    answer: "Currently, we ship pan-India, but we are working hard to bring Potent Hygiene to women across the globe very soon!"
+    question: "What are the locations Potent Hygiene delivers its products to?",
+    answer: "We currently deliver across India. We are working on expanding our delivery services internationally."
   }
+
 ];
 
 const Faq = () => {

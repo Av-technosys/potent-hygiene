@@ -1,12 +1,15 @@
 // components/sections/blog-section.tsx
+
 import Image from "next/image";
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
-import { blogs } from "@/app/data/blogs";
+import { getBlogs } from "@/helper/blog/action";
 
-export function BlogSection() {
-  const articles = blogs.slice(0, 3);
+export async function BlogSection() {
+  const allBlogs = await getBlogs();
+
+  const articles = allBlogs?.slice(0, 3) || [];
 
   return (
     <section className="py-16 bg-[#F8F6F1]">
@@ -26,23 +29,29 @@ export function BlogSection() {
         {/* Blog Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 
-          {articles.map((article) => (
-            <Link key={article.slug} href={`/blog/${article.slug}`}>
+          {articles.map((article: any, index: number) => (
+            <Link
+              key={article.id || `${article.slug}-${index}`}
+              href={`/blog/${article.slug}`}
+            >
               <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition duration-300">
 
                 {/* Image */}
                 <div className="relative h-48 w-full overflow-hidden">
                   <Image
-                    src={article.image}
-                    alt={article.title}
+                    src={article.image || "/placeholder.jpg"}
+                    alt={article.title || "Blog Image"}
                     fill
                     className="object-cover transition duration-700 group-hover:scale-110"
+                    unoptimized
                   />
 
                   {/* Category */}
-                  <span className="absolute top-4 left-4 bg-[#1A8D91] text-white text-[10px] px-3 py-1 rounded-full font-semibold">
-                    {article.category}
-                  </span>
+                  {article.blogCategory && (
+                    <span className="absolute top-4 left-4 bg-[#1A8D91] text-white text-[10px] px-3 py-1 rounded-full font-semibold">
+                      {article.blogCategory}
+                    </span>
+                  )}
                 </div>
 
                 {/* Content */}
@@ -51,17 +60,17 @@ export function BlogSection() {
                   {/* Date */}
                   <div className="flex items-center gap-2 text-xs text-gray-400">
                     <Calendar className="w-4 h-4" />
-                    {article.date}
+                    {article.date || "Recent"}
                   </div>
 
                   {/* Title */}
                   <h3 className="text-base font-semibold text-gray-900 leading-snug group-hover:text-[#1A8D91] transition">
-                    {article.title}
+                    {article.title || "Untitled Blog"}
                   </h3>
 
                   {/* Description */}
                   <p className="text-sm text-gray-500 line-clamp-2">
-                    {article.description}
+                    {article.metaDescription || "Read more about this article..."}
                   </p>
 
                 </div>

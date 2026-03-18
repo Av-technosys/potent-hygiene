@@ -4,41 +4,7 @@ import { getCategories } from "@/helper";
 import Image from "next/image"
 import Link from "next/link"
 
-// const categories = [
 
-//   {
-//     id:1,
-//     title:"Sanitary Pads",
-//     description:"Ultra Soft Protection",
-//     image:"/category1.png",
-//     type:"Sanitary Pads"
-//   },
-
-//   {
-//     id:2,
-//     title:"Menstrual Cup",
-//     description:"Reusable Comfort",
-//     image:"/category2.png",
-//     type:"Menstrual Cup"
-//   },
-
-//   {
-//     id:3,
-//     title:"Pantyliners",
-//     description:"Daily Freshness",
-//     image:"/category3.png",
-//     type:"Pantyliners"
-//   },
-
-//   {
-//     id:4,
-//     title:"Combo Pack",
-//     description:"Complete Care Kit",
-//     image:"/category4.png",
-//     type:"Combo"
-//   }
-
-// ]
 
 export async function CategoryGrid(){
 

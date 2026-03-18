@@ -44,12 +44,14 @@ const ProductTable = ({ products, total, currentPage }: any) => {
 
         toast.success(res.message ?? "Product deleted");
 
+        // ✅ IMPORTANT FIX
+        router.refresh();
+
       } catch {
         toast.error("Server crashed while deleting");
       }
     });
   };
-
 
   return (
     <>
@@ -112,11 +114,11 @@ const ProductTable = ({ products, total, currentPage }: any) => {
                           Cancel
                         </AlertDialogCancel>
 
-                        <AlertDialogAction
-                          disabled={isPending}
-                          onClick={() => handleDelete(item.id)}
-                          className="bg-red-600 hover:bg-red-700"
-                        >
+                      <AlertDialogAction
+  disabled={isPending}
+  onClick={() => handleDelete(item.productId)} // ✅ yaha change
+  className="bg-red-600 hover:bg-red-700"
+>
                           {isPending ? (
                             <Loader2 className="animate-spin" size={16} />
                           ) : (

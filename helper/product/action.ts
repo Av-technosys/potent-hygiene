@@ -632,3 +632,15 @@ export async function saveProductAttributes(productId: string, payload: any) {
   return { success: true };
 }
 
+export async function getProductsCount() {
+  try {
+    const result = await db
+      .select({ count: sql<number>`count(*)` })
+      .from(product);
+
+    return result[0].count || 0;
+  } catch (error) {
+    console.error("getProductsCount failed:", error);
+    return 0;
+  }
+}

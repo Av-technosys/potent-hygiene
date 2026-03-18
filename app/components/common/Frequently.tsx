@@ -26,46 +26,141 @@ const faqData: Record<
   { question: string; answer: string }[]
 > = {
   "Product Usage": [
-    { question: "How often should I change my sanitary pad?", answer: "Change every 4–6 hours depending on flow." },
-    { question: "How do I insert and remove a menstrual cup?", answer: "Fold, insert gently, and pinch base to remove." },
-    { question: "Can I wear period panties overnight?", answer: "Yes, depending on absorbency level." },
-    { question: "How do I clean reusable menstrual products?", answer: "Rinse with cold water and wash with mild soap." },
-    { question: "Can I exercise while using menstrual products?", answer: "Yes, they are designed for daily activity." },
+    {
+      question: "How often should I change my sanitary pad?",
+      answer: "It is recommended to change your sanitary pad every 4–6 hours depending on your flow to maintain hygiene and prevent infections."
+    },
+    {
+      question: "How do I use a menstrual cup correctly?",
+      answer: "Fold the cup, insert it into the vagina, and ensure it opens fully. To remove, gently pinch the base and pull it out carefully."
+    },
+    {
+      question: "Can I wear panty liners every day?",
+      answer: "Yes, panty liners can be used daily for freshness, but make sure to change them regularly to maintain hygiene."
+    },
+    {
+      question: "Can I exercise while using menstrual products?",
+      answer: "Yes, all menstrual hygiene products are designed to support daily activities including workouts and sports."
+    },
+    {
+      question: "How do I clean reusable menstrual products?",
+      answer: "Wash with cold water first, then clean with mild soap. For menstrual cups, sterilize by boiling in water after each cycle."
+    },
   ],
+
   "Material & Safety": [
-    { question: "Are the materials safe for sensitive skin?", answer: "Yes, dermatologically tested." },
-    { question: "Do your products contain harmful chemicals?", answer: "No, we avoid harsh chemicals." },
-    { question: "Are products fragrance free?", answer: "Most variants are fragrance free." },
-    { question: "Is the material breathable?", answer: "Yes, designed for airflow and comfort." },
-    { question: "Are products tested before sale?", answer: "Yes, quality checks are done." },
+    {
+      question: "Are your products safe for sensitive skin?",
+      answer: "Yes, our products are dermatologically tested and made with skin-friendly materials suitable for sensitive skin."
+    },
+    {
+      question: "Do your products contain harmful chemicals?",
+      answer: "No, our products are free from harsh chemicals, toxins, and artificial irritants."
+    },
+    {
+      question: "Are the products fragrance-free?",
+      answer: "Most of our products are fragrance-free to minimize the risk of irritation and allergies."
+    },
+    {
+      question: "Is the material breathable?",
+      answer: "Yes, all products are designed with breathable layers to ensure comfort and reduce moisture buildup."
+    },
+    {
+      question: "Are your products eco-friendly?",
+      answer: "We offer eco-friendly and biodegradable options that are safe for both users and the environment."
+    },
   ],
+
   "Sizing & Variations": [
-    { question: "How do I choose the right size?", answer: "Check the size guide on product page." },
-    { question: "Do you offer multiple sizes?", answer: "Yes, different sizes are available." },
-    { question: "Are sizes suitable for teens?", answer: "Yes, smaller sizes are available." },
-    { question: "Can I switch sizes during cycle?", answer: "Yes, based on flow comfort." },
-    { question: "Do sizes vary by product type?", answer: "Yes, each product has its own sizing." },
+    {
+      question: "How do I choose the right size for my needs?",
+      answer: "You can select the size based on your flow type. Light, regular, and heavy flow options are available on product pages."
+    },
+    {
+      question: "Do you offer multiple size options?",
+      answer: "Yes, we provide different sizes and absorbency levels to suit individual preferences."
+    },
+    {
+      question: "Are your products suitable for teenagers?",
+      answer: "Yes, we offer smaller sizes and beginner-friendly options suitable for teens."
+    },
+    {
+      question: "Can I switch sizes during my cycle?",
+      answer: "Yes, you can switch between sizes depending on your flow during different days of your cycle."
+    },
+    {
+      question: "Do sizes differ between product types?",
+      answer: "Yes, each product type such as pads, cups, or liners has its own sizing guidelines."
+    },
   ],
+
   "Shipping & Delivery": [
-    { question: "How long does delivery take?", answer: "Usually 3–5 business days." },
-    { question: "Do you provide tracking?", answer: "Yes, tracking link is shared after shipping." },
-    { question: "Do you deliver nationwide?", answer: "Yes, delivery is available across locations." },
-    { question: "Is express shipping available?", answer: "Yes, in selected areas." },
-    { question: "What if delivery is delayed?", answer: "Contact support for help." },
+    {
+      question: "How long does delivery take?",
+      answer: "Orders are usually delivered within 3–5 business days depending on your location."
+    },
+    {
+      question: "Do you provide tracking details?",
+      answer: "Yes, once your order is shipped, you will receive a tracking link via SMS or email."
+    },
+    {
+      question: "Do you deliver across India?",
+      answer: "Yes, we currently deliver to most locations across India."
+    },
+    {
+      question: "Is express shipping available?",
+      answer: "Express shipping is available in selected cities and can be chosen at checkout."
+    },
+    {
+      question: "What should I do if my order is delayed?",
+      answer: "If your order is delayed, please check your tracking link or contact our support team for assistance."
+    },
   ],
+
   "Return & Replacement": [
-    { question: "Can I return opened products?", answer: "Opened hygiene products are non-returnable." },
-    { question: "How do I request a replacement?", answer: "Contact support with order details." },
-    { question: "What is return time period?", answer: "Returns allowed within policy period." },
-    { question: "Do I pay return shipping?", answer: "Depends on return reason." },
-    { question: "How long refund takes?", answer: "Refunds processed within few business days." },
+    {
+      question: "Can I return a used product?",
+      answer: "For hygiene reasons, used or opened products cannot be returned."
+    },
+    {
+      question: "How do I request a return or replacement?",
+      answer: "You can contact our support team within 48 hours of delivery with your order details."
+    },
+    {
+      question: "What is the return policy duration?",
+      answer: "Returns must be requested within the allowed return window mentioned in our policy."
+    },
+    {
+      question: "Do I have to pay for return shipping?",
+      answer: "Return shipping charges depend on the reason for the return."
+    },
+    {
+      question: "How long does it take to get a refund?",
+      answer: "Refunds are processed within 6–8 business days after approval."
+    },
   ],
+
   "Subscription and Offers": [
-    { question: "Do you offer subscription discounts?", answer: "Yes, subscribers get offers." },
-    { question: "Can I cancel anytime?", answer: "Yes, subscription can be cancelled anytime." },
-    { question: "Are offers auto applied?", answer: "Yes, eligible offers apply automatically." },
-    { question: "Do subscribers get early access?", answer: "Yes, sometimes early access is given." },
-    { question: "Can I pause subscription?", answer: "Yes, pause option is available." },
+    {
+      question: "Do you offer subscription discounts?",
+      answer: "Yes, customers who subscribe can enjoy exclusive discounts and offers."
+    },
+    {
+      question: "Can I cancel my subscription anytime?",
+      answer: "Yes, you can cancel your subscription anytime without any extra charges."
+    },
+    {
+      question: "Are offers automatically applied?",
+      answer: "Yes, eligible discounts and offers are automatically applied during checkout."
+    },
+    {
+      question: "Do subscribers get early access to products?",
+      answer: "Yes, subscribers may receive early access to new launches and special deals."
+    },
+    {
+      question: "Can I pause or reschedule my subscription?",
+      answer: "Yes, you can pause or reschedule your subscription from your account dashboard."
+    },
   ],
 };
 
@@ -74,7 +169,7 @@ const Frequently = () => {
 
   return (
     <section className="w-full bg-white py-12 sm:py-14">
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8">
 
         
         <div className="text-center space-y-3">

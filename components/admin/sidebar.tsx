@@ -18,7 +18,7 @@ import {
 
 const navItems = [
   { label: "Dashboard", href: "/admin", icon: LayoutGrid },
-  { label: "blog", href: "/admin/blog", icon: LayoutGrid },
+  { label: "Blog", href: "/admin/blog", icon: LayoutGrid },
   
   { label: "Product", href: "/admin/product", icon: Box },
   { label: "Category", href: "/admin/category", icon: List },

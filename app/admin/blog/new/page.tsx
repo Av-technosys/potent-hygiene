@@ -9,6 +9,7 @@ import { Label } from "@/components/ui/label";
 import { Loader2, Upload, User, Tag } from "lucide-react"; 
 import { createBlog } from "@/helper/blog/action";
 import { useRouter } from "next/navigation";
+import RichTextEditor from "@/components/ui/rich-text-editor";
 
 export default function BlogForm() {
   const router = useRouter();
@@ -165,16 +166,13 @@ export default function BlogForm() {
             />
           </div>
 
-          <div className="space-y-2">
-            <Label className="font-medium">Main Blog Content</Label>
-            <Textarea 
-              className="min-h-75 leading-relaxed" 
-              placeholder="Start writing your masterpiece here..."
-              value={formData.data} 
-              onChange={(e) => setFormData({...formData, data: e.target.value})} 
-              required 
-            />
-          </div>
+        <div className="space-y-2">
+  <Label className="font-medium">Main Blog Content</Label>
+  <RichTextEditor
+    value={formData.data}
+    onChange={(val) => setFormData({ ...formData, data: val })}
+  />
+</div>
 
           <Button type="submit" className="w-full bg-[#2D5A5D] hover:bg-[#234749] h-14 text-lg font-medium shadow-lg" disabled={loading}>
             {loading ? <Loader2 className="animate-spin mr-2" /> : "Publish Blog Post"}
