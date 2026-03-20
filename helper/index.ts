@@ -18,3 +18,5 @@ export {
   updateOrderStatus,
   createOrder,
 } from "./order/action";
+
+export {getAddresses,getUserId} from "./user/action";

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
 
 export default function CategoryProducts({ products }: any) {
   const router = useRouter();
@@ -48,8 +49,8 @@ export default function CategoryProducts({ products }: any) {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
-
-    router.push("/cart");
+    window.dispatchEvent(new Event("cartUpdated"));
+    toast.success("Product added to cart successfully.");
   };
 
   return (

@@ -361,7 +361,7 @@ export const blog = pgTable("blog", {
 
 export const address = pgTable("address", {
   id: serial("id").primaryKey(),
-
+  userId: uuid("user_id").references(() => users.id).notNull(),
   fullName: varchar("full_name"),
   phone: varchar("phone"),
   email: varchar("email"),
@@ -620,6 +620,6 @@ export const payment = pgTable("payment", {
 
   paymentAmount: integer("payment_amount"),
   paymentCurrency: varchar("payment_currency"),
-
+  // paymentGatewayOrderId: varchar("payment_gateway_order_id"),
   createdAt: timestamp("created_at").defaultNow(),
 });

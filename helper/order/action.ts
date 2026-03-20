@@ -94,6 +94,123 @@ export async function updateOrderStatus(id: string, status: string | any) {
   await changeOrderStatus(id, status);
   revalidatePath("/admin/order");
 }
+// export async function createOrder({
+//   items,
+//   userId,
+//   fixedAmount,
+//   address,
+//   razorpayPaymentId,
+//   razorpayOrderId,
+// }: {
+//   items: { productVariantId: string; quantity: number }[];
+//   userId: string;
+//   fixedAmount: number;
+//   address: any;
+//   razorpayPaymentId: string;
+//   razorpayOrderId: string;
+// }) {
+//   try {
+//     if (!items || items.length === 0) {
+//       throw new Error("Order items are required");
+//     }
+
+//     const productIds = items.map((i) => (i as any).productVariantId || (i as any).productId);
+
+//     const products = await db
+//       .select()
+//       .from(productVariant)
+//       .where(inArray(productVariant.id, productIds));
+
+//     if (products.length !== items.length) {
+//       throw new Error("Some products not found");
+//     }
+
+//     const productMap = new Map(products.map((p) => [p.id, p]));
+
+
+//     const safeAmount = Math.round(fixedAmount);
+
+
+//     const result = await db.transaction(async (tx) => {
+//       const insertedOrder = await tx
+//         .insert(order)
+//         .values({
+//           userId,
+//           status: "paid",
+//           totalAmountPaid: safeAmount,
+//           addressLine1: address.addressLine1,
+//           addressLine2: address.addressLine2,
+//           city: address.city,
+//           state: address.state,
+//           pincode: address.pincode,
+//         })
+//         .returning({ id: order.id });
+
+//       const orderId = insertedOrder[0].id;
+
+
+//       const orderItemsToInsert = items.map((item) => {
+//         const variantId = (item as any).productVariantId || (item as any).productId;
+//         const p = productMap.get(variantId);
+
+//         if (!p || !p.name || !p.slug || p.basePrice == null) {
+//           throw new Error("Invalid product data");
+//         }
+
+//         return {
+//           orderId,
+//           productVariantId: p.id,
+//           quantity: item.quantity,
+//           productName: p.name,
+//           productSlug: p.slug,
+//           productImage: p.bannerImage ?? null,
+//           productSKU: p.sku ?? null,
+//           productPrice: p.basePrice,
+//         };
+//       });
+
+//       await Promise.all([
+//         tx.insert(orderItem).values(orderItemsToInsert),
+//         tx.insert(payment).values({
+//           orderId,
+//           paymentId: razorpayPaymentId,
+//           paymentStatus: "success",
+//           paymentMethod: "razorpay",
+//           paymentAmount: safeAmount,
+//           paymentCurrency: "INR",
+//         }),
+//       ]);
+
+//       return { orderId };
+//     });
+//     const cartRes = await db
+//       .select()
+//       .from(cart)
+//       .where(eq(cart.userId, userId))
+//       .limit(1);
+
+//     if (cartRes.length > 0) {
+//       await db.delete(cartItem)
+//         .where(eq(cartItem.cartId, cartRes[0].id));
+
+//       await db.delete(cart)
+//         .where(eq(cart.id, cartRes[0].id));
+//     }
+//     return {
+//       success: true,
+//       orderId: result.orderId,
+//     };
+
+//   } catch (error) {
+//     console.error("Order creation failed:", error);
+//     return {
+//       success: false,
+//       message: "Failed to create order",
+//     };
+//   }
+// }
+
+
 export async function createOrder({
   items,
   userId,
@@ -102,7 +219,7 @@ export async function createOrder({
   razorpayPaymentId,
   razorpayOrderId,
 }: {
-  items: { productVariantId: string; quantity: number }[];
+  items:any;
   userId: string;
   fixedAmount: number;
   address: any;
@@ -114,7 +231,11 @@ export async function createOrder({
       throw new Error("Order items are required");
     }
 
-    const productIds = items.map((i) => (i as any).productVariantId || (i as any).productId);
+    const productIds = items.map(
+      (i:any) => (i as any).id || (i as any).productId,
+    );
+
+    
 
     const products = await db
       .select()
@@ -130,7 +251,6 @@ export async function createOrder({
 
     const safeAmount = Math.round(fixedAmount);
 
-
     const result = await db.transaction(async (tx) => {
       const insertedOrder = await tx
         .insert(order)
@@ -138,8 +258,8 @@ export async function createOrder({
           userId,
           status: "paid",
           totalAmountPaid: safeAmount,
-          addressLine1: address.addressLine1,
-          addressLine2: address.addressLine2,
+          addressLine1: address.street,
+          addressLine2: address.locality,
           city: address.city,
           state: address.state,
           pincode: address.pincode,
@@ -148,9 +268,10 @@ export async function createOrder({
 
       const orderId = insertedOrder[0].id;
 
-
-      const orderItemsToInsert = items.map((item) => {
-        const variantId = (item as any).productVariantId || (item as any).productId;
+      const orderItemsToInsert = items.map((item:any) => {
+        // const variantId =
+        //   (item as any).id || (item as any).productId;
+        const variantId = item.id; 
         const p = productMap.get(variantId);
 
         if (!p || !p.name || !p.slug || p.basePrice == null) {
@@ -178,29 +299,29 @@ export async function createOrder({
           paymentMethod: "razorpay",
           paymentAmount: safeAmount,
           paymentCurrency: "INR",
+          //  paymentGatewayOrderId: razorpayOrderId,
         }),
       ]);
 
       return { orderId };
     });
-    const cartRes = await db
-      .select()
-      .from(cart)
-      .where(eq(cart.userId, userId))
-      .limit(1);
 
-    if (cartRes.length > 0) {
-      await db.delete(cartItem)
-        .where(eq(cartItem.cartId, cartRes[0].id));
+    // This part is commented out because the cart is not used yet , we use localstorage for manage cart
 
-      await db.delete(cart)
-        .where(eq(cart.id, cartRes[0].id));
-    }
+    // const cartRes = await db.query.cart.findFirst({
+    //   where: eq(cart.userId, userId),
+    // });
+
+    // if (cartRes) {
+    //   await db.delete(cartItem).where(eq(cartItem.cartId, cartRes.id));
+
+    //   await db.delete(cart).where(eq(cart.id, cartRes.id));
+    // }
+
     return {
       success: true,
       orderId: result.orderId,
     };
-
   } catch (error) {
     console.error("Order creation failed:", error);
     return {
