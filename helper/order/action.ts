@@ -339,7 +339,20 @@ export async function getOrdersByUserId(userId: string) {
     .where(eq(order.userId, userId))
     .orderBy(desc(order.createdAt));
 
-  return orders;
+  const orderData = await Promise.all(
+    orders.map(async (order) => {
+      const items = await db
+        .select()
+        .from(orderItem)
+        .where(eq(orderItem.orderId, order.id));
+      return {
+        ...order,
+        order_items: items,
+      };
+    }),
+  )
+
+  return orderData;
 }
 
 
