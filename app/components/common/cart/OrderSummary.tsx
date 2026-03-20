@@ -15,7 +15,7 @@ export function OrderSummary() {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]")
 
     const subtotal = cart.reduce(
-      (acc:any,item:any)=> acc + item.price * item.quantity,
+      (acc:any,item:any)=> acc + item.basePrice * item.quantity,
       0
     )
 
@@ -88,7 +88,7 @@ export function OrderSummary() {
         onClick={()=>router.push("/checkout")}
         className="h-14 w-full rounded-xl bg-[#168BA0] text-lg font-bold"
       >
-        Continue
+        Checkout
       </Button>
 
       <div className="flex items-center justify-center gap-2 text-[10px] text-gray-400 mt-3">

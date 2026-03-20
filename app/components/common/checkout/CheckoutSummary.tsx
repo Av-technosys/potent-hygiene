@@ -1,68 +1,131 @@
-// components/checkout/CheckoutSummary.tsx
-import Image from "next/image";
-import { Button } from "@/components/ui/button";
+"use client";
+
 import { ShieldCheck } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { initiateRazorpayPayment } from "@/lib/razorpay";
+import { toast } from "sonner";
 
-export function CheckoutSummary() {
+export function CheckoutSummary({ selected, address, userId }: any) {
+  const [cart, setCart] = useState<any[]>([]);
+  const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  const filteredAddress = address.filter((item: any) => item.id === selected);
+
+  useEffect(() => {
+    const stored = localStorage.getItem("cart");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setCart(parsed);
+      calculateTotal(parsed);
+    }
+  }, []);
+
+  const calculateTotal = (cartData: any[]) => {
+    const subtotal = cartData.reduce(
+      (acc: any, item: any) => acc + item.basePrice * item.quantity,
+      0,
+    );
+    setTotal(subtotal);
+  };
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      const updated = localStorage.getItem("cart");
+      if (updated) {
+        const parsed = JSON.parse(updated);
+        setCart(parsed);
+        calculateTotal(parsed);
+      }
+    };
+
+    window.addEventListener("cartUpdated", handleUpdate);
+
+    return () => {
+      window.removeEventListener("cartUpdated", handleUpdate);
+    };
+  }, []);
+
+  const gst = total * 0.18;
+  const shipping = total > 0 ? 50 : 0;
+  const final = total + gst + shipping;
+
+  const handlePayment = async () => {
+    try {
+      setLoading(true);
+
+      if (!selected) {
+        toast.error("Please select an address");
+        return;
+      }
+
+      const res: any = await initiateRazorpayPayment({
+        amount: final,
+        name: "POTENT HYGIENE",
+        description: "Order Payment",
+        items: cart,
+        userId,
+        address: filteredAddress[0],
+      });
+
+      toast.success("Payment Successful 🎉");
+
+      localStorage.removeItem("cart");
+      setCart([]);
+
+      router.push(`/order-confirmation/${res?.orderId}`);
+    } catch (err) {
+      toast.error("Payment Failed ❌");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-      <h2 className="text-lg font-semibold text-gray-900 mb-6">Order Summary</h2>
+    <div className="rounded-md border bg-white p-6 shadow-sm">
+      <h2 className="mb-6 text-xl font-bold text-[#333333]">Order Summary</h2>
 
-      {/* Product Mini Preview */}
-      <div className="flex gap-4 mb-6">
-        <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-gray-50 border">
-          <Image src="/product3.png" alt="Product" fill className="object-cover" />
-        </div>
-        <div className="flex flex-col justify-center">
-          <h3 className="text-[13px] font-bold text-gray-800 leading-tight">
-            Organic Cotton Sanitary Pads - Heavy Flow
-          </h3>
-          <p className="text-[11px] text-gray-400 mt-1 uppercase">QTY: 1</p>
-          <p className="text-sm font-bold text-[#188B9E] mt-0.5">₹ 299</p>
-        </div>
-      </div>
-
-      {/* Coupon Code */}
-      <div className="mb-8">
-        <label className="block text-sm font-bold text-gray-700 mb-2">Apply Coupons Code</label>
-        <div className="flex gap-2">
-          <input 
-            type="text" 
-            placeholder="Enter Code" 
-            className="flex-1 rounded-md border border-gray-200 px-4 py-2 text-sm focus:outline-none focus:border-[#188B9E]" 
-          />
-          <Button className="bg-[#188B9E] hover:bg-[#146e71] text-white px-6 font-bold">Apply</Button>
-        </div>
-      </div>
-
-      {/* Pricing Details */}
-      <div className="space-y-3 border-b border-dashed pb-6">
-        <div className="flex justify-between text-sm text-gray-500">
+      <div className="space-y-4 border-b pb-6">
+        <div className="flex justify-between text-sm text-[#666666]">
           <span>Subtotal</span>
-          <span className="font-medium text-gray-800">₹299.00</span>
+          <span className="font-bold text-[#333333]">₹{total.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between text-sm text-gray-500">
+
+        <div className="flex justify-between text-sm text-[#666666]">
           <span>GST (18%)</span>
-          <span className="font-medium text-gray-800">₹53.82</span>
+          <span className="font-bold text-[#333333]">₹{gst.toFixed(2)}</span>
         </div>
-        <div className="flex justify-between text-sm text-gray-500">
+
+        <div className="flex justify-between text-sm text-[#666666]">
           <span>Shipping</span>
-          <span className="font-medium text-gray-800">₹50.00</span>
+          <span className="font-bold text-[#333333]">
+            ₹{shipping.toFixed(2)}
+          </span>
         </div>
       </div>
 
-      {/* Total */}
-      <div className="mt-6 flex items-center justify-between mb-8">
-        <span className="text-lg font-bold text-gray-900">Total</span>
-        <span className="text-2xl font-bold text-gray-900">₹402.82</span>
+      <div className="py-6">
+        <div className="flex justify-between items-center">
+          <span className="text-lg font-bold text-[#333333]">Total</span>
+
+          <span className="text-2xl font-black text-[#333333]">
+            ₹{final.toFixed(2)}
+          </span>
+        </div>
       </div>
 
-      {/* Action Button */}
-      <Button className="w-full bg-[#188B9E] hover:bg-[#146e71] py-7 text-lg font-bold rounded-xl mb-4">
-        Continue
+      <Button
+        onClick={handlePayment}
+        disabled={loading}
+        className="h-14 w-full rounded-xl bg-[#168BA0] text-lg font-bold"
+      >
+        {loading ? "Processing..." : `Pay ₹${final}`}
       </Button>
 
-      <div className="flex items-center justify-center gap-2 text-[11px]  font-medium">
+      <div className="flex items-center justify-center gap-2 text-[10px] text-gray-400 mt-3">
         <ShieldCheck className="h-4 w-4 text-[#00FF1E]" />
         Secure Checkout
       </div>

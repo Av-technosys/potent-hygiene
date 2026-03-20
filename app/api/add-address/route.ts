@@ -21,6 +21,7 @@ export async function POST(req: Request) {
       fullName: body.fullName,
       phone: body.phone,
       street: body.street,
+      userId: body.userId,
       locality: body.locality,
       city: body.city,
       state: body.state,

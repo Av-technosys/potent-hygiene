@@ -1,65 +1,108 @@
-// components/checkout/CheckoutForm.tsx
-export function CheckoutForm() {
-  const inputStyles = "w-full rounded-md border border-[#A8A8A8] px-4 py-3 text-sm focus:border-[#1A8D91] focus:outline-none transition-colors";
-  const labelStyles = "block text-sm font-bold text-[#333333] mb-2";
+"use client";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+import Link from "next/link";
+
+
+const CheckoutForm = ({ selected, setSelected, address, loading }: any) => {
+  if (loading) return <p>Loading...</p>;
 
   return (
-    <div className="space-y-10">
-      {/* Contact Information */}
-      <section>
-        <h2 className="text-xl font-semibold text-[#333333] mb-6">Contact Information</h2>
-        <div className="space-y-4">
-          <div>
-            <label className={labelStyles}>Full Name</label>
-            <input type="text" placeholder="Enter your full name" className={inputStyles} />
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelStyles}>Email Address</label>
-              <input type="email" placeholder="Enter your Email address" className={inputStyles} />
-            </div>
-            <div>
-              <label className={labelStyles}>Phone Number</label>
-              <input type="tel" placeholder="Enter your phone number" className={inputStyles} />
-            </div>
-          </div>
-        </div>
-      </section>
+    <>
+      <div className="col-span-3 md:col-span-2 space-y-4">
+        <div className="flex justify-between items-center">
+          <h2 className="text-lg font-semibold">Checkout</h2>
 
-      {/* Shipping Address */}
-      <section>
-        <h2 className="text-xl font-semibold text-[#333333] mb-6">Shipping Address</h2>
-        <div className="space-y-4">
-          <div>
-            <label className={labelStyles}>House/Apartment Address</label>
-            <input type="text" placeholder="House number, Building name" className={inputStyles} />
-          </div>
-          <div>
-            <label className={labelStyles}>Area/Street/Locality</label>
-            <input type="text" placeholder="Area, Street, Locality, Village" className={inputStyles} />
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelStyles}>City</label>
-              <input type="text" placeholder="Enter your city" className={inputStyles} />
-            </div>
-            <div>
-              <label className={labelStyles}>State</label>
-              <input type="text" placeholder="Enter your State" className={inputStyles} />
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div>
-              <label className={labelStyles}>Pincode</label>
-              <input type="text" placeholder="Enter Pincode" className={inputStyles} />
-            </div>
-            <div>
-              <label className={labelStyles}>Country</label>
-              <input type="text" placeholder="Enter your Country" className={inputStyles} />
-            </div>
-          </div>
+          <Link href="/dashboard/address" className="text-sm">
+            + Add New Address
+          </Link>
         </div>
-      </section>
-    </div>
+
+        <h3 className="text-sm font-semibold text-gray-700">
+          Shipping Address
+        </h3>
+
+        <RadioGroup
+          value={selected ?? ""}
+          onValueChange={setSelected}
+          className="space-y-3"
+        >
+          {loading ? (
+            [...Array(3)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardContent className="p-4">
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
+                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
+                </CardContent>
+              </Card>
+            ))
+          ) : address.length > 0 ? (
+            address.map((item: any) => {
+              const isActive = selected === item.id;
+
+              return (
+                <Card
+                  key={item.id}
+                  className={`transition border cursor-pointer
+                ${isActive ? "border-blue-500 bg-blue-50" : "border-gray-200"}`}
+                >
+                  <CardContent className="p-4 flex gap-3 items-start justify-between">
+                    <div className="w-full flex gap-3 items-start">
+                      <RadioGroupItem
+                        value={item.id}
+                        id={item.id}
+                        className="mt-1"
+                      />
+
+                      <Label
+                        htmlFor={item.id}
+                        className="flex flex-col items-start gap-1 cursor-pointer w-full"
+                      >
+                        <div className="flex items-center gap-2">
+                          <p className="font-semibold text-gray-900">
+                            {item.street}
+                          </p>
+
+                          {item.isDefault && (
+                            <span className="text-xs font-medium bg-green-100 text-green-700 px-2 py-0.5 rounded-full">
+                              Default
+                            </span>
+                          )}
+
+                          {!item.isDefault && (
+                            <span className="text-xs font-medium bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                              Saved
+                            </span>
+                          )}
+                        </div>
+
+                        <p className="text-sm text-gray-600">{item.locality}</p>
+
+                        <p className="text-sm text-gray-500">
+                          {item.city}, {item.state},{item.pincode}
+                        </p>
+                      </Label>
+                    </div>
+
+                    <Button variant="link" size="sm">
+                      Edit
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })
+          ) : (
+            <div>No address found..</div>
+          )}
+        </RadioGroup>
+      </div>
+    </>
   );
-}
+};
+
+export default CheckoutForm;

@@ -58,7 +58,8 @@ export function BestsellingProducts(){
 
   const addToCart = (product:any)=>{
 
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]")
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    console.log("cartttt",cart)
 
     const existing = cart.find((item:any)=>item.id === product.id)
 

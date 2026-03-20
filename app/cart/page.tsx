@@ -1,3 +1,4 @@
+
 import { Navbar } from "@/app/components/common/Navbar";
 // 
 import { CartItems } from "../components/common/cart/CartItems";
@@ -7,7 +8,10 @@ import RelatedProducts from "../components/common/Product-detail/alsolike";
 import Footer from "../components/common/Footer";
 
 
+
+
 export default function CartPage() {
+
   return (<>
     <div className="min-h-screen bg-[#FDFCF9]">
       <Navbar />
@@ -17,7 +21,7 @@ export default function CartPage() {
             <CartItems />
           </div>
           <div className="lg:col-span-4 lg:sticky lg:top-49">
-            <OrderSummary />
+            <OrderSummary   />
           </div>
         </div>
             <RelatedProducts />
