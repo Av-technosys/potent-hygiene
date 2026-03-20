@@ -20,7 +20,6 @@ export default async function Page({ params }: any) {
       const { slug } = await params;   // ✅ important fix
 
   const product = await getFullProduct(slug);
-  console.log( "products", product);
 
      
 if (!product) {

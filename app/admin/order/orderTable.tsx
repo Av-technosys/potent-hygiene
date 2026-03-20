@@ -24,6 +24,7 @@ interface OrderTableProps {
 
 const ORDER_STATUS = [
   { value: "pending", label: "Pending" },
+  { value: "paid", label: "Paid" },
   { value: "completed", label: "Completed" },
   { value: "cancelled", label: "Cancelled" },
   { value: "failed", label: "Failed" },
