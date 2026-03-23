@@ -8,6 +8,20 @@
       "when": 1773986585311,
       "tag": "0000_small_black_panther",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774246647497,
+      "tag": "0001_high_the_initiative",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1774246960062,
+      "tag": "0002_odd_onslaught",
+      "breakpoints": true
     }
   ]
 }
