@@ -9,7 +9,7 @@
 //   integer,
 //   index,
 //   primaryKey
-       
+
 // } from "drizzle-orm/pg-core";
 // import {} from "drizzle-orm/pg-core";
 
@@ -452,8 +452,8 @@ export const productVariant = pgTable(
 export const productCategory = pgTable(
   "product_category",
   {
-    productId: uuid("product_id").references(() => product.id),
-    categoryId: uuid("category_id").references(() => category.id),
+    productId: uuid("product_id").notNull().references(() => product.id),
+    categoryId: uuid("category_id").notNull().references(() => category.id),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.productId, table.categoryId] }),
@@ -527,8 +527,8 @@ export const subscriptionPlans = pgTable("subscription_plans", {
 export const productVariantSubscriptionPlan = pgTable(
   "product_variant_subscription_plan",
   {
-    productVariantId: uuid("product_variant_id").references(() => productVariant.id),
-    subscriptionPlanId: integer("subscription_plan_id").references(() => subscriptionPlans.id),
+    productVariantId: uuid("product_variant_id").notNull().references(() => productVariant.id),
+    subscriptionPlanId: integer("subscription_plan_id").notNull().references(() => subscriptionPlans.id),
     discountPercentage: integer("discount_percentage").default(0),
   },
   (table) => ({
@@ -565,6 +565,25 @@ export const cartItem = pgTable("cart_item", {
   productVariantId: uuid("product_variant_id").references(() => productVariant.id),
   subscriptionPlanId: integer("subscription_plan_id").references(() => subscriptionPlans.id),
   quantity: integer("quantity").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// ================= wishlist =================
+
+
+export const wishlist = pgTable("wishlist", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+
+// ================= wishlist ITEMS =================
+
+export const wishlistItem = pgTable("wishlist_item", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  wishlistId: uuid("wishlist_id").references(() => wishlist.id),
+  productVariantId: uuid("product_variant_id").references(() => productVariant.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
