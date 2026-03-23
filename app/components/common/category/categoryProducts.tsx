@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
@@ -6,6 +7,9 @@ import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+
+// ✅ IMPORT HELPER
+import { addToCart as addToCartAction } from "@/store/cartActions";
 
 export default function CategoryProducts({ products }: any) {
   const router = useRouter();
@@ -37,19 +41,18 @@ export default function CategoryProducts({ products }: any) {
     setWishlist(updated.map((p: any) => p.id));
   };
 
-  const addToCart = (product: any) => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+  // ✅ FIXED ADD TO CART
+  const addToCart = async (product: any) => {
+    await addToCartAction({
+      productVariantId: product.id, // ✅ IMPORTANT
+      sku: "default", // or derive if needed
+      slug: product.slug || "",
+      title: product.name,
+      image: product.bannerImage || "/product.png",
+      price: product.basePrice || 0,
+      originalPrice: product.strikethroughPrice,
+    });
 
-    const existing = cart.find((item: any) => item.id === product.id);
-
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      cart.push({ ...product, quantity: 1 });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
     toast.success("Product added to cart successfully.");
   };
 
@@ -84,8 +87,9 @@ export default function CategoryProducts({ products }: any) {
           )}
 
           {/* Image */}
-          <div className="relative aspect-square w-full overflow-hidden rounded-md bg-gray-50"
-              onClick={() => router.push(`/product-detail/${value.slug}`)}
+          <div
+            className="relative aspect-square w-full overflow-hidden rounded-md bg-gray-50"
+            onClick={() => router.push(`/product-detail/${value.slug}`)}
           >
             <Image
               src={value.bannerImage || "/product.png"}

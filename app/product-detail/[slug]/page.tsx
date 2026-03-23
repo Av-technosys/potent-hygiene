@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import Breadcrumb from '../../components/common/Product-detail/breadcrumb'
 import { Navbar } from '../../components/common/Navbar'
@@ -20,7 +21,6 @@ export default async function Page({ params }: any) {
       const { slug } = await params;   // ✅ important fix
 
   const product = await getFullProduct(slug);
-  console.log( "products", product);
 
      
 if (!product) {

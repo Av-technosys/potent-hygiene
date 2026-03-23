@@ -20,3 +20,23 @@ export {
 } from "./order/action";
 
 export {getAddresses,getUserId} from "./user/action";
+
+//cart
+export {
+  addToCart,
+  removeFromCart,
+  syncCartWithDatabase,
+  updateCartItemQuantity,
+  clearCart ,
+} from "./cart/action";
+
+//auth
+export {
+  signIn,
+  signUp,
+  refreshToken,
+  verifyOtp,
+  confirmForgotPassword,
+  resendOtp,
+  forgotPassword
+} from "./auth/action"

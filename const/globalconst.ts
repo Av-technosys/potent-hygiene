@@ -237,3 +237,5 @@ export const pageSize =  4
 // export const tempUserId = userId
 export const canResendOTPInterval = 10; // in seconds
 export const isUUID = (identifier: string) => /^[0-9a-fA-F-]{36}$/.test(identifier);
+
+export const tempUserId = "63089f34-5276-481f-bc92-f75ff1ad24a5";

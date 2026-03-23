@@ -1,69 +1,97 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
-
 import Image from "next/image";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "@/helper";
+import { toast } from "sonner";
 
 const Page = () => {
   const router = useRouter();
-  const [formData, setFormData] = useState({ email: "", password: "" });
-  const [errors, setErrors] = useState({ email: "", password: "", general: "" });
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [errors, setErrors] = useState({
+    email: "",
+    password: "",
+    general: "",
+  });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-    if (errors[name as keyof typeof errors]) {
-      setErrors({ ...errors, [name]: "" });
-    }
-    if (errors.general) {
-      setErrors({ ...errors, general: "" });
-    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    setErrors((prev) => ({
+      ...prev,
+      [name]: "",
+      general: "",
+    }));
   };
 
   const validate = () => {
     let valid = true;
-    const newErrors = { email: "", password: "", general: "" };
+
+    const newErrors = {
+      email: "",
+      password: "",
+      general: "",
+    };
+
     if (!formData.email.trim()) {
       newErrors.email = "Email is required";
       valid = false;
     }
+
     if (!formData.password) {
       newErrors.password = "Password is required";
       valid = false;
     }
+
     setErrors(newErrors);
     return valid;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!validate()) return;
 
     try {
-      const res = await fetch("/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      await signIn({
+        email: formData.email,
+        password: formData.password,
       });
-      const data = await res.json();
-      if (res.ok) {
-        // store token or user info if returned
-        localStorage.setItem("userEmail", formData.email);
-        router.push("/dashboard");
-      } else {
-        setErrors({ ...errors, general: data.error || "Login failed" });
-      }
-    } catch (err) {
-      console.error("Login error", err);
-      setErrors({ ...errors, general: "Network error" });
+
+      // 🔥 STORE TOKENS (if you really want)
+      // if (res?.data) {
+      //   localStorage.setItem("accessToken", res.data.accessToken);
+      //   localStorage.setItem("idToken", res.data.idToken);
+      //   localStorage.setItem("refreshToken", res.data.refreshToken);
+      // }
+
+      toast.success("Login successful 🎉");
+
+      router.push("/dashboard");
+    } catch (err: any) {
+      toast.error(err.message || "Login failed ❌");
+
+      setErrors((prev) => ({
+        ...prev,
+        general: err.message || "Login failed",
+      }));
     }
   };
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
-
-      
       <Image
         src="/loginbg.png"
         alt="background"
@@ -72,37 +100,33 @@ const Page = () => {
         className="object-cover -z-10"
       />
 
-      
       <div className="w-full md:w-1/2 flex items-center justify-center p-4">
-<div className="bg-white shadow-lg rounded-2xl w-full max-w-sm md:max-w-lg lg:max-w-md p-4">
-
-        <div className="flex justify-center mb-4 mt-5">
-  <Image
-    src="/logo.svg"   
-    alt="Potent logo"
-    width={90}
-    height={50}
-    className="object-contain"
-  />
-</div>
+        <div className="bg-white shadow-lg rounded-2xl w-full max-w-sm md:max-w-lg lg:max-w-md p-4">
+          <div className="flex justify-center mb-4 mt-5">
+            <Image
+              src="/logo.svg"
+              alt="Potent logo"
+              width={90}
+              height={50}
+              className="object-contain"
+            />
+          </div>
           <div className="flex justify-center mb-1">
-            
-<Image
-  src="/mobilelogin.png"
-  alt="background mobile"
-  fill
-  priority
-  className="object-cover -z-10 md:hidden"
-/>
+            <Image
+              src="/mobilelogin.png"
+              alt="background mobile"
+              fill
+              priority
+              className="object-cover -z-10 md:hidden"
+            />
 
-
-<Image
-  src="/loginbg.png"
-  alt="background desktop"
-  fill
-  priority
-  className="object-cover -z-10 hidden md:block"
-/>
+            <Image
+              src="/loginbg.png"
+              alt="background desktop"
+              fill
+              priority
+              className="object-cover -z-10 hidden md:block"
+            />
           </div>
 
           <h2 className="text-center text-2xl font-semibold text-[#168ba0] mb-2">
@@ -162,23 +186,17 @@ const Page = () => {
             </button>
           </form>
 
-         <button className="w-full border border-cyan-700 text-cyan-700 py-2 text-sm rounded-full mt-1 font-medium flex items-center justify-center gap-2 bg-white ">
-  
-  <Image
-    src="/google.svg"   
-    alt="google"
-    width={15}
-    height={15}
-  />
+          <button className="w-full border border-cyan-700 text-cyan-700 py-2 text-sm rounded-full mt-1 font-medium flex items-center justify-center gap-2 bg-white ">
+            <Image src="/google.svg" alt="google" width={15} height={15} />
 
-  <span>Sign up with Google</span>
-</button>
+            <span>Sign up with Google</span>
+          </button>
 
           <p className="text-center text-xs mt-4 mb-6">
             Don’t have an account?{" "}
-<Link href="/signup" className="underline cursor-pointer">
-  Register
-</Link>
+            <Link href="/signup" className="underline cursor-pointer">
+              Register
+            </Link>
           </p>
         </div>
       </div>

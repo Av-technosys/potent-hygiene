@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"; 
 
 import { useState, useMemo, useEffect } from "react";
@@ -12,6 +13,7 @@ import {
   IconPhone, IconShoppingBag, IconSquareRoundedX, IconUser, IconLayoutDashboard,
   IconHistory, IconStar, IconShieldLock, IconAddressBook
 } from "@tabler/icons-react";
+import { useCartStore } from "@/store/cartStore";
 
 const navLinks = [
   { name: "Home", href: "/", icon: <IconHome size={20} /> },
@@ -32,6 +34,10 @@ const dashboardLinks = [
 
 export function Navbar() {
 
+    // Get cart count from Zustand store
+  const totalItems = useCartStore((state) => state.totalItems());
+  const syncWithDatabase = useCartStore((state) => state.syncWithDatabase);
+
   const [open, setOpen] = useState(false); 
   const pathname = usePathname();
 
@@ -41,39 +47,35 @@ export function Navbar() {
   const [cartCount,setCartCount] = useState(0)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(()=>{
-
-    const loadData = ()=>{
-
-      const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]")
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]")
-
-      setWishlistCount(wishlist.length)
-      const totalCart = cart.reduce((acc:any,item:any)=>acc + (item.quantity || 1),0)
-      setCartCount(totalCart)
-
-    }
+  useEffect(() => {
+    const loadData = () => {
+      const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+      setWishlistCount(wishlist.length);
+    };
 
     const checkLogin = () => {
       const userEmail = localStorage.getItem("userEmail");
       setIsLoggedIn(!!userEmail);
     };
 
-    loadData()
-    checkLogin()
-    window.addEventListener("storage",loadData)
-    window.addEventListener("cartUpdated",loadData)
-    window.addEventListener("wishlistUpdated",loadData)
-    window.addEventListener("storage", checkLogin); // listen for login/logout changes
-
-    return ()=>{
-      window.removeEventListener("storage",loadData)
-      window.removeEventListener("cartUpdated",loadData)
-      window.removeEventListener("wishlistUpdated",loadData)
-      window.removeEventListener("storage", checkLogin);
+    loadData();
+    checkLogin();
+    
+    // Sync cart with database on mount if user is logged in
+    if (isLoggedIn) {
+      syncWithDatabase();
     }
+    
+    window.addEventListener("storage", loadData);
+    window.addEventListener("wishlistUpdated", loadData);
+    window.addEventListener("storage", checkLogin);
 
-  },[])
+    return () => {
+      window.removeEventListener("storage", loadData);
+      window.removeEventListener("wishlistUpdated", loadData);
+      window.removeEventListener("storage", checkLogin);
+    };
+  }, [isLoggedIn, syncWithDatabase]);
 
   return (
     <nav className="w-full border-b bg-white relative">
@@ -156,15 +158,15 @@ export function Navbar() {
             </Link>
           ))}
         </div>
-        <div className="flex items-center space-x-3 md:space-x-5 text-[#1A8D91]">
+          <div className="flex items-center space-x-3 md:space-x-5 text-[#1A8D91]">
+          {/* Cart with Zustand count */}
           <div className="relative">
             <Link href="/cart">
               <IconShoppingBag className="h-5 w-5 cursor-pointer" />
             </Link>
-
-            {cartCount > 0 && (
+            {totalItems > 0 && (
               <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-4 h-4 flex items-center justify-center rounded-full">
-                {cartCount}
+                {totalItems}
               </span>
             )}
           </div>

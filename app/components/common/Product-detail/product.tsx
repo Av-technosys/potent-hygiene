@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation"
 import { Star, Minus, Plus } from "lucide-react";
 import Image from "next/image";
+import { addToCart as addToCartAction } from "@/store/cartActions"; // Rename import
 
 export default function ProductDetailPage({ variants, product }: any) {
     const [quantity, setQuantity] = useState(1);
@@ -39,79 +40,23 @@ export default function ProductDetailPage({ variants, product }: any) {
 
 
     const productId = product.id
+  
+
     const addToCart = async () => {
-        // Update localStorage first (since CartItems.tsx purely reads from localStorage)
-        const currentCart = JSON.parse(localStorage.getItem("cart") || "[]");
-
-        let newItem;
-
-        if (isSubscribed) {
-            // Find the chosen subscription plan to get its correct price
-            const plans = [
-                { id: "1", label: "Monthly Subscription", price: 239 },
-                { id: "2", label: "Every 2 Months", price: 229 },
-                { id: "3", label: "Every 3 Months", price: 219 },
-            ];
-            const chosenPlan = plans.find(p => p.id === selectedPlan) || plans[0];
-
-            // Subscription Variant Structure
-            newItem = {
-                id: `${selectedVariant?.id || productId}_sub_${selectedPlan}`, 
-                title: `${variants?.[0]?.name || "Sanitary Pads"} - ${chosenPlan.label}`,
-                image: selectedVariant?.bannerImage || "/product.png",
-                price: chosenPlan.price,
-                quantity: quantity, 
-                size: selectedSize,
-                flow: selectedFlow,
-                subscriptionPlanId: selectedPlan,
-                isSubscription: true
-            };
-        } else {
-            // Normal Purchase
-            newItem = {
-                id: selectedVariant?.id || productId,
-                title: variants?.[0]?.name || "Sanitary Pads",
-                image: selectedVariant?.bannerImage || "/product.png",
-                price: selectedVariant?.basePrice || 0,
-                quantity: quantity,
-                size: selectedSize,
-                flow: selectedFlow,
-                subscriptionPlanId: null
-            };
-        }
-
-        // Check if item already exists
-        const existingIndex = currentCart.findIndex((item: any) => item.id === newItem.id);
-        if (existingIndex > -1) {
-            currentCart[existingIndex].quantity += quantity;
-        } else {
-            currentCart.push(newItem);
-        }
-
-        localStorage.setItem("cart", JSON.stringify(currentCart));
-        window.dispatchEvent(new Event("cartUpdated"));
-
-        // Optional: Try syncing with the backend if an API exists
-        try {
-            const userId = "557230dc-7792-43ce-bf4f-2efd3c48a95c"
-            fetch("/api/cart/add", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    userId,
-                    productVariantId: selectedVariant?.id,
-                    subscriptionPlanId: isSubscribed ? parseInt(selectedPlan) : null,
-                    quantity
-                })
-            }).catch(e => console.error("Database Cart Sync Error:", e));
-        } catch (e) {
-            console.error("Failed to sync with API");
-        }
-
-        // Redirect to cart regardless of backend status, using the local state
-        router.push("/cart");
+ 
+    await  addToCartAction({
+        productVariantId: selectedVariant?.id || productId,
+        sku: `${selectedSize}-${selectedFlow}`,
+        slug: product?.slug || "",
+        title: isSubscribed 
+            ? `${variants?.[0]?.name || "Sanitary Pads"} - ${selectedPlan === "1" ? "Monthly" : selectedPlan === "2" ? "Every 2 Months" : "Every 3 Months"}`
+            : variants?.[0]?.name || "Sanitary Pads",
+        image: selectedVariant?.bannerImage || "/product.png",
+        price: isSubscribed 
+            ? (selectedPlan === "1" ? 239 : selectedPlan === "2" ? 229 : 219)
+            : selectedVariant?.basePrice || 0,
+        originalPrice: selectedVariant?.strikethroughPrice,
+    })
     }
 
     const subscribeToCart = (e: React.MouseEvent) => {

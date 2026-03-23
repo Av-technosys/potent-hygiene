@@ -1,16 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
-
 import {
   Dialog,
   DialogContent,
   DialogTitle,
 } from "@/components/ui/dialog";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+import { confirmForgotPassword } from "@/helper";
 
 const Page = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,84 +21,86 @@ const Page = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  const [error, setError] = useState("");
   const [openPopup, setOpenPopup] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [email, setEmail] = useState("");
-  const router = useRouter();
 
-  useEffect(() => {
-    const resetEmail = localStorage.getItem("resetEmail");
-    if (!resetEmail) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // ✅ get from previous step
+  const email = searchParams.get("email");
+  const code = searchParams.get("code");
+
+  React.useEffect(() => {
+    if (!email || !code) {
       router.push("/reset-password-email");
-    } else {
-      setEmail(resetEmail);
     }
-  }, [router]);
+  }, [email, code, router]);
 
   const handleReset = async () => {
-    setError("");
     if (!password || !confirmPassword) {
-      setError("Both fields are required");
-      return;
-    }
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
-      return;
-    }
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+      toast.error("Both fields are required ❌");
       return;
     }
 
-    setLoading(true);
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match ❌");
+      return;
+    }
+
+    if (password.length < 6) {
+      toast.error("Password must be at least 6 characters ❌");
+      return;
+    }
+
     try {
-      const res = await fetch("/api/reset-password", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, confirmPassword }),
+      setLoading(true);
+
+      const toastId = toast.loading("Resetting password...");
+
+      // 🔥 MAIN API CALL
+      await confirmForgotPassword({
+        email: email!,
+        code: code!,
+        newPassword: password,
       });
-      const data = await res.json();
-      if (res.ok) {
-        localStorage.removeItem("resetEmail");
-        setOpenPopup(true);
-      } else {
-        setError(data.error || "Failed to reset password");
-      }
-    } catch (err) {
+
+      toast.success("Password reset successful 🎉", { id: toastId });
+
+      setOpenPopup(true);
+
+    } catch (err: any) {
       console.error("Error:", err);
-      setError("Network error. Please try again.");
+      toast.error(err.message || "Failed to reset password ❌");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-<div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
+    <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
 
-      
-     <Image
-       src="/mobilelogin.png"
-       alt="background mobile"
-       fill
-       priority
-       className="object-cover -z-10 md:hidden"
-     />
-     
-     
-     <Image
-       src="/loginbg.png"
-       alt="background desktop"
-       fill
-       priority
-       className="object-cover -z-10 hidden md:block"
-     />
+      {/* Background */}
+      <Image
+        src="/mobilelogin.png"
+        alt="background mobile"
+        fill
+        priority
+        className="object-cover -z-10 md:hidden"
+      />
 
-      
+      <Image
+        src="/loginbg.png"
+        alt="background desktop"
+        fill
+        priority
+        className="object-cover -z-10 hidden md:block"
+      />
+
       <div className="w-full md:w-1/2 flex items-center justify-center p-4">
-        <div className="bg-white shadow-lg rounded-2xl w-full max-w-sm md:max-w-lg lg:max-w-sm p-4">
+        <div className="bg-white shadow-lg rounded-2xl w-full max-w-sm p-4">
 
-    
+          {/* LOGO */}
           <div className="flex justify-center mb-1">
             <Image src="/logo.png" alt="logo" width={100} height={36} />
           </div>
@@ -111,14 +115,14 @@ const Page = () => {
 
           <div className="space-y-3">
 
-          
+            {/* Password */}
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none"
+                className="w-full border-b border-gray-400 px-1 py-2 text-sm outline-none"
               />
 
               <button
@@ -130,14 +134,14 @@ const Page = () => {
               </button>
             </div>
 
-           
+            {/* Confirm Password */}
             <div className="relative">
               <input
                 type={showConfirm ? "text" : "password"}
                 placeholder="Confirm Password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none"
+                className="w-full border-b border-gray-400 px-1 py-2 text-sm outline-none"
               />
 
               <button
@@ -149,15 +153,9 @@ const Page = () => {
               </button>
             </div>
 
-           
-            {error && (
-              <p className="text-red-500 text-xs">
-                {error}
-              </p>
-            )}
           </div>
 
-         
+          {/* Submit */}
           <button
             onClick={handleReset}
             disabled={loading}
@@ -168,45 +166,38 @@ const Page = () => {
         </div>
       </div>
 
-     
-<Dialog open={openPopup} onOpenChange={setOpenPopup}>
-  <DialogContent className="max-w-xs w-full rounded-2xl text-center px-4 py-6">
+      {/* SUCCESS POPUP */}
+      <Dialog open={openPopup} onOpenChange={setOpenPopup}>
+        <DialogContent className="max-w-xs w-full rounded-2xl text-center px-4 py-6">
 
-    
-    <DialogTitle className="sr-only">
-      Password Reset Successfully
-    </DialogTitle>
+          <DialogTitle className="sr-only">
+            Password Reset Successfully
+          </DialogTitle>
 
-   <div className="flex justify-center mb-2">
-  <Image
-    src="/tick.svg"   
-    alt="success"
-    width={80}
-    height={80}
-  />
-</div>
+          <div className="flex justify-center mb-2">
+            <Image src="/tick.svg" alt="success" width={80} height={80} />
+          </div>
 
-    <h3 className="text-cyan-700 font-semibold text-xl">
-      Password Reset Successfully
-    </h3>
+          <h3 className="text-cyan-700 font-semibold text-xl">
+            Password Reset Successfully
+          </h3>
 
-    <p className="text-sm text-gray-500 mt-2 leading-relaxed text-center">
-  Your password has been updated, you can <br />
-  now login with your new credentials
-</p>
+          <p className="text-sm text-gray-500 mt-2 text-center">
+            Your password has been updated, you can now login.
+          </p>
 
-           <Link href="/login">
-             <button
-      onClick={() => setOpenPopup(false)}
-      className="mt-4 w-full bg-cyan-700 text-white py-2 rounded-full text-sm"
-    >
-      Login
-    </button>
-    </Link>
+          <Link href="/login">
+            <button
+              onClick={() => setOpenPopup(false)}
+              className="mt-4 w-full bg-cyan-700 text-white py-2 rounded-full text-sm"
+            >
+              Login
+            </button>
+          </Link>
 
+        </DialogContent>
+      </Dialog>
 
-  </DialogContent>
-</Dialog>
     </div>
   );
 };
