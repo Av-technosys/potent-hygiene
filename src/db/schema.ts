@@ -569,6 +569,26 @@ export const cartItem = pgTable("cart_item", {
 });
 
 
+
+export const wishlist = pgTable("wishlist", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+
+// ================= wishlist ITEMS =================
+
+export const wishlistItem = pgTable("wishlist_item", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  wishlistId: uuid("wishlist_id").references(() => wishlist.id),
+  productVariantId: uuid("product_variant_id").references(() => productVariant.id),
+  subscriptionPlanId: integer("subscription_plan_id").references(() => subscriptionPlans.id),
+  quantity: integer("quantity").default(1),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+
 // ================= ORDER =================
 
 export const order = pgTable("order", {
