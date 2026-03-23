@@ -12,6 +12,7 @@ import {
   IconPhone, IconShoppingBag, IconSquareRoundedX, IconUser, IconLayoutDashboard,
   IconHistory, IconStar, IconShieldLock, IconAddressBook
 } from "@tabler/icons-react";
+import { getUserId, getUserWishlist } from "@/helper";
 
 const navLinks = [
   { name: "Home", href: "/", icon: <IconHome size={20} /> },
@@ -43,9 +44,11 @@ export function Navbar() {
 
   useEffect(()=>{
 
-    const loadData = ()=>{
+    const loadData = async()=>{
+      const useremail:any = localStorage.getItem("userEmail");
+      const userId:any = await getUserId(useremail);
 
-      const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]")
+      const wishlist = await getUserWishlist(userId);
       const cart = JSON.parse(localStorage.getItem("cart") || "[]")
 
       setWishlistCount(wishlist.length)

@@ -20,3 +20,5 @@ export {
 } from "./order/action";
 
 export {getAddresses,getUserId} from "./user/action";
+
+export {createWishlist,getUserWishlist,removeItemFromWishlist,addWishlistItemToCart} from "./wishlist/action";
