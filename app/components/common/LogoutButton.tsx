@@ -1,17 +1,15 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { logout } from "@/helper/auth/action";
+import { toast } from "sonner";
 
 export const LogoutButton: React.FC = () => {
-  const router = useRouter();
 
   const handleLogout = () => {
-    // Clear stored authentication data
-    localStorage.removeItem("userEmail");
-    localStorage.removeItem("resetEmail");
-    // any other tokens/cookies can be cleared here
-    router.push("/login");
+   logout()
+   toast.success("Logout SuccessFully")
+   window.location.href = "/login"; 
   };
 
   return (

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // stores/cartStore.ts
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
@@ -83,7 +84,7 @@ export const useCartStore = create<CartState>()(
         ),
     }),
     {
-      name: "yunanved-cart",
+      name: "potent-cart",
       storage: createJSONStorage(() => localStorage),
     }
   )

@@ -15,7 +15,6 @@ export async function POST(req: Request) {
 
   try {
     const result = await authSingIn({ email, password });
-
     if (!result?.accessToken) {
       return NextResponse.json(
         { message: "Invalid credentials" },
@@ -35,14 +34,13 @@ export async function POST(req: Request) {
       },
       { status: 200 }
     );
-
+    console.log("SETTING COOKIE:", result.accessToken?.slice(0, 20));
     response.cookies.set("accessToken", result.accessToken!, {
       httpOnly: true,
-      secure: true,
-      sameSite: "strict",
+      secure: false,
+      sameSite: "lax",
       path: "/",
     });
-
     return response;
 
   } catch (error: any) {

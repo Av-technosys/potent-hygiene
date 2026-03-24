@@ -78,7 +78,7 @@ const Page = () => {
       // }
 
       toast.success("Login successful 🎉");
-
+      router.refresh();
       router.push("/dashboard");
     } catch (err: any) {
       toast.error(err.message || "Login failed ❌");

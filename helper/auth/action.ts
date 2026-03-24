@@ -1,4 +1,3 @@
-"use server";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { BASE_AUTH_API_URL } from "@/env";
@@ -106,4 +105,10 @@ export async function logout() {
   return request("/logout", {
     method: "POST",
   });
+  
+}
+export async function session() {
+  return request('/session' ,{
+    method: "GET"
+  })
 }

@@ -4,7 +4,6 @@ import { tempUserId } from '@/const/globalconst';
 import { db } from '@/src/db';
 import { cart, cartItem, productVariant } from '@/src/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
-// import { getServerSession } from 'next-auth';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -28,7 +27,7 @@ export async function getCart() {
 
     // Fetch product details for each cart item
     const itemsWithDetails = await Promise.all(
-      cartItems.map(async (item:any) => {
+      cartItems.map(async (item: any) => {
         // Only fetch if productVariantId exists
         if (!item.productVariantId) {
           return {
@@ -44,22 +43,22 @@ export async function getCart() {
         }
 
         // Fetch product variant details
-     const variant = await db
-  .select()
-  .from(productVariant)
-  .where(eq(productVariant.id, item.productVariantId))
-  .then(r => r[0]);
+        const variant = await db
+          .select()
+          .from(productVariant)
+          .where(eq(productVariant.id, item.productVariantId))
+          .then(r => r[0]);
 
-return {
-  productVariantId: item.productVariantId,
-  quantity: item.quantity ?? 0,
-  title: variant?.name || 'Product',
-  image: variant?.bannerImage || '/product.png',
-  price: variant?.basePrice || 0,
-  originalPrice: variant?.strikethroughPrice,
-  slug: variant?.slug || '',
-  sku: item?.sku || ''
-};
+        return {
+          productVariantId: item.productVariantId,
+          quantity: item.quantity ?? 0,
+          title: variant?.name || 'Product',
+          image: variant?.bannerImage || '/product.png',
+          price: variant?.basePrice || 0,
+          originalPrice: variant?.strikethroughPrice,
+          slug: variant?.slug || '',
+          sku: item?.sku || ''
+        };
       })
     );
 
@@ -85,9 +84,9 @@ export async function addToCart(productVariantId: string, quantity: number = 1) 
       if (!existingCart) {
         const [newCart] = await tx
           .insert(cart)
-          .values({ 
+          .values({
             id: uuidv4(),
-            userId 
+            userId
           })
           .returning();
         existingCart = newCart;
@@ -115,13 +114,13 @@ export async function addToCart(productVariantId: string, quantity: number = 1) 
         const newQuantity = currentQuantity + quantity;
         // Update quantity
         await tx
-            .update(cartItem)
-            .set({ quantity: newQuantity })
-            .where(eq(cartItem.id, existingItem.id));
-    
-        
-        return { 
-          success: true, 
+          .update(cartItem)
+          .set({ quantity: newQuantity })
+          .where(eq(cartItem.id, existingItem.id));
+
+
+        return {
+          success: true,
           action: 'updated',
           quantity: newQuantity
         };
@@ -135,9 +134,9 @@ export async function addToCart(productVariantId: string, quantity: number = 1) 
             productVariantId,
             quantity
           });
-        
-        return { 
-          success: true, 
+
+        return {
+          success: true,
           action: 'added',
           quantity
         };
@@ -291,7 +290,7 @@ export async function clearCart() {
 
 export async function syncCartWithDatabase() {
   try {
-  
+
     const userId = tempUserId;
     const userCart = await db
       .select()
