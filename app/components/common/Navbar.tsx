@@ -31,6 +31,7 @@ import {
 } from "@tabler/icons-react";
 import { useCartStore } from "@/store/cartStore";
 import { session } from "@/helper/auth/action";
+import { getUserWishlist } from "@/helper";
 
 const navLinks = [
   { name: "Home", href: "/", icon: <IconHome size={20} /> },
@@ -78,6 +79,7 @@ export function Navbar() {
 
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const [cartCount,setCartCount] = useState(0)
 
   const isDashboard = useMemo(
     () => pathname.startsWith("/dashboard"),
@@ -88,13 +90,18 @@ export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const loadData = () => {
-      const raw = localStorage.getItem("wishlist");
 
-      const wishlist = JSON.parse(raw || "[]");
+    const loadData = async()=>{
+      const wishlist = await getUserWishlist();
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]")
 
-      setWishlistCount(wishlist.length);
-    };
+      setWishlistCount(wishlist.length)
+      const totalCart = cart.reduce((acc:any,item:any)=>acc + (item.quantity || 1),0)
+      setCartCount(totalCart)
+
+    }
+
+
 
     const checkSession = async () => {
       try {

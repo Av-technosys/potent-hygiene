@@ -1,10 +1,11 @@
 import { db } from "@/db";
 import { address } from "@/db/schema";
+import { getCurrentUser } from "@/helper/user/action";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-
+  const {userId} = await getCurrentUser()
   const body = await req.json();
 
   try {
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
       fullName: body.fullName,
       phone: body.phone,
       street: body.street,
-      userId: body.userId,
+      userId: userId,
       locality: body.locality,
       city: body.city,
       state: body.state,

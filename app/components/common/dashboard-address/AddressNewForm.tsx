@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,7 +7,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { getUserId } from "@/helper";
 
 export const AddressNewForm = ({ onCancel }: { onCancel: () => void }) => {
   const [form, setForm] = useState({
@@ -24,11 +24,9 @@ export const AddressNewForm = ({ onCancel }: { onCancel: () => void }) => {
 
   useEffect(()=>{
     const fetchUser=async ()=>{
-    const userEmail:any = localStorage.getItem("userEmail");
-    const userid:any =await getUserId(userEmail)
+
     setForm({
       ...form,
-      userId: userid,
     });
     }
 

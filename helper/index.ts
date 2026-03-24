@@ -19,7 +19,7 @@ export {
   createOrder,
 } from "./order/action";
 
-export {getAddresses,getUserId} from "./user/action";
+export {getAddresses} from "./user/action";
 
 //cart
 export {
@@ -40,3 +40,4 @@ export {
   resendOtp,
   forgotPassword
 } from "./auth/action"
+export {createWishlist,getUserWishlist,removeItemFromWishlist,addWishlistItemToCart} from "./wishlist/action";

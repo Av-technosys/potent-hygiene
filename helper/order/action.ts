@@ -8,6 +8,7 @@ import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import { cart, cartItem, productVariant, product } from "@/db/schema";
 import { order,  orderItem,  payment,  users } from "@/db/schema";
+import { getCurrentUser } from "../user/action";
 
 export const fetchOrders = async ({
   page = 1,
@@ -331,8 +332,9 @@ export async function createOrder({
   }
 }
 
-export async function getOrdersByUserId(userId: string) {
-
+export async function getOrdersByUserId() {
+ try{
+  const {userId} = await getCurrentUser()
   const orders = await db
     .select()
     .from(order)
@@ -353,6 +355,9 @@ export async function getOrdersByUserId(userId: string) {
   )
 
   return orderData;
+}catch(error){
+  console.log(error)
+}
 }
 
 

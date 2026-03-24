@@ -21,16 +21,12 @@ export default function ProfilePage() {
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-    const storedEmail = localStorage.getItem("userEmail");
 
-    if (!storedEmail) {
-      router.replace("/login");
-      return;
-    }
+
 
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`/api/profile?email=${encodeURIComponent(storedEmail)}`);
+        const res = await fetch(`/api/profile`);
         if (!res.ok) {
           throw new Error("Failed to load profile");
         }
