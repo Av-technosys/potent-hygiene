@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { db } from "@/db";
 import {
@@ -8,13 +9,15 @@ import {
   wishlistItem,
 } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
+import { getCurrentUser } from "../user/action";
 
-export async function createWishlist(productVarientId: any, userid: string) {
+export async function createWishlist(productVarientId: any) {
   try {
+    const {userId} = await getCurrentUser()
     const existingWishlist = await db
       .select()
       .from(wishlist)
-      .where(eq(wishlist.userId, userid));
+      .where(eq(wishlist.userId, userId));
     if (existingWishlist.length > 0) {
       const existingProduct = await db
         .select()
@@ -38,7 +41,7 @@ export async function createWishlist(productVarientId: any, userid: string) {
     } else {
       const wishlistId = await db
         .insert(wishlist)
-        .values({ userId: userid })
+        .values({ userId: userId })
         .returning({ id: wishlist.id });
       await db.insert(wishlistItem).values({
         wishlistId: wishlistId[0].id,
@@ -53,13 +56,15 @@ export async function createWishlist(productVarientId: any, userid: string) {
   }
 }
 
-export async function getUserWishlist(userid: string) {
+export async function getUserWishlist() {
   try {
+    const {userId} = await getCurrentUser()
+    
     const result = await db.transaction(async (tx) => {
       const userWishlist = await tx
         .select()
         .from(wishlist)
-        .where(eq(wishlist.userId, userid))
+        .where(eq(wishlist.userId, userId))
         .limit(1);
 
       if (userWishlist.length === 0) return [];
@@ -92,9 +97,10 @@ export async function getUserWishlist(userid: string) {
 
 export async function removeItemFromWishlist(
   productVariantId: any,
-  userId: string,
+ 
 ) {
   try {
+    const {userId} = await getCurrentUser()
     await db.transaction(async (tx) => {
       const wishlistIdSubquery = tx
         .select({ id: wishlist.id })
@@ -129,10 +135,11 @@ export async function removeItemFromWishlist(
 
 export async function addWishlistItemToCart(
   productVariantId: any,
-  userId: string,
+
 ) {
   try {
-    const result = await db.transaction(async (tx) => {
+    const {userId} = await getCurrentUser()
+     await db.transaction(async (tx) => {
       const wishlistIdSubquery = tx
         .select({ id: wishlist.id })
         .from(wishlist)

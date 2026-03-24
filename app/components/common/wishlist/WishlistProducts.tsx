@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
@@ -5,19 +7,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
 import { useEffect, useState } from "react";
-import { addWishlistItemToCart, getUserId, getUserWishlist, removeItemFromWishlist } from "@/helper";
+import { addWishlistItemToCart, getUserWishlist, removeItemFromWishlist } from "@/helper";
 import { toast } from "sonner";
 
 export default function WishlistProducts() {
   const [products, setProducts] = useState<any[]>([]);
 
   const fetchWishlist = async () => {
-    const email: any = localStorage.getItem("userEmail");
-    if (email !== null) {
-      const userid: any = await getUserId(email);
-      const data = await getUserWishlist(userid);
+  
+      const data = await getUserWishlist();
       setProducts(data);
-    }
+    
   };
 
   useEffect(() => {
@@ -25,25 +25,19 @@ export default function WishlistProducts() {
   }, []);
 
   const removeWishlist = async (productVariantId: any) => {
-    const email: any = localStorage.getItem("userEmail");
-    if (email !== null) {
-      const userid: any = await getUserId(email);
-      const response = await removeItemFromWishlist(productVariantId, userid);
+
+      const response = await removeItemFromWishlist(productVariantId);
       if (response.success) {
         toast.success(response.message);
         window.dispatchEvent(new Event("wishlistUpdated"));
         await fetchWishlist();
-      } else {
-        toast.error(response.message);
-      }
-    }
+      } 
+    
   };
 
   const addToCartHandler=async (productVariantId:any)=>{
-    const email: any = localStorage.getItem("userEmail");
-    if (email !== null) {
-      const userid: any = await getUserId(email);
-      const response = await addWishlistItemToCart(productVariantId, userid);
+
+      const response = await addWishlistItemToCart(productVariantId);
       if (response.success) {
         toast.success(response.message);
         window.dispatchEvent(new Event("wishlistUpdated"));
@@ -52,7 +46,7 @@ export default function WishlistProducts() {
       } else {
         toast.error(response.message);
       }
-    }
+    
   }
 
   if (products.length === 0) {

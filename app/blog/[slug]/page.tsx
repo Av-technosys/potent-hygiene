@@ -67,10 +67,11 @@ export default async function BlogDetailPage({
           </div>
 
           <article className="prose prose-neutral max-w-none text-[#4a4a4a]">
-            <div className="whitespace-pre-line leading-relaxed text-[17px]">
-              {blog.data}
-            </div>
-          </article>
+            <div
+              className="whitespace-pre-line leading-relaxed text-[17px]"
+              dangerouslySetInnerHTML={{ __html: blog.data || ''}}
+            />         
+             </article>
         </div>
       </div>
 

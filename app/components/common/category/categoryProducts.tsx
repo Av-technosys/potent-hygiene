@@ -1,3 +1,5 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
@@ -6,8 +8,9 @@ import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
+import {  getUserWishlist } from "@/helper";
 import AddToWishlist from "./addToWishlist";
-import { getUserId, getUserWishlist } from "@/helper";
+import { addToCart as addToCartAction } from "@/store/cartActions"; 
 
 export default function CategoryProducts({ products }: any) {
   const router = useRouter();
@@ -15,31 +18,28 @@ export default function CategoryProducts({ products }: any) {
   const [wishlist, setWishlist] = useState<string[]>([]);
 
   const fetchWishlist = async () => {
-      const email: any = localStorage.getItem("userEmail");
-      if (email !== null) {
-        const userid: any = await getUserId(email);
-        const data = await getUserWishlist(userid);
+
+        const data = await getUserWishlist();
         setWishlist(data.map((p: any) => p.productVariantId));
       }
-    };
-
-  useEffect(() => {
+    
+      useEffect(() => {
     fetchWishlist();
   }, []);
 
-  const addToCart = (product: any) => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-    const existing = cart.find((item: any) => item.id === product.id);
+  // ✅ FIXED ADD TO CART
+  const addToCart = async (product: any) => {
+    await addToCartAction({
+      productVariantId: product.id, 
+      sku: "default", 
+      slug: product.slug || "",
+      title: product.name,
+      image: product.bannerImage || "/product.png",
+      price: product.basePrice || 0,
+      originalPrice: product.strikethroughPrice,
+    });
 
-    if (existing) {
-      existing.quantity += 1;
-    } else {
-      cart.push({ ...product, quantity: 1 });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
     toast.success("Product added to cart successfully.");
   };
 

@@ -12,16 +12,11 @@ export default function DashboardPage() {
   const [name, setName] = useState("");
 
   useEffect(() => {
-    const userEmail = localStorage.getItem("userEmail");
 
-    if (!userEmail) {
-      router.replace("/login");
-      return;
-    }
 
     const fetchUser = async () => {
       try {
-        const res = await fetch(`/api/profile?email=${userEmail}`);
+        const res = await fetch(`/api/profile`);
         const data = await res.json();
 
         if (res.ok) {

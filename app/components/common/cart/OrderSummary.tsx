@@ -1,56 +1,37 @@
-"use client"
+"use client";
 
 import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useCartStore } from "@/store/cartStore";
 
 export function OrderSummary() {
+  const router = useRouter();
 
-  const [total,setTotal] = useState(0)
-  const router = useRouter()
+  // ✅ Zustand state
+  const items = useCartStore((state) => state.items);
 
-  const calculateTotal = ()=>{
+  // ✅ Derived calculations
+  const subtotal = items.reduce(
+    (acc, item) => acc + item.price * item.quantity,
+    0
+  );
 
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]")
-
-    const subtotal = cart.reduce(
-      (acc:any,item:any)=> acc + item.basePrice * item.quantity,
-      0
-    )
-
-    setTotal(subtotal)
-  }
-
-  useEffect(()=>{
-
-    calculateTotal()
-
-    window.addEventListener("cartUpdated", calculateTotal)
-
-    return ()=>{
-      window.removeEventListener("cartUpdated", calculateTotal)
-    }
-
-  },[])
-
-  const gst = total * 0.18
-  const shipping = total > 0 ? 50 : 0
-  const final = total + gst + shipping
+  const gst = subtotal * 0.18;
+  const shipping = subtotal > 0 ? 50 : 0;
+  const final = subtotal + gst + shipping;
 
   return (
     <div className="rounded-md border bg-white p-6 shadow-sm">
-
       <h2 className="mb-6 text-xl font-bold text-[#333333]">
         Order Summary
       </h2>
 
       <div className="space-y-4 border-b pb-6">
-
         <div className="flex justify-between text-sm text-[#666666]">
           <span>Subtotal</span>
           <span className="font-bold text-[#333333]">
-            ₹{total.toFixed(2)}
+            ₹{subtotal.toFixed(2)}
           </span>
         </div>
 
@@ -67,12 +48,10 @@ export function OrderSummary() {
             ₹{shipping.toFixed(2)}
           </span>
         </div>
-
       </div>
 
       <div className="py-6">
         <div className="flex justify-between items-center">
-
           <span className="text-lg font-bold text-[#333333]">
             Total
           </span>
@@ -80,13 +59,13 @@ export function OrderSummary() {
           <span className="text-2xl font-black text-[#333333]">
             ₹{final.toFixed(2)}
           </span>
-
         </div>
       </div>
 
       <Button
-        onClick={()=>router.push("/checkout")}
-        className="h-14 w-full rounded-xl bg-[#168BA0] text-lg font-bold"
+        onClick={() => router.push("/checkout")}
+        disabled={items.length === 0}
+        className="h-14 w-full rounded-xl bg-[#168BA0] text-lg font-bold disabled:opacity-50"
       >
         Checkout
       </Button>
@@ -95,7 +74,6 @@ export function OrderSummary() {
         <ShieldCheck className="h-4 w-4 text-[#00FF1E]" />
         Secure Checkout
       </div>
-
     </div>
   );
 }

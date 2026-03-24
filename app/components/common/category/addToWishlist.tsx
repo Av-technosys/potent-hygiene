@@ -1,4 +1,5 @@
-import { createWishlist, getUserId, removeItemFromWishlist } from "@/helper";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { createWishlist, removeItemFromWishlist } from "@/helper";
 import { Heart } from "lucide-react";
 import { toast } from "sonner";
 
@@ -6,19 +7,13 @@ const AddToWishlist = ({ productVarientId, wishlist, setWishlist }: any) => {
 
 
   const toggleWishlist = async (productVarientId: any) => {
-    const email: any = localStorage.getItem("userEmail");
 
-    if (!email) {
-      toast.error("Please login before adding item to wishlist");
-      return;
-    }
 
-    const userid: any = await getUserId(email);
 
     const isInWishlist = wishlist.includes(productVarientId);
 
     if (isInWishlist) {
-      const response = await removeItemFromWishlist(productVarientId, userid);
+      const response = await removeItemFromWishlist(productVarientId);
       if (response.success) {
         toast.success(response.message);
         setWishlist((prev: string[]) =>
@@ -29,7 +24,7 @@ const AddToWishlist = ({ productVarientId, wishlist, setWishlist }: any) => {
         toast.error(response.message);
       }
     } else {
-      const response = await createWishlist(productVarientId, userid);
+      const response = await createWishlist(productVarientId);
       if (response.success) {
         toast.success(response.message);
         setWishlist((prev: string[]) => [...prev, productVarientId]);

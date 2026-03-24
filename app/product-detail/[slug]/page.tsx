@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react'
 import Breadcrumb from '../../components/common/Product-detail/breadcrumb'
 import { Navbar } from '../../components/common/Navbar'
