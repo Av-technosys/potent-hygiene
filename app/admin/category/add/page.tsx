@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -24,9 +24,12 @@ import { createCategory, getAllCategoriesMeta } from "@/helper/category/action";
 import { toast } from "sonner";
 // Naya component import karein
 import ImageUpload from "@/components/ImageUpload"; 
+import { useFileUpload } from "@/helper";
 
 export default function AddCategoryForm() {
   const router = useRouter();
+  const { upload, uploading } = useFileUpload();
+  const bannerRef = useRef<HTMLInputElement>(null);
   
   const [parentId, setParentId] = useState("");
   // 'preview' ki jagah hum 'bannerUrl' use karenge jo ImageKit se aayega
@@ -54,6 +57,26 @@ export default function AddCategoryForm() {
       router.push("/admin/category");
     } else {
       toast.error(response?.message ?? "Failed to add category");
+    }
+  };
+
+   const handleBanner = async (file?: File) => {
+    if (!file) return;
+
+    try {
+      const { fileKey, fileUrl } = await upload(file, "category");
+
+      setBannerUrl(fileUrl as any); // UI ke liye
+
+      // IMPORTANT: agar tu key store karna chahta hai (recommended)
+      // setForm((prev) => ({
+      //   ...prev,
+      //   bannerKey: fileKey,
+      // }));
+
+      toast.success("Image uploaded");
+    } catch (err: any) {
+      toast.error(err.message);
     }
   };
 
@@ -117,7 +140,35 @@ export default function AddCategoryForm() {
                   <Label className="text-slate-600 font-medium">Category Image</Label>
                   
                   {/* Purana drag-drop div hata kar naya component dala hai */}
-                  <ImageUpload onUploadSuccess={(url) => setBannerUrl(url)} />
+                  {/* <ImageUpload onUploadSuccess={(url) => setBannerUrl(url)} /> */}
+                  <div
+                    onClick={() => bannerRef.current?.click()}
+                    className="border-2 border-dashed rounded-xl h-48 flex items-center justify-center cursor-pointer relative overflow-hidden"
+                  >
+                    {!bannerUrl ? (
+                      <p>Click to upload category image</p>
+                    ) : (
+                      <img
+                        src={bannerUrl}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+
+                    {uploading && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        Uploading...
+                      </div>
+                    )}
+                  </div>
+
+                  <input
+                    ref={bannerRef}
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => handleBanner(e.target.files?.[0])}
+                  />
+
                   
                   {bannerUrl && (
                     <p className="text-xs text-green-600 font-medium mt-2">

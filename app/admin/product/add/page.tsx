@@ -19,6 +19,8 @@ import ImageUpload from "@/components/ImageUpload";
 import { createProduct } from "@/helper/product/action";
 import GallerySection from "../GallerySection";
 import AttributeSection from "../AttributeSection";
+import { validateImage } from "@/lib/validateImage";
+import { useFileUpload } from "@/helper";
 
 type ImageItem = {
   key: string;
@@ -51,6 +53,8 @@ type Variant = {
 
 export default function AddProductForm() {
   const router = useRouter();
+  const { upload, uploading } = useFileUpload();
+  const bannerRef = useRef<HTMLInputElement>(null);
 
   const [availablePlans, setAvailablePlans] = useState<any[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
@@ -112,31 +116,84 @@ export default function AddProductForm() {
     setVariants(newVariants);
   };
 
+   const handleGallery = async (files: FileList | null) => {
+    if (!files) return;
+
+    for (const file of Array.from(files)) {
+      try {
+        await validateImage(file, {
+          maxSizeMB: 2,
+          maxWidth: 1000,
+          maxHeight: 1000,
+          ratio: 1000 / 1000,
+        });
+
+        const res = await upload(file, "product");
+        if (res && res.fileKey) {
+          const currentGallery = variants[activeIndex].gallery;
+          updateVariant(activeIndex, {
+            gallery: [...currentGallery, { key: res.fileKey, preview: res.preview }]
+          });
+          toast.success("Image uploaded");
+        }
+      } catch (err: any) {
+        toast.info(err.message);
+      }
+    }
+  };
+
   const setGalleryForActive = (action: React.SetStateAction<ImageItem[]>) => {
     const currentGallery = variants[activeIndex].gallery;
     const nextGallery = typeof action === "function" ? (action as any)(currentGallery) : action;
     updateVariant(activeIndex, { gallery: nextGallery });
   };
 
-  const handleBannerSuccess = (url: string) => {
-    updateVariant(activeIndex, { banner: { key: url, preview: url } });
+  // const handleBannerSuccess = (url: string) => {
+  //   updateVariant(activeIndex, { banner: { key: url, preview: url } });
+  //   toast.success("Banner uploaded");
+  // };
+
+    const handleBanner = async (file?: File) => {
+  if (!file) return;
+
+  try {
+    await validateImage(file, {
+      maxSizeMB: 2,
+      maxWidth: 1000,
+      maxHeight: 1000,
+      ratio: 1,
+    });
+
+    const { fileKey, fileUrl } = await upload(file, "product");
+
+    updateVariant(activeIndex, {
+      banner: {
+        key: fileKey,
+        preview: fileUrl as any, 
+      },
+    });
+
     toast.success("Banner uploaded");
-  };
-
- const handleGallerySuccess = (url: string) => {
-
-  const currentGallery = variants[activeIndex].gallery;
-
-  if (currentGallery.length >= 5) {
-    return toast.error("Maximum 5 images allowed");
+  } catch (err: any) {
+    toast.error(err.message);
   }
-
-  updateVariant(activeIndex, {
-    gallery: [...currentGallery, { key: url, preview: url }]
-  });
-
-  toast.success("Gallery image added");
 };
+
+
+//  const handleGallerySuccess = (url: string) => {
+
+//   const currentGallery = variants[activeIndex].gallery;
+
+//   if (currentGallery.length >= 5) {
+//     return toast.error("Maximum 5 images allowed");
+//   }
+
+//   updateVariant(activeIndex, {
+//     gallery: [...currentGallery, { key: url, preview: url }]
+//   });
+
+//   toast.success("Gallery image added");
+// };
 
   const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -242,7 +299,28 @@ export default function AddProductForm() {
                 </div>
                 <div className="space-y-3">
                   <Label>Banner Image</Label>
-                  <ImageUpload onUploadSuccess={handleBannerSuccess} />
+                  {/* <ImageUpload onUploadSuccess={handleBannerSuccess} /> */}
+                   <div
+                    onClick={() => bannerRef.current?.click()}
+                    className="border-2 border-dashed rounded-xl h-48 flex items-center justify-center cursor-pointer relative overflow-hidden"
+                  >
+                    {!activeVariant.banner ? (
+                      <p>Click to upload banner</p>
+                    ) : (
+                      <img
+                        src={activeVariant.banner.preview}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+                  </div>
+
+                  <input
+                    ref={bannerRef}
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => handleBanner(e.target.files?.[0])}
+                  />
                   {activeVariant.banner && <img src={activeVariant.banner.preview} className="h-32 w-24 object-cover rounded-md border mt-2" alt="Preview" />}
                 </div>
                 
@@ -326,6 +404,13 @@ export default function AddProductForm() {
                 </div>
               </CardContent>
             </Card>
+
+            <GallerySection
+              gallery={activeVariant.gallery}
+              galleryRef={galleryRef}
+              handleGallery={handleGallery}
+              setGallery={setGalleryForActive}
+            />
 
             <AttributeSection productAttributes={activeVariant.attributes} handleValueChange={(k, v) => {
               const current = activeVariant.attributes;

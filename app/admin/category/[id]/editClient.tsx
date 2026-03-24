@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -24,18 +24,23 @@ import { useRouter } from "next/navigation";
 import { getAllCategoriesMeta, updateCategory } from "@/helper/category/action";
 import { toast } from "sonner";
 // Naya ImageUpload component import karein
-import ImageUpload from "@/components/ImageUpload"; 
+import ImageUpload from "@/components/ImageUpload";
+import { useFileUpload } from "@/helper";
 
 export default function EditCategory({ categoryInfo }: any) {
   const router = useRouter();
+  const { upload, uploading } = useFileUpload();
+  const bannerRef = useRef<HTMLInputElement>(null);
 
   const [form, setForm] = useState({
     name: categoryInfo.name,
     parent: categoryInfo.parentId ?? "",
-    description: categoryInfo.description ?? ""
+    description: categoryInfo.description ?? "",
   });
 
-  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>(
+    [],
+  );
   const [selectedParent, setSelectedParent] = useState<string>(
     categoryInfo.parentId ?? "", // Spelling fixed: parrentId -> parentId
   );
@@ -72,6 +77,26 @@ export default function EditCategory({ categoryInfo }: any) {
     }
   };
 
+  const handleBanner = async (file?: File) => {
+    if (!file) return;
+
+    try {
+      const { fileKey, fileUrl } = await upload(file, "category");
+
+      setPreview(fileUrl as any); // UI ke liye
+
+      // IMPORTANT: agar tu key store karna chahta hai (recommended)
+      setForm((prev) => ({
+        ...prev,
+        bannerKey: fileKey,
+      }));
+
+      toast.success("Image uploaded");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
+
   return (
     <div className="w-full p-1">
       <Card className="border-none shadow-none">
@@ -93,7 +118,9 @@ export default function EditCategory({ categoryInfo }: any) {
               {/* Left column */}
               <div className="space-y-6">
                 <div className="space-y-1.5">
-                  <Label className="text-slate-600 font-medium">Category Name</Label>
+                  <Label className="text-slate-600 font-medium">
+                    Category Name
+                  </Label>
                   <Input
                     name="name"
                     defaultValue={categoryInfo.name}
@@ -103,7 +130,9 @@ export default function EditCategory({ categoryInfo }: any) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-slate-600 font-medium">Parent Category</Label>
+                  <Label className="text-slate-600 font-medium">
+                    Parent Category
+                  </Label>
                   <Select
                     value={selectedParent}
                     onValueChange={(value) => setSelectedParent(value)}
@@ -122,7 +151,9 @@ export default function EditCategory({ categoryInfo }: any) {
                 </div>
 
                 <div className="space-y-1.5">
-                  <Label className="text-slate-600 font-medium">Description</Label>
+                  <Label className="text-slate-600 font-medium">
+                    Description
+                  </Label>
                   <Textarea
                     name="description"
                     defaultValue={categoryInfo.description}
@@ -137,15 +168,45 @@ export default function EditCategory({ categoryInfo }: any) {
               {/* Right column - Updated Image Logic */}
               <div className="space-y-6">
                 <div className="space-y-1.5">
-                  <Label className="text-slate-600 font-medium">Category Image</Label>
-                  
+                  <Label className="text-slate-600 font-medium">
+                    Category Image
+                  </Label>
+
                   {/* ImageUpload component with initial image support */}
-                  <ImageUpload 
+                  {/* <ImageUpload 
                     onUploadSuccess={(url) => setPreview(url)} 
                     initialImage={preview} // Agar aap apne ImageUpload component mein ye prop add karein to purani image dikhegi
+                  /> */}
+
+                  <div
+                    onClick={() => bannerRef.current?.click()}
+                    className="border-2 border-dashed rounded-xl h-48 flex items-center justify-center cursor-pointer relative overflow-hidden"
+                  >
+                    {!preview ? (
+                      <p>Click to upload category image</p>
+                    ) : (
+                      <img
+                        src={preview}
+                        className="w-full h-full object-contain"
+                      />
+                    )}
+
+                    {uploading && (
+                      <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+                        Uploading...
+                      </div>
+                    )}
+                  </div>
+
+                  <input
+                    ref={bannerRef}
+                    type="file"
+                    hidden
+                    accept="image/*"
+                    onChange={(e) => handleBanner(e.target.files?.[0])}
                   />
-                  
-                  {preview && !preview.startsWith('http') && (
+
+                  {preview && !preview.startsWith("http") && (
                     <p className="text-xs text-blue-600 mt-1 italic">
                       Note: New image selected. Click Update to save.
                     </p>

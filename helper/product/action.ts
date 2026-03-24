@@ -352,89 +352,89 @@ export async function updateProduct(formData: FormData): Promise<void> {
   }
 }
 
+
+
 export async function getFullProduct(identifier: string) {
   try {
-    if (!identifier) return null;
+    if (!identifier) throw new Error("Missing product identifier");
 
     const isThroughId = isUUID(identifier);
     let productGroupId: string | null = null;
     let targetVariantId: string | null = null;
 
-    // 1. Finding Product or Variant
     if (isThroughId) {
-      // Direct ID se product dhoondo
-      const pg = await db.select().from(product).where(eq(product.id, identifier)).limit(1);
-      
-      if (pg.length > 0) {
-        productGroupId = pg[0].id;
+      const [pg] = await db.select().from(product).where(eq(product.id, identifier)).limit(1);
+      if (pg) {
+        productGroupId = pg.id;
       } else {
-        // Agar product nahi mila toh variant check karo
-        const v = await db.select().from(productVariant).where(eq(productVariant.id, identifier)).limit(1);
-        if (v.length > 0) {
-          productGroupId = v[0].productId;
-          targetVariantId = v[0].id;
+        const [productVariendMatch] = await db.select().from(productVariant).where(eq(productVariant.id, identifier)).limit(1);
+        if (productVariendMatch) {
+          productGroupId = productVariendMatch.productId;
+          targetVariantId = productVariendMatch.id;
         }
       }
     } else {
-      // Slug se variant dhoondo
-      const v = await db.select().from(productVariant).where(eq(productVariant.slug, identifier)).limit(1);
-      if (v.length > 0) {
-        productGroupId = v[0].productId;
-        targetVariantId = v[0].id;
+      const [v] = await db.select().from(productVariant).where(eq(productVariant.slug, identifier)).limit(1);
+      if (v) {
+        productGroupId = v.productId;
+        targetVariantId = v.id;
       }
     }
 
     if (!productGroupId) return null;
 
-    // 2. Fetch all related data in Parallel
     const [variants, categoryLinks] = await Promise.all([
-      db.select().from(productVariant).where(eq(productVariant.productId, productGroupId)),
-      db.select().from(productCategory).where(eq(productCategory.productId, productGroupId)),
+      db
+        .select()
+        .from(productVariant)
+        .where(eq(productVariant.productId, productGroupId)),
+      db
+        .select()
+        .from(productCategory)
+        .where(eq(productCategory.productId, productGroupId)),
     ]);
 
-    const variantIds = variants.map(v => v.id);
+    const variantIds = variants.map((v) => v.id);
 
     let allMedia: any[] = [];
     let allAttributes: any[] = [];
-    let allSubscriptions: any[] = [];
 
     if (variantIds.length > 0) {
-      [allMedia, allAttributes, allSubscriptions] = await Promise.all([
-        db.select().from(productVariantMedia).where(inArray(productVariantMedia.productVariantId, variantIds)),
-        db.select().from(productVariantAttribute).where(inArray(productVariantAttribute.productVariantId, variantIds)),
-        db.select()
-          .from(productVariantSubscriptionPlan)
-          .where(inArray(productVariantSubscriptionPlan.productVariantId, variantIds))
+      [allMedia, allAttributes] = await Promise.all([
+        db
+          .select()
+          .from(productVariantMedia)
+          .where(inArray(productVariantMedia.productVariantId, variantIds)),
+
+        db
+          .select()
+          .from(productVariantAttribute)
+          .where(inArray(productVariantAttribute.productVariantId, variantIds)),
       ]);
     }
 
-    // 3. Mapping data for UI
-    const attributeMap = new Map();
-    const mediaMap = new Map();
-    const subMap = new Map();
+    const attributeMap = new Map<string, any[]>();
+    const mediaMap = new Map<string, any[]>();
 
-    allAttributes.forEach(a => {
-      if (!attributeMap.has(a.productVariantId)) attributeMap.set(a.productVariantId, []);
-      attributeMap.get(a.productVariantId).push(a);
-    });
+    for (const a of allAttributes) {
+      if (!attributeMap.has(a.productVariantId)) {
+        attributeMap.set(a.productVariantId, []);
+      }
+      attributeMap.get(a.productVariantId)!.push(a);
+    }
 
-    allMedia.forEach(m => {
-      if (!mediaMap.has(m.productVariantId)) mediaMap.set(m.productVariantId, []);
-      mediaMap.get(m.productVariantId).push(m);
-    });
+    for (const m of allMedia) {
+      if (!mediaMap.has(m.productVariantId)) {
+        mediaMap.set(m.productVariantId, []);
+      }
+      mediaMap.get(m.productVariantId)!.push(m);
+    }
 
-    allSubscriptions.forEach(s => {
-       if (!subMap.has(s.productVariantId)) subMap.set(s.productVariantId, []);
-       subMap.get(s.productVariantId).push(s.subscriptionPlanId);
-    });
-
-    const variantsWithDetails = variants.map(v => ({
+    const variantsWithDetails = variants.map((v) => ({
       ...v,
       media: mediaMap.get(v.id) || [],
       attributes: attributeMap.get(v.id) || [],
-      subscriptionPlans: subMap.get(v.id) || []
     }));
-
     return {
       id: productGroupId,
       categoryIds: categoryLinks.map((c) => c.categoryId),
@@ -443,12 +443,12 @@ export async function getFullProduct(identifier: string) {
         ? variantsWithDetails.find((v) => v.id === targetVariantId)
         : variantsWithDetails[0],
     };
-
   } catch (error) {
     console.error("getFullProduct failed:", error);
-    return null; // Silent fail for UI safety
+    throw new Error("Unable to fetch product");
   }
 }
+
 
 export async function deleteProduct(id: string) {
   try {

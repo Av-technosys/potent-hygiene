@@ -9,17 +9,13 @@ import { toast } from "sonner";
 
 const Page = () => {
   const router = useRouter();
-
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
-
+  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({
     email: "",
     password: "",
     general: "",
   });
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -63,6 +59,7 @@ const Page = () => {
     e.preventDefault();
 
     if (!validate()) return;
+    setLoading(true);
 
     try {
       await signIn({
@@ -70,19 +67,12 @@ const Page = () => {
         password: formData.password,
       });
 
-      // 🔥 STORE TOKENS (if you really want)
-      // if (res?.data) {
-      //   localStorage.setItem("accessToken", res.data.accessToken);
-      //   localStorage.setItem("idToken", res.data.idToken);
-      //   localStorage.setItem("refreshToken", res.data.refreshToken);
-      // }
-
       toast.success("Login successful 🎉");
-      router.refresh();
       router.push("/dashboard");
+      setLoading(false);
     } catch (err: any) {
+      setLoading(false);
       toast.error(err.message || "Login failed ❌");
-
       setErrors((prev) => ({
         ...prev,
         general: err.message || "Login failed",
@@ -179,10 +169,11 @@ const Page = () => {
             </div>
 
             <button
+              disabled={loading}
               type="submit"
-              className="w-full bg-cyan-700 text-white py-2 text-sm rounded-lg mt-2 mb-2 font-medium"
+              className={`w-full ${loading ? "opacity-50 cursor-not-allowed" : ""} bg-cyan-700 text-white py-2 text-sm rounded-lg mt-2 mb-2 font-medium`}
             >
-              Login
+              {loading ? "Logging in..." : "Login"}
             </button>
           </form>
 
