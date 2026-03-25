@@ -41,3 +41,5 @@ export {
   forgotPassword
 } from "./auth/action"
 export {createWishlist,getUserWishlist,removeItemFromWishlist,addWishlistItemToCart} from "./wishlist/action";
+
+export {useFileUpload} from "./useFileUpload";

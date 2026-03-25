@@ -15,10 +15,12 @@ import {
   IconRefresh
 } from "@tabler/icons-react";
 import RichTextEditor from "../ui/rich-text-editor";
+import { useFileUpload } from "@/helper";
 
 export default function EditBlogForm({ initialData }: { initialData: any }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { upload, uploading } = useFileUpload();
 
   const [formData, setFormData] = useState({
     title: initialData.title || "",
@@ -35,34 +37,53 @@ export default function EditBlogForm({ initialData }: { initialData: any }) {
   });
 
   // ✅ IMAGE UPLOAD FUNCTION
+  // const handleFileUpload = async (
+  //   e: React.ChangeEvent<HTMLInputElement>,
+  //   field: string
+  // ) => {
+  //   const file = e.target.files?.[0];
+  //   if (!file) return;
+
+  //   const formDataUpload = new FormData();
+  //   formDataUpload.append("file", file);
+
+  //   try {
+  //     const res = await fetch("/api/upload", {
+  //       method: "POST",
+  //       body: formDataUpload,
+  //     });
+
+  //     const data = await res.json();
+
+  //     if (data.url) {
+  //       setFormData((prev) => ({
+  //         ...prev,
+  //         [field]: data.url,
+  //       }));
+  //     }
+  //   } catch (error) {
+  //     console.error("Upload failed", error);
+  //   }
+  // };
+
   const handleFileUpload = async (
-    e: React.ChangeEvent<HTMLInputElement>,
-    field: string
-  ) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  e: React.ChangeEvent<HTMLInputElement>,
+  field: string
+) => {
+  const file = e.target.files?.[0];
+  if (!file) return;
 
-    const formDataUpload = new FormData();
-    formDataUpload.append("file", file);
+  try {
+    const { fileUrl } = await upload(file, "blog");
 
-    try {
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formDataUpload,
-      });
-
-      const data = await res.json();
-
-      if (data.url) {
-        setFormData((prev) => ({
-          ...prev,
-          [field]: data.url,
-        }));
-      }
-    } catch (error) {
-      console.error("Upload failed", error);
-    }
-  };
+    setFormData((prev) => ({
+      ...prev,
+      [field]: fileUrl, // ✅ DB + preview same
+    }));
+  } catch (error) {
+    console.error("Upload failed", error);
+  }
+};
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -10,9 +10,11 @@ import { Loader2, Upload, User, Tag } from "lucide-react";
 import { createBlog } from "@/helper/blog/action";
 import { useRouter } from "next/navigation";
 import RichTextEditor from "@/components/ui/rich-text-editor";
+import { useFileUpload } from "@/helper";
 
 export default function BlogForm() {
   const router = useRouter();
+  const { upload, uploading } = useFileUpload();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: "",
@@ -26,6 +28,35 @@ export default function BlogForm() {
     tags: "" 
   });
 
+//   const handleFileUpload = async (
+//   e: React.ChangeEvent<HTMLInputElement>,
+//   field: string
+// ) => {
+//   const file = e.target.files?.[0];
+//   if (!file) return;
+
+//   const formDataUpload = new FormData();
+//   formDataUpload.append("file", file);
+
+//   try {
+//     const res = await fetch("/api/upload", {
+//       method: "POST",
+//       body: formDataUpload,
+//     });
+
+//     const data = await res.json();
+
+//     if (data.url) {
+//       setFormData((prev) => ({
+//         ...prev,
+//         [field]: data.url, // ImageKit URL save
+//       }));
+//     }
+//   } catch (error) {
+//     console.error("Upload failed", error);
+//   }
+// };
+
   const handleFileUpload = async (
   e: React.ChangeEvent<HTMLInputElement>,
   field: string
@@ -33,23 +64,13 @@ export default function BlogForm() {
   const file = e.target.files?.[0];
   if (!file) return;
 
-  const formDataUpload = new FormData();
-  formDataUpload.append("file", file);
-
   try {
-    const res = await fetch("/api/upload", {
-      method: "POST",
-      body: formDataUpload,
-    });
+    const { fileUrl } = await upload(file, "blog");
 
-    const data = await res.json();
-
-    if (data.url) {
-      setFormData((prev) => ({
-        ...prev,
-        [field]: data.url, // ImageKit URL save
-      }));
-    }
+    setFormData((prev) => ({
+      ...prev,
+      [field]: fileUrl, // ✅ DB + preview same
+    }));
   } catch (error) {
     console.error("Upload failed", error);
   }
