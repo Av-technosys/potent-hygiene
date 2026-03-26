@@ -1,347 +1,388 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation"
+import { useRouter } from "next/navigation";
 import { Star, Minus, Plus } from "lucide-react";
 import Image from "next/image";
 import { addToCart as addToCartAction } from "@/store/cartActions"; // Rename import
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import { Card, CardContent } from "@/components/ui/card";
 
-export default function ProductDetailPage({ variants, product }: any) {
-    const [quantity, setQuantity] = useState(1);
-    const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
-    const [selectedFlow, setSelectedFlow] = useState("Regular Flow");
-    const [isSubscribed, setIsSubscribed] = useState(false);
-    const [selectedPlan, setSelectedPlan] = useState("1");
+export default function ProductDetailPage({
+  categoryName,
+  variants,
+  productInfo,
+}: any) {
+  const [quantity, setQuantity] = useState(1);
+  const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
+  const [selectedFlow, setSelectedFlow] = useState("Regular Flow");
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState("1");
+  const [activeVariant, setActiveVariant] = useState(productInfo);
+  const [bannerImage, setBannerImage] = useState<any>(
+    activeVariant.bannerImage,
+  );
 
+  console.log("product-full details", productInfo);
+  // Size extraction logic (Aapne jo pehle likha tha)
+  const sizeAttr = activeVariant?.attributes?.find(
+    (a: any) => a.attribute === "size",
+  );
 
-    const selectedVariant = product?.variants?.[0];
-    // Size extraction logic (Aapne jo pehle likha tha)
-    const dynamicSizes = Array.from(new Set(
-        variants?.flatMap((v: any) => {
-            const sizeAttr = v.attributes?.find((a: any) => a.attribute === "size");
-            return sizeAttr ? sizeAttr.value.split(",").map((s: string) => s.trim()) : [];
-        }).filter(Boolean)
-    ));
+  const sizes = sizeAttr?.value?.split(",").map((s: string) => s.trim()) || [];
 
-    // Flow extraction logic (Ab dynamic hai)
-    const dynamicFlows = Array.from(new Set(
-        variants?.flatMap((v: any) => {
-            const flowAttr = v.attributes?.find((a: any) => a.attribute === "flow");
-            return flowAttr ? flowAttr.value.split(",").map((s: string) => s.trim()) : [];
-        }).filter(Boolean)
-    ));
+  const flowAttr = activeVariant?.attributes?.find(
+    (a: any) => a.attribute === "flow",
+  );
 
-    // Discount percentage calculate karne ke liye
-    const discount = selectedVariant?.strikethroughPrice && selectedVariant?.basePrice
-        ? Math.round(((selectedVariant.strikethroughPrice - selectedVariant.basePrice) / selectedVariant.strikethroughPrice) * 100)
-        : 0;
+  const flows = flowAttr?.value?.split(",").map((s: string) => s.trim()) || [];
 
-    const router = useRouter()
+  // Discount percentage calculate karne ke liye
+  const discount =
+    activeVariant?.strikethroughPrice && activeVariant?.basePrice
+      ? Math.round(
+          ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
+            activeVariant.strikethroughPrice) *
+            100,
+        )
+      : 0;
 
+  const router = useRouter();
 
-    const productId = product.id
-  
+  const productId = productInfo.id;
 
-    const addToCart = async () => {
- 
-    await  addToCartAction({
-        productVariantId: selectedVariant?.id || productId,
-        sku: `${selectedSize}-${selectedFlow}`,
-        slug: product?.slug || "",
-        title: isSubscribed 
-            ? `${variants?.[0]?.name || "Sanitary Pads"} - ${selectedPlan === "1" ? "Monthly" : selectedPlan === "2" ? "Every 2 Months" : "Every 3 Months"}`
-            : variants?.[0]?.name || "Sanitary Pads",
-        image: selectedVariant?.bannerImage || "/product.png",
-        price: isSubscribed 
-            ? (selectedPlan === "1" ? 239 : selectedPlan === "2" ? 229 : 219)
-            : selectedVariant?.basePrice || 0,
-        originalPrice: selectedVariant?.strikethroughPrice,
-    })
-    }
+  const addToCart = async () => {
+    await addToCartAction({
+      productVariantId: activeVariant?.id || productId,
+      sku: `${selectedSize}-${selectedFlow}`,
+      slug: productInfo?.slug || "",
+      title: isSubscribed
+        ? `${activeVariant?.name || "Sanitary Pads"} - ${selectedPlan === "1" ? "Monthly" : selectedPlan === "2" ? "Every 2 Months" : "Every 3 Months"}`
+        : activeVariant?.name || "Sanitary Pads",
+      image: activeVariant?.bannerImage || "/product.png",
+      price: isSubscribed
+        ? selectedPlan === "1"
+          ? 239
+          : selectedPlan === "2"
+            ? 229
+            : 219
+        : activeVariant?.basePrice || 0,
+      originalPrice: activeVariant?.strikethroughPrice,
+    });
+  };
 
-    const subscribeToCart = (e: React.MouseEvent) => {
-        e.preventDefault();
-        setIsSubscribed(true);
-        // Do not redirect to /cart. Wait for user to click Add to Cart.
-    };
+  const subscribeToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setIsSubscribed(true);
+    // Do not redirect to /cart. Wait for user to click Add to Cart.
+  };
 
-    return (
-        <div className="min-h-screen py-10">
-            <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+  const handleVariantChange = (variant: any) => {
+    setActiveVariant(variant);
+    router.push(`/product-detail/${variant.slug}`);
+  };
 
-                {/* LEFT SIDE */}
-                <div>
-                    <div className=" ">
-                        <Image
-                            unoptimized
-                            src={selectedVariant?.bannerImage}
-                            alt="Product"
-                            width={600}
-                            height={500}
-                            className="rounded-xl object-contain"
-                        />
-                    </div>
+  return (
+    <div className="min-h-screen py-10">
+      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+        {/* LEFT SIDE */}
+        <div>
+          <div className=" ">
+            <Image
+              unoptimized
+              src={bannerImage}
+              alt="Product"
+              width={600}
+              height={500}
+              className="rounded-xl object-contain"
+            />
+          </div>
 
-                    {/* Thumbnails */}
-                    <div className="flex gap-2 mt-8">
-                        {[1, 2, 3, 4, 5].map((i) => (
-                            <div
-                                key={i}
-                                className="bg-white rounded-lg flex items-center justify-center"
-                            >
-                                <Image
-                                    className="rounded-lg"
-                                    src={"/product.png"}
-                                    alt="thumb"
-                                    width={100}
-                                    height={100}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
+          <Carousel
+            opts={{
+              align: "start",
+            }}
+            className="w-full mt-8"
+          >
+            <CarouselContent className="gap-2 md:gap-3">
+              {productInfo?.media?.map((item: any, index: number) => (
+                <CarouselItem
+                  key={index}
+                  className="
+                  basis-[28%]  
+                  sm:basis-[36%]
+                  lg:basis-[20%]"
+                >
+                  <div
+                    onClick={() => setBannerImage(item?.mediaURL)}
+                    className="cursor-pointer"
+                  >
+                    <img
+                      src={item?.mediaURL}
+                      className={`w-full h-[90px] sm:h-[100px] md:h-[110px] object-cover rounded-lg
+                   ${
+                    item.mediaURL === bannerImage
+                     ? "border-2 border-[#1A8D91]"
+                     : "border border-gray-200 "
+                    }`}
+                    />
+                  </div>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
 
-                {/* RIGHT SIDE */}
-                <div className="space-y-6">
-
-                    {/* Tags */}
-                    <div className="flex gap-2">
-                        <span className="bg-orange-100 text-orange-600 text-xs px-3 py-1 rounded-full">
-                            Bestseller
-                        </span>
-                        <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">
-                            Organic
-                        </span>
-                    </div>
-
-                    {/* Title */}
-                    <div>
-                        <h1 className="text-2xl font-semibold">
-                            {variants?.[0]?.name}
-                        </h1>
-                        <p className="text-gray-500 text-sm">
-                            {variants?.[0]?.description}
-                        </p>
-                    </div>
-
-                    {/* Rating */}
-                    <div className="flex items-center gap-2 text-sm">
-                        <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
-                        <span className="font-medium">4.7</span>
-                        <span className="text-gray-500">| 1,248 reviews</span>
-                    </div>
-
-                    {/* Feature Badges */}
-                    <div className="flex flex-wrap gap-2">
-                        {[
-                            "Organic Cotton Top Layer",
-                            "Rash-Free Guarantee",
-                            "High Absorbency",
-                            "Biodegradable Materials",
-                            "Dermatologically Tested",
-                        ].map((feature) => (
-                            <span
-                                key={feature}
-                                className="bg-[#F0FDFA] text-[#168BA0] text-xs px-3 py-1 rounded-full"
-                            >
-                                {feature}
-                            </span>
-                        ))}
-                    </div>
-
-                    {/* Price */}
-                    <div className="flex items-center gap-3">
-                        <span className="text-2xl font-bold text-[#168BA0]">₹{selectedVariant?.basePrice}</span>
-                        {selectedVariant?.strikethroughPrice && (
-                            <>
-                                <span className="line-through text-gray-400">₹{selectedVariant?.strikethroughPrice}</span>
-                                <span className="bg-[#DCFCE7] text-[#15803D] text-xs px-2 py-1 rounded-md">
-                                    Save {discount} %
-                                </span>
-                            </>
-                        )}
-                    </div>
-                    {/* Size Selection */}
-                    <div>
-                        <p className="text-sm font-medium mb-2">Select size</p>
-                        <div className="flex flex-wrap gap-2">
-                            {dynamicSizes.map((size: any) => (
-                                <button
-                                    key={size}
-                                    type="button"
-                                    onClick={() => setSelectedSize(size)}
-                                    className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === size
-                                            ? "bg-[#168BA0] text-white border-[#168BA0]"
-                                            : "bg-white border-gray-300 hover:border-[#168BA0]"
-                                        }`}
-                                >
-                                    {size}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Flow Type - NOW DYNAMIC */}
-                    <div>
-                        <p className="text-sm font-medium mb-2">Flow Type</p>
-                        <div className="flex flex-wrap gap-2">
-                            {dynamicFlows.map((flow: any) => (
-                                <button
-                                    key={flow}
-                                    type="button"
-                                    onClick={() => setSelectedFlow(flow)}
-                                    className={`px-4 py-2 text-sm rounded-full border transition ${selectedFlow === flow
-                                            ? "bg-[#168BA0] text-white border-[#168BA0]"
-                                            : "bg-white border-gray-300 hover:border-[#168BA0]"
-                                        }`}
-                                >
-                                    {flow}
-                                </button>
-                            ))}
-                        </div>
-                    </div>
-
-                    {/* Quantity */}
-                    <div>
-                        <p className="text-sm font-medium mb-2">Quantity</p>
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center border rounded-full">
-                                <button
-                                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                                    className="p-2"
-                                >
-                                    <Minus size={16} />
-                                </button>
-                                <span className="px-4">{quantity}</span>
-                                <button
-                                    onClick={() => setQuantity((q) => q + 1)}
-                                    className="p-2"
-                                >
-                                    <Plus size={16} />
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Buttons */}
-                    <div className="flex gap-4">
-                        <button
-                            onClick={addToCart}
-                            className="flex-1 bg-[#168BA0] hover:bg-[#44a4b5] text-white py-3 rounded-xl"
-                        >
-                            Add to Cart
-                        </button>
-                        <button className="flex-1 bg-black text-white py-3 rounded-xl">
-                            Buy Now
-                        </button>
-                    </div>
-
-                    {/* Subscription Section */}
-                    {/* <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
-                        <h2 className="font-semibold text-lg">Choose your Frequency</h2>
-                        <p className="text-sm text-gray-500">
-                            Subscribe & Get more discount
-                        </p>
-
-                        {[
-                            { id: "1", label: "Monthly Subscription", price: "₹239" },
-                            { id: "2", label: "Every 2 Months", price: "₹229" },
-                            { id: "3", label: "Every 3 Months", price: "₹219" },
-                        ].map((plan) => (
-                            <div
-                                key={plan.id}
-                                onClick={() => setSelectedPlan(plan.id)}
-                                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
-                                    selectedPlan === plan.id
-                                    ? "border-teal-600 bg-teal-50"
-                                    : "border-gray-200"
-                                }`}
-                            >
-                                <div className="flex items-center gap-3">
-                                    <input
-                                        type="radio"
-                                        checked={selectedPlan === plan.id}
-                                        readOnly
-                                    />
-                                    <span className="text-sm">{plan.label}</span>
-                                </div>
-                                <span className="font-medium">{plan.price}</span>
-                            </div>
-                        ))}
-
-                        <div className="flex justify-between items-center pt-4">
-                            <span className="text-xl font-bold">₹239</span>
-                            <button className="bg-[#168BA0] text-white px-6 py-3 rounded-xl">
-                                Add to Cart
-                            </button>
-                        </div>
-                    </div> */}
-                    <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
-
-                        <h2 className="font-semibold text-lg">
-                            Choose your Frequency
-                        </h2>
-
-                        <p className="text-sm text-gray-500">
-                            Subscribe & Get more discount
-                        </p>
-
-                        {[
-                            { id: "1", label: "Monthly Subscription", price: "₹239" },
-                            { id: "2", label: "Every 2 Months", price: "₹229" },
-                            { id: "3", label: "Every 3 Months", price: "₹219" },
-                        ].map((plan) => (
-
-                            <div
-                                key={plan.id}
-                                onClick={() => setSelectedPlan(plan.id)}
-                                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan === plan.id
-                                        ? "border-teal-600 bg-teal-50"
-                                        : "border-gray-200"
-                                    }`}
-                            >
-
-                                <div className="flex items-center gap-3">
-
-                                    <input
-                                        type="radio"
-                                        checked={selectedPlan === plan.id}
-                                        readOnly
-                                    />
-
-                                    <span className="text-sm">
-                                        {plan.label}
-                                    </span>
-
-                                </div>
-
-                                <span className="font-medium">
-                                    {plan.price}
-                                </span>
-
-                            </div>
-
-                        ))}
-
-                        <div className="flex justify-between items-center pt-4">
-
-                            <span className="text-xl font-bold">
-                                ₹239
-                            </span>
-
-                            <button
-                                onClick={subscribeToCart}
-                                disabled={isSubscribed}
-                                className={`${isSubscribed ? "bg-gray-400 cursor-not-allowed" : "bg-[#168BA0]"} text-white px-6 py-3 rounded-xl transition duration-200`}
-                            >
-                                {isSubscribed ? "Subscribed!" : "Subscribe"}
-                            </button>
-
-                        </div>
-
-                    </div>
-                </div>
-            </div>
+            {/* Buttons */}
+            <CarouselPrevious className="left-0" />
+            <CarouselNext className="right-0" />
+          </Carousel>
         </div>
-    );
+
+        {/* RIGHT SIDE */}
+        <div className="space-y-6">
+          {/* Tags */}
+          <div className="flex gap-2">
+            <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">
+              {categoryName}
+            </span>
+          </div>
+
+          {/* Title */}
+          <div>
+            <h1 className="text-2xl font-semibold">{activeVariant?.name}</h1>
+            <p className="text-gray-500 text-sm">
+              {activeVariant?.description}
+            </p>
+          </div>
+
+          {/* Rating */}
+          <div className="flex items-center gap-2 text-sm">
+            <Star className="w-4 h-4 text-yellow-500 fill-yellow-500" />
+            <span className="font-medium">{activeVariant?.rating}</span>
+            <span className="text-gray-500">
+              | {activeVariant?.reviewCount} reviews
+            </span>
+          </div>
+
+          {/* Feature Badges */}
+          <div className="flex flex-wrap gap-2">
+            {[
+              "Organic Cotton Top Layer",
+              "Rash-Free Guarantee",
+              "High Absorbency",
+              "Biodegradable Materials",
+              "Dermatologically Tested",
+            ].map((feature) => (
+              <span
+                key={feature}
+                className="bg-[#F0FDFA] text-[#168BA0] text-xs px-3 py-1 rounded-full"
+              >
+                {feature}
+              </span>
+            ))}
+          </div>
+
+          {/* Price */}
+          <div className="flex items-center gap-3">
+            <span className="text-2xl font-bold text-[#168BA0]">
+              ₹{activeVariant?.basePrice}
+            </span>
+            {activeVariant?.strikethroughPrice && (
+              <>
+                <span className="line-through text-gray-400">
+                  ₹{activeVariant?.strikethroughPrice}
+                </span>
+                <span className="bg-[#DCFCE7] text-[#15803D] text-xs px-2 py-1 rounded-md">
+                  Save {discount} %
+                </span>
+              </>
+            )}
+          </div>
+          <ProductVarient
+            variants={variants}
+            handleVariantChange={handleVariantChange}
+            activeVariant={activeVariant}
+          />
+          {/* Size Selection */}
+          <div>
+            <p className="text-sm font-medium mb-2">Select size</p>
+
+            <div className="flex flex-wrap gap-2">
+              {sizes.map((s: string) => (
+                <button
+                  key={s}
+                  type="button"
+                  onClick={() => setSelectedSize(s)}
+                  className={`px-4 py-2 text-sm rounded-full border transition ${
+                    selectedSize === s
+                      ? "bg-[#168BA0] text-white border-[#168BA0]"
+                      : "bg-white border-gray-300 hover:border-[#168BA0]"
+                  }`}
+                >
+                  {s}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Flow Type - NOW DYNAMIC */}
+          <div>
+            <p className="text-sm font-medium mb-2">Flow Type</p>
+            <div className="flex flex-wrap gap-2">
+              {flows?.map((flow: any) => (
+                <button
+                  key={flow}
+                  type="button"
+                  onClick={() => setSelectedFlow(flow)}
+                  className={`px-4 py-2 text-sm rounded-full border transition ${
+                    selectedFlow === flow
+                      ? "bg-[#168BA0] text-white border-[#168BA0]"
+                      : "bg-white border-gray-300 hover:border-[#168BA0]"
+                  }`}
+                >
+                  {flow}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Quantity */}
+          <div>
+            <p className="text-sm font-medium mb-2">Quantity</p>
+            <div className="flex items-center gap-4">
+              <div className="flex items-center border rounded-full">
+                <button
+                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                  className="p-2"
+                >
+                  <Minus size={16} />
+                </button>
+                <span className="px-4">{quantity}</span>
+                <button
+                  onClick={() => setQuantity((q) => q + 1)}
+                  className="p-2"
+                >
+                  <Plus size={16} />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Buttons */}
+          <div className="flex gap-4">
+            <button
+              onClick={addToCart}
+              className="flex-1 bg-[#168BA0] hover:bg-[#44a4b5] text-white py-3 rounded-xl"
+            >
+              Add to Cart
+            </button>
+            <button className="flex-1 bg-black text-white py-3 rounded-xl">
+              Buy Now
+            </button>
+          </div>
+          <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
+            <h2 className="font-semibold text-lg">Choose your Frequency</h2>
+
+            <p className="text-sm text-gray-500">
+              Subscribe & Get more discount
+            </p>
+
+            {[
+              { id: "1", label: "Monthly Subscription", price: "₹239" },
+              { id: "2", label: "Every 2 Months", price: "₹229" },
+              { id: "3", label: "Every 3 Months", price: "₹219" },
+            ].map((plan) => (
+              <div
+                key={plan.id}
+                onClick={() => setSelectedPlan(plan.id)}
+                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
+                  selectedPlan === plan.id
+                    ? "border-teal-600 bg-teal-50"
+                    : "border-gray-200"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <input
+                    type="radio"
+                    checked={selectedPlan === plan.id}
+                    readOnly
+                  />
+
+                  <span className="text-sm">{plan.label}</span>
+                </div>
+
+                <span className="font-medium">{plan.price}</span>
+              </div>
+            ))}
+
+            <div className="flex justify-between items-center pt-4">
+              <span className="text-xl font-bold">₹239</span>
+
+              <button
+                onClick={subscribeToCart}
+                disabled={isSubscribed}
+                className={`${isSubscribed ? "bg-gray-400 cursor-not-allowed" : "bg-[#168BA0]"} text-white px-6 py-3 rounded-xl transition duration-200`}
+              >
+                {isSubscribed ? "Subscribed!" : "Subscribe"}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ProductVarient({
+  variants,
+  handleVariantChange,
+  activeVariant,
+}: {
+  variants: any;
+  handleVariantChange: any;
+  activeVariant: any;
+}) {
+  return (
+    <>
+      {variants.length > 0 && (
+        <div className=" space-y-2">
+          <p className="font-medium text-gray-800">Variants</p>
+          <div className=" flex flex-wrap gap-2">
+            {variants.map((v: any, index: number) => (
+              <div key={index} className="">
+                <Button
+                  variant={"outline"}
+                  key={v.id}
+                  onClick={() => handleVariantChange(v)}
+                  className={cn(
+                    `h-auto cursor-pointer  flex flex-col gap-2`,
+                    v.id === activeVariant.id && "bg-gray-100",
+                  )}
+                >
+                  <div className="w-28 h-28 relative rounded-md overflow-hidden">
+                    <Image
+                      src={v.bannerImage}
+                      alt="product thumbnail"
+                      fill
+                      className="object-contain rounded-md"
+                    />
+                  </div>
+                  <span className=" max-w-32 whitespace-break-spaces">
+                    {v.name.replace(activeVariant.name, "").trim() || v.name}
+                  </span>
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
 }

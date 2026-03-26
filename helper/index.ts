@@ -43,3 +43,5 @@ export {
 export {createWishlist,getUserWishlist,removeItemFromWishlist,addWishlistItemToCart} from "./wishlist/action";
 
 export {useFileUpload} from "./useFileUpload";
+
+export {getProductSimilarProducts,getFullProduct} from "./product/action";

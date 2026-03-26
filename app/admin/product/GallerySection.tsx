@@ -72,6 +72,7 @@ export default function GallerySection({
 
                   <div className="absolute inset-0 flex items-center justify-center">
                     <Button
+                    type="button"
                       onClick={() =>
                         setGallery((prev) => prev.filter((_, x) => x !== i))
                       }
