@@ -123,9 +123,9 @@ export default function AddProductForm() {
       try {
         await validateImage(file, {
           maxSizeMB: 2,
-          maxWidth: 1000,
-          maxHeight: 1000,
-          ratio: 1000 / 1000,
+          maxWidth: 2000,
+          maxHeight: 2000,
+          ratio: 2000 / 2000,
         });
 
         const res = await upload(file, "product");
@@ -159,8 +159,8 @@ export default function AddProductForm() {
   try {
     await validateImage(file, {
       maxSizeMB: 2,
-      maxWidth: 1000,
-      maxHeight: 1000,
+      maxWidth: 2000,
+      maxHeight: 2000,
       ratio: 1,
     });
 

@@ -154,8 +154,8 @@ export default function EditProduct({
     try {
       await validateImage(file, {
         maxSizeMB: 2,
-        maxWidth: 1000,
-        maxHeight: 1000,
+        maxWidth: 2000,
+        maxHeight: 2000,
         ratio: 1,
       });
 
@@ -201,9 +201,9 @@ export default function EditProduct({
       try {
         await validateImage(file, {
           maxSizeMB: 2,
-          maxWidth: 1000,
-          maxHeight: 1000,
-          ratio: 1000 / 1000,
+          maxWidth: 2000,
+          maxHeight: 2000,
+          ratio: 2000 / 2000,
         });
         const { preview, fileKey, fileUrl } = await upload(file, "product");
         const currentGallery = variants[activeIndex].gallery;

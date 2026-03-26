@@ -8,7 +8,6 @@ import { s3 } from "@/lib/s3";
 export async function POST(req: Request) {
   const { fileName, fileType , folder } = await req.json();
   const fileKey = `${folder}/${Date.now()}-${fileName}`;
-   console.log(fileKey);
   const command = new PutObjectCommand({
     Bucket: AWS_BUCKET!,
     Key: fileKey,

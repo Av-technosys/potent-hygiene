@@ -3,7 +3,7 @@ import { Navbar } from "@/app/components/common/Navbar";
 import { CartItems } from "../components/common/cart/CartItems";
 import { OrderSummary } from "../components/common/cart/OrderSummary";
 import { WhatsAppWidget } from "../components/common/homepage/WhatsAppWidget";
-import RelatedProducts from "../components/common/Product-detail/alsolike";
+// import RelatedProducts from "../components/common/Product-detail/alsolike";
 import Footer from "../components/common/Footer";
 import { getCart } from "@/helper/cart/action";
 import { CartInitializer } from "./CartInitializer";
@@ -27,7 +27,7 @@ export default async function CartPage() {
               <OrderSummary />
             </div>
           </div>
-          <RelatedProducts />
+          {/* <RelatedProducts /> */}
         </main>
         <WhatsAppWidget />
       </div>

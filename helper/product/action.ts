@@ -449,6 +449,55 @@ export async function getFullProduct(identifier: string) {
   }
 }
 
+export async function getProductSimilarProducts(slug: string | any) {
+  try {
+    const [v] = await db.select().from(productVariant).where(eq(productVariant.slug, slug)).limit(1);
+    if (!v || !v.productId) return [];
+
+    const productWithCategory = await db
+      .select({ categoryId: productCategory.categoryId })
+      .from(productCategory)
+      .where(eq(productCategory.productId, v.productId));
+
+    if (!productWithCategory.length) return [];
+
+    const categoryId = productWithCategory[0].categoryId;
+
+    const similarVariants = await db
+      .select({
+        id: productVariant.id,
+        name: productVariant.name,
+        slug: productVariant.slug,
+        basePrice: productVariant.basePrice,
+        bannerImage: productVariant.bannerImage,
+        rating: productVariant.rating,
+        strikethroughPrice: productVariant.strikethroughPrice,
+        reviewCount: productVariant.reviewCount,
+        category: category.name
+      })
+      .from(productVariant)
+      .innerJoin(
+        productCategory,
+        eq(productCategory.productId, productVariant.productId),
+      )
+      .innerJoin(
+        category,
+        eq(category.id, productCategory.categoryId),
+      )
+      .where(
+        and(
+          eq(productCategory.categoryId, categoryId),
+          ne(productVariant.productId, v.productId),
+        ),
+      )
+      .limit(10);
+
+    return similarVariants;
+  } catch (error) {
+    console.error("getProductSimilarProducts failed:", error);
+  }
+}
+
 
 export async function deleteProduct(id: string) {
   try {
