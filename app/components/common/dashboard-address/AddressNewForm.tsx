@@ -7,8 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { createUserAddress } from "@/helper";
+import { useRouter } from "next/navigation";
 
 export const AddressNewForm = ({ onCancel }: { onCancel: () => void }) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const router = useRouter();
   const [form, setForm] = useState({
     fullName: "",
     phone: "",
@@ -22,16 +26,15 @@ export const AddressNewForm = ({ onCancel }: { onCancel: () => void }) => {
     isDefault: false,
   });
 
-  useEffect(()=>{
-    const fetchUser=async ()=>{
+  useEffect(() => {
+    const fetchUser = async () => {
+      setForm({
+        ...form,
+      });
+    };
 
-    setForm({
-      ...form,
-    });
-    }
-
-    fetchUser()
-  },[])
+    fetchUser();
+  }, []);
 
   const handleChange = (e: any) => {
     setForm({
@@ -41,14 +44,24 @@ export const AddressNewForm = ({ onCancel }: { onCancel: () => void }) => {
   };
 
   const saveAddress = async () => {
-    await fetch("/api/add-address", {
-      method: "POST",
-      body: JSON.stringify(form),
-    });
+    try {
+      setIsSaving(true);
 
-    window.location.href = "/dashboard/address";
+      const res = await createUserAddress(form);
+
+      if (!res.success) {
+        console.error("Failed:", res.error);
+        return;
+      }
+
+      router.push("/dashboard/address");
+      router.refresh();
+    } catch (error) {
+      console.error("Error saving address:", error);
+    } finally {
+      setIsSaving(false);
+    }
   };
-
   return (
     <Card className="p-8 border-gray-200 shadow-sm bg-white rounded-[20px]">
       <h3 className="text-[14px] font-bold text-[#2D3748] mb-8 uppercase tracking-widest">
@@ -160,9 +173,10 @@ export const AddressNewForm = ({ onCancel }: { onCancel: () => void }) => {
       <div className="flex gap-4">
         <Button
           onClick={saveAddress}
-          className="flex-1 bg-[#168BA0] hover:bg-[#168BA0] h-14 rounded-xl font-bold text-lg"
+          disabled={isSaving}
+          className="flex-1 bg-[#168BA0] h-14 rounded-xl font-bold text-lg"
         >
-          Save Address
+          {isSaving ? "Saving..." : "Save Address"}
         </Button>
 
         <Button

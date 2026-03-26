@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { initiateRazorpayPayment } from "@/lib/razorpay";
 import { toast } from "sonner";
+import { getCart } from "@/helper";
+import { clearCart } from "@/store/cartActions";
 
 export function CheckoutSummary({ selected, address, userId }: any) {
   const [cart, setCart] = useState<any[]>([]);
@@ -17,38 +19,25 @@ export function CheckoutSummary({ selected, address, userId }: any) {
   const filteredAddress = address.filter((item: any) => item.id === selected);
 
   useEffect(() => {
-    const stored = localStorage.getItem("cart");
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      setCart(parsed);
-      calculateTotal(parsed);
-    }
+    const fetchCart = async () => {
+      const res = await getCart();
+
+      if (!res.success) return;
+
+      setCart(res?.items ?? []);
+      calculateTotal(res?.items ?? []);
+    };
+
+    fetchCart();
   }, []);
 
   const calculateTotal = (cartData: any[]) => {
     const subtotal = cartData.reduce(
-      (acc: any, item: any) => acc + item.basePrice * item.quantity,
+      (acc, item) => acc + (item.price || 0) * item.quantity,
       0,
     );
     setTotal(subtotal);
   };
-
-  useEffect(() => {
-    const handleUpdate = () => {
-      const updated = localStorage.getItem("cart");
-      if (updated) {
-        const parsed = JSON.parse(updated);
-        setCart(parsed);
-        calculateTotal(parsed);
-      }
-    };
-
-    window.addEventListener("cartUpdated", handleUpdate);
-
-    return () => {
-      window.removeEventListener("cartUpdated", handleUpdate);
-    };
-  }, []);
 
   const gst = total * 0.18;
   const shipping = total > 0 ? 50 : 0;
@@ -68,15 +57,13 @@ export function CheckoutSummary({ selected, address, userId }: any) {
         name: "POTENT HYGIENE",
         description: "Order Payment",
         items: cart,
-        userId,
+        // userId,
         address: filteredAddress[0],
       });
 
       toast.success("Payment Successful 🎉");
 
-      localStorage.removeItem("cart");
-      setCart([]);
-
+      clearCart()
       router.push(`/order-confirmation/${res?.orderId}`);
     } catch (err) {
       toast.error("Payment Failed ❌");

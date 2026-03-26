@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -5,43 +6,31 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { IconTrash } from "@tabler/icons-react";
+import { useState } from "react";
+import { deleteUserAddress, setDefaultAddress } from "@/helper";
 
 export const AddressCard = ({ address }: { address: any }) => {
-
   const router = useRouter();
+  const [loadingId, setLoadingId] = useState<number | null>(null);
 
-  const setDefault = async () => {
-    await fetch("/api/address/default", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id: address.id })
-    });
-
+  const handleDefault = async () => {
+    setLoadingId(address.id);
+    await setDefaultAddress(address.id);
     router.refresh();
+    setLoadingId(null);
   };
 
-  const deleteAddress = async () => {
-    await fetch("/api/address/delete", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ id: address.id })
-    });
-
+  const handleDelete = async () => {
+    setLoadingId(address.id);
+    await deleteUserAddress(address.id);
     router.refresh();
+    setLoadingId(null);
   };
-
   return (
     <Card className="p-6 shadow-sm bg-white rounded-md border border-transparent hover:border-pink-100 transition-all">
-
       {/* Default Badge only */}
       {address.isDefault && (
-        <Badge className="mb-4 bg-[#168BA0] text-white">
-          Default Address
-        </Badge>
+        <Badge className="mb-4 bg-[#168BA0] text-white">Default Address</Badge>
       )}
 
       <div className="space-y-1 mb-6">
@@ -49,17 +38,15 @@ export const AddressCard = ({ address }: { address: any }) => {
           {address.fullName}
         </h3>
 
-        <p className="text-[14px] text-gray-400 font-medium">
-          {address.phone}
-        </p>
+        <p className="text-[14px] text-gray-400 font-medium">{address.phone}</p>
 
         <p className="text-[14px] text-gray-400">
-          {address.street}, {address.locality}, {address.city}, {address.state}, {address.pincode}
+          {address.street}, {address.locality}, {address.city}, {address.state},{" "}
+          {address.pincode}
         </p>
       </div>
 
       <div className="flex gap-3">
-
         <Button
           variant="outline"
           onClick={() => router.push(`/dashboard/edit-address/${address.id}`)}
@@ -72,24 +59,22 @@ export const AddressCard = ({ address }: { address: any }) => {
           <>
             <Button
               variant="outline"
-              onClick={setDefault}
-              className="flex-1 border-[#168BA0] text-[#168BA0]"
+              onClick={handleDefault}
+              disabled={loadingId === address.id}
             >
-              Set Default
+              {loadingId === address.id ? "Setting..." : "Set Default"}
             </Button>
 
             <Button
               variant="outline"
-              onClick={deleteAddress}
-              className="border-red-100 text-red-500 hover:bg-red-50"
+              onClick={handleDelete}
+              disabled={loadingId === address.id}
             >
-              <IconTrash size={20}/>
+              <IconTrash size={20} />
             </Button>
           </>
         )}
-
       </div>
-
     </Card>
   );
 };

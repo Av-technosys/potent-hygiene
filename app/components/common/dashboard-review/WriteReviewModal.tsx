@@ -14,6 +14,8 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
 import { IconPencil, IconStarFilled } from "@tabler/icons-react";
+import { apiFetch } from "@/lib/apiFetch";
+import { toast } from "sonner";
 
 export const WriteReviewModal = ({ product }: { product: any }) => {
   const [rating, setRating] = useState(5);
@@ -29,7 +31,7 @@ export const WriteReviewModal = ({ product }: { product: any }) => {
     try {
       setLoading(true);
 
-      const res = await fetch("/api/reviews", {
+      const res = await apiFetch("/reviews", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -44,19 +46,18 @@ export const WriteReviewModal = ({ product }: { product: any }) => {
         }),
       });
 
-      const data = await res.json();
 
-      console.log("Review API Response:", data);
+      if (res.status === 200) {
+        toast.success("✅ Review submitted successfully");
 
-      if (res.ok) {
-        alert("Review submitted successfully");
+        // better than reload (optional)
+        // update state instead of reload
         window.location.reload();
       } else {
-        alert("Failed to submit review");
+        toast.error(res.data?.error || "❌ Failed to submit review");
       }
-
     } catch (error) {
-      console.log("Review Error:", error);
+      console.log("💥 Review Error:", error);
     } finally {
       setLoading(false);
     }

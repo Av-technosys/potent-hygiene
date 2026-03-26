@@ -6,9 +6,9 @@ import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 
 import { revalidatePath } from "next/cache";
-import { cart, cartItem, productVariant, product } from "@/db/schema";
-import { order,  orderItem,  payment,  users } from "@/db/schema";
-import { getCurrentUser } from "../user/action";
+import { productVariant } from "@/db/schema";
+import { order, orderItem, payment, users } from "@/db/schema";
+import { requireUserWithRefresh } from "../user/action";
 
 export const fetchOrders = async ({
   page = 1,
@@ -214,14 +214,14 @@ export async function updateOrderStatus(id: string, status: string | any) {
 
 export async function createOrder({
   items,
-  userId,
   fixedAmount,
   address,
+  userId,
   razorpayPaymentId,
   razorpayOrderId,
 }: {
-  items:any;
-  userId: string;
+  items: any;
+  userId: any
   fixedAmount: number;
   address: any;
   razorpayPaymentId: string;
@@ -231,12 +231,11 @@ export async function createOrder({
     if (!items || items.length === 0) {
       throw new Error("Order items are required");
     }
+    const productIds = items
+      .map((i: any) => i.productVariantId)
+      .filter((id: any): id is string => !!id);
 
-    const productIds = items.map(
-      (i:any) => (i as any).id || (i as any).productId,
-    );
 
-    
 
     const products = await db
       .select()
@@ -269,10 +268,10 @@ export async function createOrder({
 
       const orderId = insertedOrder[0].id;
 
-      const orderItemsToInsert = items.map((item:any) => {
+      const orderItemsToInsert = items.map((item: any) => {
         // const variantId =
         //   (item as any).id || (item as any).productId;
-        const variantId = item.id; 
+        const variantId = item.productVariantId;
         const p = productMap.get(variantId);
 
         if (!p || !p.name || !p.slug || p.basePrice == null) {
@@ -333,31 +332,31 @@ export async function createOrder({
 }
 
 export async function getOrdersByUserId() {
- try{
-  const {userId} = await getCurrentUser()
-  const orders = await db
-    .select()
-    .from(order)
-    .where(eq(order.userId, userId))
-    .orderBy(desc(order.createdAt));
+  try {
+    const { userId } = await requireUserWithRefresh()
+    const orders = await db
+      .select()
+      .from(order)
+      .where(eq(order.userId, userId))
+      .orderBy(desc(order.createdAt));
 
-  const orderData = await Promise.all(
-    orders.map(async (order) => {
-      const items = await db
-        .select()
-        .from(orderItem)
-        .where(eq(orderItem.orderId, order.id));
-      return {
-        ...order,
-        order_items: items,
-      };
-    }),
-  )
+    const orderData = await Promise.all(
+      orders.map(async (order) => {
+        const items = await db
+          .select()
+          .from(orderItem)
+          .where(eq(orderItem.orderId, order.id));
+        return {
+          ...order,
+          order_items: items,
+        };
+      }),
+    )
 
-  return orderData;
-}catch(error){
-  console.log(error)
-}
+    return orderData;
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 

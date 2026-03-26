@@ -62,7 +62,7 @@ const Page = () => {
     setLoading(true);
 
     try {
-      await signIn({
+       await signIn({
         email: formData.email,
         password: formData.password,
       });

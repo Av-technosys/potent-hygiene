@@ -10,6 +10,8 @@ import {
   clearCart as clearCartDB,
   getCart,
 } from "@/helper/cart/action";
+import { isUserLoggedIn } from "@/helper/auth/action";
+import { toast } from "sonner";
 
 // Types
 type CartItem = {
@@ -24,7 +26,18 @@ type CartItem = {
 
 // Add to cart
 export const addToCart = async (item: CartItem) => {
-  console.log("Adding to cart in zustand");
+
+  const isAuth = await isUserLoggedIn()
+
+  if (!isAuth) {
+    toast.info("Please login to add items to cart");
+
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 1200);
+
+    return; // ✅ stop execution
+  }
 
   const normalizedItem = {
     productVariantId: item.productVariantId,
@@ -39,7 +52,6 @@ export const addToCart = async (item: CartItem) => {
   // ✅ optimistic UI
   useCartStore.getState().addItem(normalizedItem);
 
-  console.log("Synced to Zustand, now DB...");
 
   // ✅ DB sync
   addToCartDB(item.productVariantId, 1).catch((error) => {

@@ -30,7 +30,7 @@ import {
   IconAddressBook,
 } from "@tabler/icons-react";
 import { useCartStore } from "@/store/cartStore";
-import { session } from "@/helper/auth/action";
+import { isUserLoggedIn } from "@/helper/auth/action";
 import { getUserWishlist } from "@/helper";
 
 const navLinks = [
@@ -79,7 +79,7 @@ export function Navbar() {
 
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const [cartCount,setCartCount] = useState(0)
+  const [cartCount, setCartCount] = useState(0);
 
   const isDashboard = useMemo(
     () => pathname.startsWith("/dashboard"),
@@ -90,29 +90,21 @@ export function Navbar() {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
-
-    const loadData = async()=>{
+    const loadData = async () => {
       const wishlist = await getUserWishlist();
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]")
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
-      setWishlistCount(wishlist.length)
-      const totalCart = cart.reduce((acc:any,item:any)=>acc + (item.quantity || 1),0)
-      setCartCount(totalCart)
-
-    }
-
-
+      setWishlistCount(wishlist.length);
+      const totalCart = cart.reduce(
+        (acc: any, item: any) => acc + (item.quantity || 1),
+        0,
+      );
+      setCartCount(totalCart);
+    };
 
     const checkSession = async () => {
-      try {
-        const res: any = await session();
-
-        const isAuth = res?.authenticated ?? false;
-        setIsLoggedIn(isAuth);
-      } catch (err) {
-        console.log(err);
-        setIsLoggedIn(false);
-      }
+      const isAuth = await isUserLoggedIn();
+      setIsLoggedIn(isAuth);
     };
 
     loadData();

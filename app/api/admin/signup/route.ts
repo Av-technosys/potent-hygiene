@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { SignUpCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { cognito, generateSecretHash } from "@/lib/cognito";
+import { cognito, generateSecretHash } from "@/helper/cognito";
 import { db } from "@/db";
 import { admins } from "@/db/schema";
 

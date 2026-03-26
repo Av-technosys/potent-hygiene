@@ -34,8 +34,19 @@ export async function POST(req: Request) {
       },
       { status: 200 }
     );
-    console.log("SETTING COOKIE:", result.accessToken?.slice(0, 20));
     response.cookies.set("accessToken", result.accessToken!, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
+    response.cookies.set("idToken", result.idToken!, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      path: "/",
+    });
+      response.cookies.set("refreshToken", result.refreshToken!, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",

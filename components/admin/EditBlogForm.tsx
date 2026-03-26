@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useState } from "react";
@@ -12,7 +13,7 @@ import {
   IconX,
   IconPhoto,
   IconUser,
-  IconRefresh
+  IconRefresh,
 } from "@tabler/icons-react";
 import RichTextEditor from "../ui/rich-text-editor";
 import { useFileUpload } from "@/helper";
@@ -163,15 +164,15 @@ export default function EditBlogForm({ initialData }: { initialData: any }) {
                 onChange={(e) => handleFileUpload(e, "image")}
               />
               <p className="text-sm text-gray-500 flex items-center justify-center gap-2">
-  {formData.image ? (
-    <>
-      <IconRefresh className="w-4 h-4" />
-      Change Image
-    </>
-  ) : (
-    "Upload Image"
-  )}
-</p>
+                {formData.image ? (
+                  <>
+                    <IconRefresh className="w-4 h-4" />
+                    Change Image
+                  </>
+                ) : (
+                  "Upload Image"
+                )}
+              </p>
             </div>
 
             {formData.image && (
@@ -220,15 +221,15 @@ export default function EditBlogForm({ initialData }: { initialData: any }) {
                 />
 
                 <span className="text-sm text-gray-600 flex items-center justify-center gap-2">
-  {formData.userImage ? (
-    <>
-      <IconRefresh className="w-4 h-4" />
-      Change Photo
-    </>
-  ) : (
-    "Upload Photo"
-  )}
-</span>
+                  {formData.userImage ? (
+                    <>
+                      <IconRefresh className="w-4 h-4" />
+                      Change Photo
+                    </>
+                  ) : (
+                    "Upload Photo"
+                  )}
+                </span>
               </div>
 
               {formData.userImage && (
@@ -294,7 +295,9 @@ export default function EditBlogForm({ initialData }: { initialData: any }) {
           disabled={loading}
           className="bg-[#168BA0] hover:bg-[#137688] text-white px-10 py-4 text-lg font-bold shadow-md"
         >
-          {loading ? "Saving Changes..." : (
+          {loading ? (
+            "Saving Changes..."
+          ) : (
             <>
               <IconDeviceFloppy className="w-5 h-5 mr-2" />
               Update Post

@@ -9,11 +9,11 @@ import {
   wishlistItem,
 } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
-import { getCurrentUser } from "../user/action";
+import { requireUserWithRefresh } from "../user/action";
 
 export async function createWishlist(productVarientId: any) {
   try {
-    const {userId} = await getCurrentUser()
+    const {userId} = await requireUserWithRefresh()
     const existingWishlist = await db
       .select()
       .from(wishlist)
@@ -58,7 +58,7 @@ export async function createWishlist(productVarientId: any) {
 
 export async function getUserWishlist() {
   try {
-    const {userId} = await getCurrentUser()
+    const {userId} = await requireUserWithRefresh()
     
     const result = await db.transaction(async (tx) => {
       const userWishlist = await tx
@@ -100,7 +100,7 @@ export async function removeItemFromWishlist(
  
 ) {
   try {
-    const {userId} = await getCurrentUser()
+    const {userId} = await requireUserWithRefresh()
     await db.transaction(async (tx) => {
       const wishlistIdSubquery = tx
         .select({ id: wishlist.id })
@@ -138,7 +138,7 @@ export async function addWishlistItemToCart(
 
 ) {
   try {
-    const {userId} = await getCurrentUser()
+    const {userId} = await requireUserWithRefresh()
      await db.transaction(async (tx) => {
       const wishlistIdSubquery = tx
         .select({ id: wishlist.id })

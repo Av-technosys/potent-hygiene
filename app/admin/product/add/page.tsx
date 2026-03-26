@@ -21,6 +21,7 @@ import GallerySection from "../GallerySection";
 import AttributeSection from "../AttributeSection";
 import { validateImage } from "@/lib/validateImage";
 import { useFileUpload } from "@/helper";
+import { apiFetch } from "@/lib/apiFetch";
 
 type ImageItem = {
   key: string;
@@ -77,13 +78,24 @@ export default function AddProductForm() {
     replacementDays: 0
   }]);
 
-  useEffect(() => {
-    fetch("/api/subscription-plans")
-      .then(r => r.json())
-      .then(res => {
-         if(res?.success) setAvailablePlans(res.data);
-      });
-  }, []);
+useEffect(() => {
+  const loadPlans = async () => {
+    try {
+      const res = await apiFetch("/subscription-plans");
+
+      if (res.status === 200 && res.data?.success) {
+        setAvailablePlans(res.data.data);
+      } else {
+        console.error("❌ Failed to load plans:", res.data);
+      }
+
+    } catch (err) {
+      console.error("💥 Error loading plans:", err);
+    }
+  };
+
+  loadPlans();
+}, []);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const galleryRef = useRef<HTMLInputElement>(null);

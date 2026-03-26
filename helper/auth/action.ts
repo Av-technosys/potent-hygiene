@@ -102,13 +102,25 @@ export async function refreshToken(payload: {
 }
 
 export async function logout() {
-  return request("/logout", {
+  await request("/logout", {
     method: "POST",
   });
-  
+
+  window.location.href = "/login"; 
 }
 export async function session() {
   return request('/session' ,{
     method: "GET"
   })
+}
+
+export async function isUserLoggedIn(): Promise<boolean> {
+  try {
+    const res: any = await session();
+
+    return res?.authenticated ?? false;
+  } catch (error) {
+    console.error("Auth check failed:", error);
+    return false;
+  }
 }

@@ -40,7 +40,6 @@ export default function CategoryProducts({ products }: any) {
       originalPrice: product.strikethroughPrice,
     });
 
-    toast.success("Product added to cart successfully.");
   };
 
   return (

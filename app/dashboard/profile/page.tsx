@@ -6,35 +6,32 @@ import { useRouter } from "next/navigation";
 import { AccountInfo } from "@/app/components/common/dashboard-profile/AccountInfo";
 import { EditAddressForm } from "@/app/components/common/dashboard-profile/EditAddress";
 import { ProfileHeader } from "@/app/components/common/dashboard-profile/ProfileHeader";
+import { getProfile, updateProfile } from "@/helper";
 
 interface User {
   fullName: string;
   phone: string;
   email: string;
+  emailVerified?: boolean | null;
+  createdAt?: Date | string | null;
 }
 
 export default function ProfilePage() {
-  const router = useRouter();
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [user, setUser] = useState<User | null>(null);
 
   useEffect(() => {
-
-
-
     const fetchProfile = async () => {
       try {
-        const res = await fetch(`/api/profile`);
-        if (!res.ok) {
-          throw new Error("Failed to load profile");
-        }
-        const data = await res.json();
+        const data = await getProfile();
         setUser({
           fullName: data.fullName,
           phone: data.phone,
           email: data.email,
+          emailVerified: data.emailVerified,
+          createdAt: data.createdAt,
         });
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -44,7 +41,7 @@ export default function ProfilePage() {
     };
 
     fetchProfile();
-  }, [router]);
+  }, []);
 
   const handleChange = (field: keyof User, value: string) => {
     setUser((prev) => (prev ? { ...prev, [field]: value } : prev));
@@ -54,23 +51,12 @@ export default function ProfilePage() {
     if (!user) return;
 
     setIsSaving(true);
-    try {
-      const res = await fetch("/api/profile", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: user.email,
-          fullName: user.fullName,
-          phone: user.phone,
-        }),
-      });
 
-      if (!res.ok) {
-        console.error("Failed to update profile");
-        return;
-      }
+    try {
+      await updateProfile({
+        fullName: user.fullName,
+        phone: user.phone,
+      });
 
       setIsEditing(false);
     } catch (error) {
@@ -83,17 +69,16 @@ export default function ProfilePage() {
   if (isLoading || !user) {
     return (
       <div className="space-y-6">
-        <div className="text-center py-10 text-gray-500">Loading profile...</div>
+        <div className="text-center py-10 text-gray-500">
+          Loading profile...
+        </div>
       </div>
     );
   }
 
   return (
     <div className="space-y-6">
-      <ProfileHeader
-        isEditing={isEditing}
-        onEdit={() => setIsEditing(true)}
-      />
+      <ProfileHeader isEditing={isEditing} onEdit={() => setIsEditing(true)} />
 
       <EditAddressForm
         isEditing={isEditing}
@@ -104,7 +89,7 @@ export default function ProfilePage() {
         onCancel={() => setIsEditing(false)}
       />
 
-      <AccountInfo />
+      <AccountInfo user={user} />
     </div>
   );
 }

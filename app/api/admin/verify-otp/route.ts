@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { cognitoConfirmSignUp } from "@/lib/cognito";
+import { cognitoConfirmSignUp } from "@/helper/cognito";
 
 export async function POST(req: Request) {
   try {

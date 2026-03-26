@@ -8,19 +8,20 @@ import { useEffect, useState } from "react";
 
 
 export default function OrderHistoryPage() {
-  const [ordersData, setOrdersData] = useState<any>([]);
-  useEffect(() => {
+const [ordersData, setOrdersData] = useState<any[]>([]);
+
+useEffect(() => {
     const fetchUserOrders = async () => {
-      const orders_data = await getOrdersByUserId();
-      setOrdersData(orders_data);
+      const data:any = await getOrdersByUserId();
+      setOrdersData(data);
     };
 
     fetchUserOrders();
   }, []);
 
-  if (ordersData.length === 0) {
-    return <div>Loading orders...</div>;
-  }
+if (!ordersData || ordersData.length === 0) {
+  return <div>Loading orders...</div>;
+}
   return (
     <div className="space-y-6">
       <OrderHistoryHeader />

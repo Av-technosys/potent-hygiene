@@ -6,21 +6,19 @@ import { StatsCards } from "../components/common/dashboard/StatsCards";
 import { RecentOrders } from "../components/common/dashboard/RecentOrders";
 import { RecentRewards } from "../components/common/dashboard/RecentRewards";
 import { LogoutButton } from "../components/common/LogoutButton";
+import { apiFetch } from "@/lib/apiFetch";
 
 export default function DashboardPage() {
   const router = useRouter();
   const [name, setName] = useState("");
 
   useEffect(() => {
-
-
     const fetchUser = async () => {
       try {
-        const res = await fetch(`/api/profile`);
-        const data = await res.json();
+        const res = await apiFetch(`/profile`);
 
-        if (res.ok) {
-          setName(data.fullName);
+        if (res.status === 200) {
+          setName(res.data.fullName);
         }
       } catch (error) {
         console.error("User fetch error:", error);
@@ -34,7 +32,6 @@ export default function DashboardPage() {
     <>
       <div className="max-w-325 mx-auto flex items-start gap-8">
         <div className="flex-1 w-full">
-
           <div className="bg-linear-to-r from-[#168BA0] to-[#AFE7F1] rounded-2xl p-10 mb-8 text-white shadow-sm relative overflow-hidden">
             <div className="relative z-10">
               <h1 className="text-3xl font-extrabold tracking-tight mb-2">
