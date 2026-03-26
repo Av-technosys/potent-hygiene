@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { db } from "@/db";
 import { users } from "@/db/schema";
-import { cognitoConfirmSignUp } from "@/helper/cognito";
+import { cognitoConfirmSignUp, cognitoUpdateUserAttribute } from "@/helper/cognito";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 
@@ -29,6 +29,17 @@ export async function POST(req: Request) {
             })
             .where(eq(users.email, email));
 
+        // puuting user id in cognito user attributes
+
+        await cognitoUpdateUserAttribute({
+            email,
+            userAttribute: [
+                {
+                    Name: "custom:user_id",
+                    Value: dbUser.id, 
+                },
+            ],
+        });
         return NextResponse.json(
             { message: "Email verified successfully." },
             { status: 200 }

@@ -4,13 +4,16 @@ import { cognito, generateSecretHash } from "@/helper/cognito";
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
 import { NextResponse } from "next/server";
 import jwt from "jsonwebtoken";
+import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
+    const cookieStore = await cookies();
+
     const body = await req.json();
     const { refreshToken, idToken } = body;
 
-     const decoded: any = jwt.decode(idToken);
-     const username = decoded["cognito:username"] || decoded.email;
+    const decoded: any = jwt.decode(idToken);
+    const username = decoded["cognito:username"] || decoded.email;
 
 
     if (!refreshToken)
@@ -29,9 +32,27 @@ export async function POST(req: Request) {
 
         const response = await cognito.send(command);
 
+        const result = response?.AuthenticationResult;
+
+        const newAccessToken = result?.AccessToken;
+        const newIdToken = result?.IdToken;
+
+        if (!newAccessToken || !newIdToken) {
+            throw new Error("Invalid refresh response");
+        }
+        cookieStore.set("accessToken", newAccessToken, {
+            httpOnly: true,
+            secure: true,
+            path: "/",
+        });
+
+        cookieStore.set("idToken", newIdToken, {
+            httpOnly: true,
+            secure: true,
+            path: "/",
+        });
         return NextResponse.json({ response: response }, { status: 200 });
     } catch (err: any) {
-        console.error('refreshToken error:', err);
         return NextResponse.json({ message: err.message }, { status: 500 });
     }
 }

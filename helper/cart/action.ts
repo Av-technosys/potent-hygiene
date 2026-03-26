@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
-import { tempUserId } from '@/const/globalconst';
 import { db } from '@/src/db';
 import { cart, cartItem, productVariant } from '@/src/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
+import { requireUserWithRefresh } from '../user/action';
 
 export async function getCart() {
   try {
-    const userId = tempUserId;
+    const { userId } = await requireUserWithRefresh()
     const userCart = await db
       .select()
       .from(cart)
@@ -20,47 +20,25 @@ export async function getCart() {
       return { success: true, items: [] };
     }
 
-    const cartItems = await db
-      .select()
+    const itemsWithDetails = await db
+      .select({
+        productVariantId: cartItem.productVariantId,
+        quantity: cartItem.quantity,
+        title: productVariant.name,
+        image: productVariant.bannerImage,
+        price: productVariant.basePrice,
+        originalPrice: productVariant.strikethroughPrice,
+        slug: productVariant.slug,
+        sku: productVariant.sku,
+      })
       .from(cartItem)
+      .leftJoin(
+        productVariant,
+        eq(cartItem.productVariantId, productVariant.id)
+      )
       .where(eq(cartItem.cartId, userCart.id));
 
-    // Fetch product details for each cart item
-    const itemsWithDetails = await Promise.all(
-      cartItems.map(async (item: any) => {
-        // Only fetch if productVariantId exists
-        if (!item.productVariantId) {
-          return {
-            productVariantId: item.productVariantId,
-            quantity: item.quantity ?? 0,
-            title: 'Product',
-            image: '/product.png',
-            price: 0,
-            originalPrice: null,
-            slug: '',
-            sku: ''
-          };
-        }
 
-        // Fetch product variant details
-        const variant = await db
-          .select()
-          .from(productVariant)
-          .where(eq(productVariant.id, item.productVariantId))
-          .then(r => r[0]);
-
-        return {
-          productVariantId: item.productVariantId,
-          quantity: item.quantity ?? 0,
-          title: variant?.name || 'Product',
-          image: variant?.bannerImage || '/product.png',
-          price: variant?.basePrice || 0,
-          originalPrice: variant?.strikethroughPrice,
-          slug: variant?.slug || '',
-          sku: item?.sku || ''
-        };
-      })
-    );
 
     return { success: true, items: itemsWithDetails };
   } catch (error) {
@@ -71,8 +49,13 @@ export async function getCart() {
 export async function addToCart(productVariantId: string, quantity: number = 1) {
   try {
 
-    const userId = tempUserId;
-
+    const { userId } = await requireUserWithRefresh()
+    if (!userId) {
+      return {
+        success: false,
+        error: "UNAUTHORIZED",
+      };
+    }
     const result = await db.transaction(async (tx) => {
       // Get or create cart
       let existingCart = await tx
@@ -153,10 +136,7 @@ export async function addToCart(productVariantId: string, quantity: number = 1) 
 
 export async function removeFromCart(productVariantId: string) {
   try {
-
-
-    const userId = tempUserId;
-
+    const { userId } = await requireUserWithRefresh()
     const result = await db.transaction(async (tx) => {
       const userCart = await tx
         .select()
@@ -196,8 +176,7 @@ export async function removeFromCart(productVariantId: string) {
 export async function updateCartItemQuantity(productVariantId: string, quantity: number) {
   try {
 
-    const userId = tempUserId;
-
+    const { userId } = await requireUserWithRefresh()
     if (quantity < 0) {
       return { success: false, error: 'Invalid quantity' };
     }
@@ -255,8 +234,7 @@ export async function updateCartItemQuantity(productVariantId: string, quantity:
 export async function clearCart() {
   try {
 
-    const userId = tempUserId;
-
+    const { userId } = await requireUserWithRefresh()
     const result = await db.transaction(async (tx) => {
       const userCart = await tx
         .select()
@@ -291,7 +269,7 @@ export async function clearCart() {
 export async function syncCartWithDatabase() {
   try {
 
-    const userId = tempUserId;
+    const { userId } = await requireUserWithRefresh()
     const userCart = await db
       .select()
       .from(cart)

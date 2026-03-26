@@ -3,13 +3,14 @@
 import React from "react";
 import { logout } from "@/helper/auth/action";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export const LogoutButton: React.FC = () => {
-
+  const router = useRouter();
   const handleLogout = () => {
-   logout()
-   toast.success("Logout SuccessFully")
-   window.location.href = "/login"; 
+    logout();
+    toast.success("Logout SuccessFully");
+    router.push("/login");
   };
 
   return (

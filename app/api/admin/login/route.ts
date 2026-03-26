@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
 import { admins } from "@/src/db/schema";
 import { eq } from "drizzle-orm";
-import { authSingIn } from "@/lib/cognito";
+import { authSingIn } from "@/helper/cognito";
 
 export async function POST(request: NextRequest) {
   try {

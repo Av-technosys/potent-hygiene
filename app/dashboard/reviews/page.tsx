@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +8,7 @@ import {
   ReviewCard,
   ReviewHeader,
 } from "@/app/components/common/dashboard-review/ReviewHeader";
+import { apiFetch } from "@/lib/apiFetch";
 
 export default function ReviewPage() {
 
@@ -21,14 +23,24 @@ export default function ReviewPage() {
     },
   ]);
 
-  useEffect(() => {
-    fetch("/api/reviews")
-      .then((res) => res.json())
-      .then((data) => {
-        setReviews(data);
-      });
-  }, []);
+useEffect(() => {
+  const loadReviews = async () => {
+    try {
+      const res = await apiFetch("/reviews");
 
+      if (res.status === 200) {
+        setReviews(res.data);
+      } else {
+        console.error("❌ Failed to fetch reviews:", res.data);
+      }
+
+    } catch (error) {
+      console.error("💥 Error fetching reviews:", error);
+    }
+  };
+
+  loadReviews();
+}, []);
   return (
     <div className="space-y-6">
       <ReviewHeader />

@@ -19,10 +19,11 @@ export {
   createOrder,
 } from "./order/action";
 
-export {getAddresses} from "./user/action";
+export {getAddresses, createUserAddress ,getUserAddressById, updateProfile, getProfile, updateUserAddress,deleteUserAddress,setDefaultAddress} from "./user/action";
 
 //cart
 export {
+  getCart,
   addToCart,
   removeFromCart,
   syncCartWithDatabase,

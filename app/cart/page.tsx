@@ -1,4 +1,5 @@
 // app/cart/page.tsx
+export const dynamic = "force-dynamic";
 import { Navbar } from "@/app/components/common/Navbar";
 import { CartItems } from "../components/common/cart/CartItems";
 import { OrderSummary } from "../components/common/cart/OrderSummary";

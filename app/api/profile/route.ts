@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/src/db";
 import { users } from "@/src/db/schema";
 import { eq } from "drizzle-orm";
-import { getCurrentUser } from "@/helper/user/action";
+import { requireUserWithRefresh } from "@/helper/user/action";
 
 export async function GET() {
   try {
-    const { email } = await getCurrentUser();
+
+    const { email } = await requireUserWithRefresh();
 
     if (!email) {
       return NextResponse.json(
@@ -53,7 +54,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const { email } = await getCurrentUser(); 
+    const { email } = await requireUserWithRefresh();
 
     const updated = await db
       .update(users)

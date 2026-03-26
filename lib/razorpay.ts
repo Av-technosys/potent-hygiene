@@ -30,14 +30,14 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   name,
   description,
   items,
-  userId,
+  // userId,
   address,
 }: {
   amount: number;
   name: string;
   description: string;
   items: any[];
-  userId: string;
+  // userId: string;
   address: any;
 
 }) => {
@@ -78,7 +78,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
             body: JSON.stringify({
               ...response,
               items,
-              userId,
+              // userId,
               address,
               amount,
             }),
