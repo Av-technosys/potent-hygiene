@@ -11,14 +11,20 @@ import AboutHero from "../../components/common/Product-detail/abouthero";
 import JournalsSection from "../../components/common/Product-detail/journal";
 import RelatedProducts from "../../components/common/Product-detail/alsolike";
 import Footer from "../../components/common/Footer";
-import { getFullProduct, getProductSimilarProducts } from "@/helper";
+import {
+  getFullProduct,
+  getProductReviews,
+  getProductSimilarProducts,
+} from "@/helper";
 
 export default async function Page({ params }: any) {
-  const { slug } = await params; 
+  const { slug } = await params;
 
   const product = await getFullProduct(slug);
-   const similarProducts = await getProductSimilarProducts(slug) || [];
-   const catetoryName = similarProducts[0]?.category;
+  const similarProducts = (await getProductSimilarProducts(slug)) || [];
+  const reviewWithMedia = await getProductReviews(slug);
+  console.log("Reviews", reviewWithMedia);
+  const catetoryName = similarProducts[0]?.category;
 
   if (!product) {
     return <div className="text-center py-20">Product not found</div>;
@@ -27,10 +33,14 @@ export default async function Page({ params }: any) {
     <div>
       <Navbar />
       <div className="px-4 md:px-10">
-        <Product categoryName={catetoryName} variants={product.variants} productInfo={product.targetVariant} />
+        <Product
+          categoryName={catetoryName}
+          variants={product.variants}
+          productInfo={product.targetVariant}
+        />
         <TrustBadges />
         <AboutProduct variant={product.targetVariant} />
-        <ProductReviews />
+        <ProductReviews reviews={reviewWithMedia} />
         <div className="container mx-auto ">
           <Image
             src="/review.png"

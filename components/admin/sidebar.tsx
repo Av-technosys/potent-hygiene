@@ -24,7 +24,7 @@ const navItems = [
   { label: "Category", href: "/admin/category", icon: List },
   { label: "Order", href: "/admin/order", icon: FileText },
   { label: "User", href: "/admin/users", icon: User },
-  { label: "Review", href: "/admin/review", icon: MessageSquare },
+  { label: "Review", href: "/admin/reviews", icon: MessageSquare },
     { label: "Payment", href: "/admin/payment", icon: IndianRupee },
 
   {
