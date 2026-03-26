@@ -79,7 +79,6 @@ export function Navbar() {
 
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
-  const [cartCount, setCartCount] = useState(0);
 
   const isDashboard = useMemo(
     () => pathname.startsWith("/dashboard"),
@@ -92,14 +91,8 @@ export function Navbar() {
   useEffect(() => {
     const loadData = async () => {
       const wishlist = await getUserWishlist();
-      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
 
       setWishlistCount(wishlist.length);
-      const totalCart = cart.reduce(
-        (acc: any, item: any) => acc + (item.quantity || 1),
-        0,
-      );
-      setCartCount(totalCart);
     };
 
     const checkSession = async () => {

@@ -106,7 +106,6 @@ export async function logout() {
     method: "POST",
   });
 
-  window.location.href = "/login"; 
 }
 export async function session() {
   return request('/session' ,{

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,16 +25,6 @@ export const AddressNewForm = ({ onCancel }: { onCancel: () => void }) => {
     userId: "",
     isDefault: false,
   });
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      setForm({
-        ...form,
-      });
-    };
-
-    fetchUser();
-  }, []);
 
   const handleChange = (e: any) => {
     setForm({
