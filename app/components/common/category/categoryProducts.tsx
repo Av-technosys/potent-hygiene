@@ -4,42 +4,28 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Heart } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
-import { toast } from "sonner";
-import {  getUserWishlist } from "@/helper";
+import { useWishlistStore } from "@/store/WishlistStore";
+import { addToCart as addToCartAction } from "@/store/cartActions";
 import AddToWishlist from "./addToWishlist";
-import { addToCart as addToCartAction } from "@/store/cartActions"; 
 
 export default function CategoryProducts({ products }: any) {
   const router = useRouter();
+  const wishlistItems = useWishlistStore((state) => state.items);
 
-  const [wishlist, setWishlist] = useState<string[]>([]);
-
-  const fetchWishlist = async () => {
-
-        const data = await getUserWishlist();
-        setWishlist(data.map((p: any) => p.productVariantId));
-      }
-    
-      useEffect(() => {
-    fetchWishlist();
-  }, []);
-
+  const wishlist = wishlistItems.map((i) => i.productVariantId);
 
   // ✅ FIXED ADD TO CART
   const addToCart = async (product: any) => {
     await addToCartAction({
-      productVariantId: product.id, 
-      sku: "default", 
+      productVariantId: product.id,
+      sku: "default",
       slug: product.slug || "",
       title: product.name,
       image: product.bannerImage || "/product.png",
       price: product.basePrice || 0,
       originalPrice: product.strikethroughPrice,
     });
-
   };
 
   return (
@@ -50,8 +36,7 @@ export default function CategoryProducts({ products }: any) {
           className="flex relative flex-col rounded-md p-3 shadow-md bg-white"
         >
           {/* Wishlist */}
-          <AddToWishlist productVarientId={value.id} wishlist={wishlist} setWishlist={setWishlist} />
-
+          <AddToWishlist product={value} />
           {/* Discount */}
           {value.strikethroughPrice && (
             <div className="absolute right-2 top-2 z-10">

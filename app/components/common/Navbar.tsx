@@ -5,6 +5,7 @@ import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useWishlistStore } from "@/store/WishlistStore";
 import { Search, Heart, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +32,6 @@ import {
 } from "@tabler/icons-react";
 import { useCartStore } from "@/store/cartStore";
 import { isUserLoggedIn } from "@/helper/auth/action";
-import { getUserWishlist } from "@/helper";
 
 const navLinks = [
   { name: "Home", href: "/", icon: <IconHome size={20} /> },
@@ -85,31 +85,16 @@ export function Navbar() {
     [pathname],
   );
 
-  const [wishlistCount, setWishlistCount] = useState(0);
+  const wishlistCount = useWishlistStore((state) => state.totalItems());
   const [isLoggedIn, setIsLoggedIn] = useState<boolean | null>(null);
 
   useEffect(() => {
-    const loadData = async () => {
-      const wishlist = await getUserWishlist();
-
-      setWishlistCount(wishlist.length);
-    };
-
     const checkSession = async () => {
       const isAuth = await isUserLoggedIn();
       setIsLoggedIn(isAuth);
     };
 
-    loadData();
     checkSession();
-
-    window.addEventListener("storage", loadData);
-    window.addEventListener("wishlistUpdated", loadData);
-
-    return () => {
-      window.removeEventListener("storage", loadData);
-      window.removeEventListener("wishlistUpdated", loadData);
-    };
   }, []);
 
   return (

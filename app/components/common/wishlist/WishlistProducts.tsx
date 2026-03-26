@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -6,50 +5,33 @@ import Image from "next/image";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
-import { useEffect, useState } from "react";
-import { addWishlistItemToCart, getUserWishlist, removeItemFromWishlist } from "@/helper";
-import { toast } from "sonner";
+import { useWishlistStore } from "@/store/WishlistStore";
+import { removeFromWishlist } from "@/store/WishlistActions";
+import { addToCart } from "@/store/cartActions";
 
 export default function WishlistProducts() {
-  const [products, setProducts] = useState<any[]>([]);
+  const products = useWishlistStore((state) => state.items);
 
-  const fetchWishlist = async () => {
-  
-      const data = await getUserWishlist();
-      setProducts(data);
-    
+  const removeWishlist = async (productVariantId: string) => {
+    await removeFromWishlist(productVariantId);
   };
 
-  useEffect(() => {
-    fetchWishlist();
-  }, []);
+  const addToCartHandler = async (product: any) => {
+    await addToCart({
+      productVariantId: product.productVariantId,
+      sku: "default",
+      slug: product.slug || "",
+      title: product.name,
+      image: product.image || "/product.png",
+      price: product.price || 0,
+      originalPrice: product.strikethroughPrice,
+    });
 
-  const removeWishlist = async (productVariantId: any) => {
-
-      const response = await removeItemFromWishlist(productVariantId);
-      if (response.success) {
-        toast.success(response.message);
-        window.dispatchEvent(new Event("wishlistUpdated"));
-        await fetchWishlist();
-      } 
-    
+    // optional: remove after adding
+    await removeFromWishlist(product.productVariantId);
   };
 
-  const addToCartHandler=async (productVariantId:any)=>{
-
-      const response = await addWishlistItemToCart(productVariantId);
-      if (response.success) {
-        toast.success(response.message);
-        window.dispatchEvent(new Event("wishlistUpdated"));
-        window.dispatchEvent(new Event("cartUpdated"))
-        await fetchWishlist();
-      } else {
-        toast.error(response.message);
-      }
-    
-  }
-
-  if (products.length === 0) {
+  if (!products || products.length === 0) {
     return (
       <div className="text-center py-20 text-gray-500">
         Your wishlist is empty
@@ -59,8 +41,8 @@ export default function WishlistProducts() {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <Card key={product.id} className="rounded-3xl shadow-sm">
+      {products.map((product: any) => (
+        <Card key={product.productVariantId} className="rounded-3xl shadow-sm">
           <CardContent className="p-4">
             <div className="relative aspect-square bg-[#EADCF3] rounded-xl flex items-center justify-center">
               <button
@@ -71,8 +53,8 @@ export default function WishlistProducts() {
               </button>
 
               <Image
+                alt={"product image"}
                 src={product.image}
-                alt={product.name}
                 width={180}
                 height={180}
               />
@@ -84,13 +66,18 @@ export default function WishlistProducts() {
               {product.price && (
                 <div className="flex gap-2 items-center">
                   <span className="font-bold">₹{product.price}</span>
-                  <span className="text-xs line-through text-gray-400">
-                    ₹{product.strikethroughPrice}
-                  </span>
+                  {product.strikethroughPrice && (
+                    <span className="text-xs line-through text-gray-400">
+                      ₹{product.strikethroughPrice}
+                    </span>
+                  )}
                 </div>
               )}
 
-              <Button onClick={()=> addToCartHandler(product.productVariantId)} className="w-full rounded-xl bg-[#1A8D91] text-white">
+              <Button
+                onClick={() => addToCartHandler(product)}
+                className="w-full rounded-xl bg-[#1A8D91] text-white"
+              >
                 Add to Cart
               </Button>
             </div>
