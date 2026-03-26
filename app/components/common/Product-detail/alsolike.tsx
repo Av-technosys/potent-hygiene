@@ -4,14 +4,6 @@ import Image from "next/image";
 import { Heart, Star } from "lucide-react";
 
 export default function RelatedProducts({ products }: any) {
-  // const products = [
-  //     { title: "Ultra Soft Sanitary Pads", tag: "Bestseller", image: "/product.png" },
-  //     { title: "Reusable Menstrual Cup", tag: "Eco friendly", image: "/product.png" },
-  //     { title: "Daily Comfort Pantyliners", tag: "Popular", image: "/product.png" },
-  //     { title: "Daily Comfort Pantyliners", tag: "Popular", image: "/product.png" },
-  //     { title: "Daily Comfort Pantyliners", tag: "Popular", image: "/product.png" },
-  // ];
-
   return (
     <section className="w-full mx-auto pb-16">
       <div className=" p-4 mb-8">
