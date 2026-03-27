@@ -205,7 +205,11 @@ export async function getAllProductsByCategorySlug(slug: string) {
         strikethroughPrice: productVariant.strikethroughPrice,
         slug: productVariant.slug,
         bannerImage: productVariant.bannerImage,
-        rating: productVariant.rating,
+        rateing1Star: productVariant.rateing1Star,
+        rateing2Star: productVariant.rateing2Star,
+        rateing3Star: productVariant.rateing3Star,
+        rateing4Star: productVariant.rateing4Star,
+        rateing5Star: productVariant.rateing5Star,
         sku: productVariant.sku,
       })
       .from(productVariant)

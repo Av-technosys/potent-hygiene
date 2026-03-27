@@ -159,12 +159,12 @@ export async function createProduct(formData: FormData) {
 
         // Subscriptions
         if (v.subscriptionPlans?.length) {
-            for (const planId of v.subscriptionPlans) {
-                allSubscriptionRows.push({
-                    productVariantId: variantId,
-                    subscriptionPlanId: planId
-                });
-            }
+          for (const planId of v.subscriptionPlans) {
+            allSubscriptionRows.push({
+              productVariantId: variantId,
+              subscriptionPlanId: planId
+            });
+          }
         }
       }
 
@@ -295,8 +295,11 @@ export async function updateProduct(formData: FormData): Promise<void> {
               isReplacement: v.isReplacement,
               returnDays: v.returnDays,
               replacementDays: v.replacementDays,
-              rating: 0,
-              reviewCount: 0,
+              rateing1Star: 0,
+              rateing2Star: 0,
+              rateing3Star: 0,
+              rateing4Star: 0,
+              rateing5Star: 0,
             })
             .returning({ id: productVariant.id });
           vId = created.id;
@@ -335,12 +338,12 @@ export async function updateProduct(formData: FormData): Promise<void> {
           .delete(productVariantSubscriptionPlan)
           .where(eq(productVariantSubscriptionPlan.productVariantId, vId!));
         if (v.subscriptionPlans?.length) {
-             await tx.insert(productVariantSubscriptionPlan).values(
-                v.subscriptionPlans.map((planId) => ({
-                    productVariantId: vId!,
-                    subscriptionPlanId: planId
-                }))
-             )
+          await tx.insert(productVariantSubscriptionPlan).values(
+            v.subscriptionPlans.map((planId) => ({
+              productVariantId: vId!,
+              subscriptionPlanId: planId
+            }))
+          )
         }
       }
     });
@@ -470,9 +473,12 @@ export async function getProductSimilarProducts(slug: string | any) {
         slug: productVariant.slug,
         basePrice: productVariant.basePrice,
         bannerImage: productVariant.bannerImage,
-        rating: productVariant.rating,
+        rateing1Star: productVariant.rateing1Star,
+        rateing2Star: productVariant.rateing2Star,
+        rateing3Star: productVariant.rateing3Star,
+        rateing4Star: productVariant.rateing4Star,
+        rateing5Star: productVariant.rateing5Star,
         strikethroughPrice: productVariant.strikethroughPrice,
-        reviewCount: productVariant.reviewCount,
         category: category.name
       })
       .from(productVariant)
