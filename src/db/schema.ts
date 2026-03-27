@@ -420,6 +420,7 @@ export const productVariant = pgTable(
 
     slug: varchar("slug").unique().notNull(),
     bannerImage: varchar("banner_image"),
+    highlights: varchar("highlights").array(),
 
     isInStock: boolean("is_in_stock").default(true),
     isReturnable: boolean("is_returnable").default(false),
@@ -640,5 +641,14 @@ export const payment = pgTable("payment", {
   paymentAmount: integer("payment_amount"),
   paymentCurrency: varchar("payment_currency"),
   // paymentGatewayOrderId: varchar("payment_gateway_order_id"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+
+// ================= SUBSCRIPTION PAYMENT =================
+
+export const subscriptionPayment = pgTable("subscription_payment", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  email: varchar("email").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
