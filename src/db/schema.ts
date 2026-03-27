@@ -430,8 +430,11 @@ export const productVariant = pgTable(
     returnDays: integer("return_days").default(0),
     replacementDays: integer("replacement_days").default(0),
 
-    rating: integer("rating").default(0),
-    reviewCount: integer("review_count").default(0),
+    rateing5Star: integer("rateing_5_star").default(0),
+    rateing4Star: integer("rateing_4_star").default(0),
+    rateing3Star: integer("rateing_3_star").default(0),
+    rateing2Star: integer("rateing_2_star").default(0),
+    rateing1Star: integer("rateing_1_star").default(0),
 
     isFreeDelivery: boolean("is_free_delivery").default(false),
 
