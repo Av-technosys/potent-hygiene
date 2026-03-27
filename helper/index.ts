@@ -41,7 +41,7 @@ export {
   resendOtp,
   forgotPassword
 } from "./auth/action"
-export {createWishlist,getUserWishlist,removeItemFromWishlist,addWishlistItemToCart} from "./wishlist/action";
+export {addToWishlistDB,getWishlistDB,removeFromWishlistDB} from "./wishlist/action";
 
 export {useFileUpload} from "./useFileUpload";
 

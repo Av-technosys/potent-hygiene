@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
 
-// ✅ IMPORTANT: use helper (not store)
 import { updateCartQuantity, removeFromCart } from "@/store/cartActions";
 
 export function CartItems() {
