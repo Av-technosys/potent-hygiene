@@ -1,60 +1,51 @@
-"use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// app/dashboard/page.tsx
+
+import { getUserProfile } from "@/helper";
+import { redirect } from "next/navigation";
+
 import { StatsCards } from "../components/common/dashboard/StatsCards";
 import { RecentOrders } from "../components/common/dashboard/RecentOrders";
 import { RecentRewards } from "../components/common/dashboard/RecentRewards";
-import { LogoutButton } from "../components/common/LogoutButton";
-import { apiFetch } from "@/lib/apiFetch";
 
-export default function DashboardPage() {
-  const router = useRouter();
-  const [name, setName] = useState("");
+export default async function DashboardPage() {
+  let data;
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res = await apiFetch(`/profile`);
-
-        if (res.status === 200) {
-          setName(res.data.fullName);
-        }
-      } catch (error) {
-        console.error("User fetch error:", error);
-      }
-    };
-
-    fetchUser();
-  }, [router]);
+  try {
+    data = await getUserProfile();
+  } catch (err: any) {
+    if (err.message === "UNAUTHORIZED") {
+      redirect("/login");
+    }
+    throw err;
+  }
 
   return (
-    <>
-      <div className="max-w-325 mx-auto flex items-start gap-8">
-        <div className="flex-1 w-full">
-          <div className="bg-linear-to-r from-[#168BA0] to-[#AFE7F1] rounded-2xl p-10 mb-8 text-white shadow-sm relative overflow-hidden">
-            <div className="relative z-10">
-              <h1 className="text-3xl font-extrabold tracking-tight mb-2">
-                Welcome back, {name || "User"}
-              </h1>
+    <div className="max-w-325 mx-auto flex items-start gap-8">
+      <div className="flex-1 w-full">
 
-              <p className="text-white/80 text-[15px] font-medium">
-                Manage your account, track orders, and earn rewards
-              </p>
-            </div>
+        {/* HEADER */}
+        <div className="bg-linear-to-r from-[#168BA0] to-[#AFE7F1] rounded-2xl p-10 mb-8 text-white shadow-sm relative overflow-hidden">
+          <div className="relative z-10">
+            <h1 className="text-3xl font-extrabold tracking-tight mb-2">
+              Welcome back, {data.user.fullName || "User"}
+            </h1>
 
-            <div className="absolute top-[-20px] right-[-20px] w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
-          </div>
-
-          <StatsCards />
-          <RecentOrders />
-          <RecentRewards />
-
-          <div className="flex justify-end mt-4">
-            <LogoutButton />
+            <p className="text-white/80 text-[15px] font-medium">
+              Manage your account, track orders
+            </p>
           </div>
         </div>
+
+        {/* STATS */}
+        <StatsCards stats={data.stats} />
+
+        {/* ORDERS */}
+        <RecentOrders orders={data.orders} />
+     
+         {/* <RecentRewards/> */}
       </div>
-    </>
+    </div>
   );
 }

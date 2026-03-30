@@ -88,11 +88,13 @@ const Page = () => {
 
     if (!validateForm()) return;
 
+    if (loading) return;
+
+    setLoading(true);
+
+    const toastId = toast.loading("Creating your account...");
+
     try {
-      setLoading(true);
-
-      const toastId = toast.loading("Creating your account...");
-
       const res = await signUp({
         email: formData.email,
         password: formData.password,
@@ -100,11 +102,15 @@ const Page = () => {
         name: formData.fullName,
       });
 
-      toast.success(res.message || "OTP sent!", { id: toastId });
+      toast.success(res.message || "OTP sent!", {
+        id: toastId,
+      });
 
       router.push(`/email-verification?email=${formData.email}`);
     } catch (error: any) {
-      toast.error(error.message || "Signup failed ❌");
+      toast.error(error.message || "Signup failed ❌", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }

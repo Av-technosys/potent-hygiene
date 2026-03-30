@@ -22,26 +22,30 @@ const Page = () => {
       return;
     }
 
+    if (loading) return;
+
+    setLoading(true);
+
+    const toastId = toast.loading("Sending OTP...");
+
     try {
-      setLoading(true);
-
-      const toastId = toast.loading("Sending OTP...");
-
-      // 🔥 helper call
       await forgotPassword(email);
 
-      toast.success("OTP sent to your email 📩", { id: toastId });
+      toast.success("OTP sent to your email 📩", {
+        id: toastId,
+      });
 
       router.push(`/reset-password-otp?email=${email}`);
     } catch (err: any) {
       console.error("Error:", err);
 
-      toast.error(err.message || "Something went wrong ❌");
+      toast.error(err.message || "Something went wrong ❌", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }
   };
-
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
       <Image

@@ -47,6 +47,7 @@ type Variant = {
   description: string;
   banner: ImageItem | null;
   gallery: ImageItem[];
+  highlights: string[];
   attributes: Record<string, AttributeValue>;
   isInStock: boolean;
   isReturnable: boolean;
@@ -102,6 +103,7 @@ export default function EditProduct({
       isInStock: v.isInStock ?? true,
       isReturnable: v.isReturnable ?? false,
       isCancelable: v.isCancelable ?? false,
+      highlights: v.highlights || [],
       isReplacement: v.isReplacement ?? false,
       returnDays: v.returnDays ?? 0,
       replacementDays: v.replacementDays ?? 0,
@@ -243,6 +245,7 @@ export default function EditProduct({
       id: v.isExisting ? v.id : undefined, // Old variants keep ID, new ones don't
       bannerImage: v.banner?.preview,
       media: v.gallery.map((g) => g.preview),
+      highlights: v.highlights.filter((h) => h.trim().length > 0),
       attributes: Object.entries(v.attributes)
         .map(([attr, val]) => ({ attribute: attr, value: val.value }))
         .filter((a) => a.value.trim().length > 0),
@@ -405,6 +408,55 @@ export default function EditProduct({
                       })
                     }
                   />
+                </div>
+                <div className="space-y-2">
+                  <Label>Highlights</Label>
+
+                  <div className="flex flex-col gap-2">
+                    {activeVariant.highlights.map((h, i) => (
+                      <div key={i} className="flex gap-2">
+                        <Input
+                          value={h}
+                          onChange={(e) => {
+                            const newHighlights = [...activeVariant.highlights];
+                            newHighlights[i] = e.target.value;
+                            updateVariant(activeIndex, {
+                              highlights: newHighlights,
+                            });
+                          }}
+                          placeholder="Enter highlight"
+                        />
+
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={() => {
+                            const newHighlights =
+                              activeVariant.highlights.filter(
+                                (_, idx) => idx !== i,
+                              );
+                            updateVariant(activeIndex, {
+                              highlights: newHighlights,
+                            });
+                          }}
+                        >
+                          <X size={14} />
+                        </Button>
+                      </div>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        updateVariant(activeIndex, {
+                          highlights: [...activeVariant.highlights, ""],
+                        });
+                      }}
+                    >
+                      + Add Highlight
+                    </Button>
+                  </div>
                 </div>
                 <div className="space-y-3">
                   <Label>Banner Image</Label>

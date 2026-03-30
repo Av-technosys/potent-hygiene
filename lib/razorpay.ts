@@ -74,6 +74,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
           // 3️⃣ Verify + Create DB Order
           const verifyRes = await fetch("/api/razorpay/verify", {
             method: "POST",
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               ...response,

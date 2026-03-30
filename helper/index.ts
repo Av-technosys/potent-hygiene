@@ -19,7 +19,7 @@ export {
   createOrder,
 } from "./order/action";
 
-export {getAddresses, createUserAddress ,getUserAddressById, updateProfile, getProfile, updateUserAddress,deleteUserAddress,setDefaultAddress} from "./user/action";
+export { getAddresses, createUserAddress, getUserAddressById, updateProfile, getProfile, updateUserAddress, deleteUserAddress, setDefaultAddress, subscribeEmail } from "./user/action";
 
 //cart
 export {
@@ -28,8 +28,12 @@ export {
   removeFromCart,
   syncCartWithDatabase,
   updateCartItemQuantity,
-  clearCart ,
+  clearCart,
 } from "./cart/action";
+
+//profile
+
+export { getUserProfile, updateUserProfile } from "./profile/action"
 
 //auth
 export {
@@ -41,10 +45,10 @@ export {
   resendOtp,
   forgotPassword
 } from "./auth/action"
-export {addToWishlistDB,getWishlistDB,removeFromWishlistDB} from "./wishlist/action";
+export { addToWishlistDB, getWishlistDB, removeFromWishlistDB } from "./wishlist/action";
 
-export {useFileUpload} from "./useFileUpload";
+export { useFileUpload } from "./useFileUpload";
 
-export {getProductSimilarProducts,getFullProduct} from "./product/action";
+export { getProductSimilarProducts, getFullProduct, getBestSellingProducts } from "./product/action";
 
-export {createReview,getProductReviews,toggleApproveReview,deleteReview,getReviewStats,getUserAllReviews} from "./review/action"
+export { createReview, getProductReviews, toggleApproveReview, deleteReview, getReviewStats, getUserAllReviews } from "./review/action"

@@ -62,7 +62,7 @@ const Page = () => {
     setLoading(true);
 
     try {
-       await signIn({
+      await signIn({
         email: formData.email,
         password: formData.password,
       });
@@ -162,7 +162,7 @@ const Page = () => {
 
             <div className="text-right text-xs mt-2">
               <Link href="/reset-password-email">
-                <button className="text-black font-semibold mb-5">
+                <button type="button" className="text-black font-semibold mb-5">
                   Forgot Password?
                 </button>
               </Link>

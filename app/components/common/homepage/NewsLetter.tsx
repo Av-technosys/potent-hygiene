@@ -1,7 +1,33 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { subscribeEmail } from "@/helper";
+import { toast } from "sonner";
 
 export function Newsletter() {
+  const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+
+const handleSubscribe = async () => {
+  try {
+    setLoading(true);
+
+    const formData = new FormData();
+    formData.append("email", email); // ✅ correct
+
+    await subscribeEmail(formData); // ✅ now matches server
+
+    toast.success("Subscribed successfully 🎉");
+    setEmail("");
+  } catch (err: any) {
+    toast.error(err.message || "Something went wrong");
+  } finally {
+    setLoading(false);
+  }
+};
   return (
     <section className="py-10 md:bg-[#F8F6F1]">
       <div className="container mx-auto px-4 md:px-0">
@@ -21,7 +47,7 @@ export function Newsletter() {
 
           <div className="relative z-10 grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
             <div className="space-y-4 text-[#EFEDE0] text-center lg:text-left">
-              <h2 className="text-3xl font-serif font-bold lg:text-5xl  leading-tight">
+              <h2 className="text-3xl font-serif font-bold lg:text-5xl leading-tight">
                 Stay Connected
               </h2>
               <p className="max-w-md mx-auto lg:mx-0 text-sm md:text-base opacity-90 leading-relaxed">
@@ -31,15 +57,23 @@ export function Newsletter() {
                 We respect your privacy
               </p>
             </div>
+
             <div className="relative flex items-center w-full max-w-md mx-auto lg:max-w-none">
               <div className="relative w-full">
                 <Input
                   type="email"
                   placeholder="Enter your Email"
-                  className="h-14 lg:h-16 w-full rounded-full border-none bg-[#3A404F] md:bg-white px-6 lg:px-8 text-gray-800 shadow-xl placeholder:text-gray-400 focus-visible:ring-0 focus-visible:ring-offset-0"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-14 lg:h-16 w-full rounded-full border-none bg-[#3A404F] md:bg-white px-6 lg:px-8 text-gray-800 shadow-xl placeholder:text-gray-400 focus-visible:ring-0"
                 />
-                <Button className="absolute md:right-0 right-1.5 top-1.5 md:top-0 h-11 md:lg:h-16 rounded-full bg-[#1A8D91] px-6 lg:px-10 font-bold text-white transition-all hover:bg-[#146e71] active:scale-95">
-                  Subscribe
+
+                <Button
+                  onClick={handleSubscribe}
+                  disabled={loading}
+                  className="absolute md:right-0 right-1.5 top-1.5 md:top-0 h-11 md:lg:h-16 rounded-full bg-[#1A8D91] px-6 lg:px-10 font-bold text-white"
+                >
+                  {loading ? "..." : "Subscribe"}
                 </Button>
               </div>
             </div>

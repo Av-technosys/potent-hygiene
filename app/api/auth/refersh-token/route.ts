@@ -7,15 +7,20 @@ import jwt from "jsonwebtoken";
 import { cookies } from "next/headers";
 
 export async function POST(req: Request) {
+    //console.log("inside ref api")
     const cookieStore = await cookies();
 
     const body = await req.json();
     const { refreshToken, idToken } = body;
 
+   // console.log("fetched refereshtoken and id from req body" )
     const decoded: any = jwt.decode(idToken);
+
+       // console.log("decoded id token" )
+
     const username = decoded["cognito:username"] || decoded.email;
 
-
+   // console.log("making req in cognito with username", username)
     if (!refreshToken)
         return NextResponse.json({ message: 'Refresh token is required.' }, { status: 400 });
 
@@ -31,7 +36,7 @@ export async function POST(req: Request) {
         });
 
         const response = await cognito.send(command);
-
+    //    console.log("fetch this response", response)
         const result = response?.AuthenticationResult;
 
         const newAccessToken = result?.AccessToken;
@@ -51,6 +56,8 @@ export async function POST(req: Request) {
             secure: true,
             path: "/",
         });
+
+      //  console.log("no issues  i put new tokens 200")
         return NextResponse.json({ response: response }, { status: 200 });
     } catch (err: any) {
         return NextResponse.json({ message: err.message }, { status: 500 });

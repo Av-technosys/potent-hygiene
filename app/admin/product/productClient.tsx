@@ -80,7 +80,6 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
     setSelectedVisibility(searchParams.get("visibility") ?? undefined);
   }, [searchParams]);
 
-  /* ---------------- UI ---------------- */
 
   return (
     <div className="w-full p-1">

@@ -129,10 +129,10 @@ export default function ProductDetailPage({
                       src={item?.mediaURL}
                       className={`w-full h-[90px] sm:h-[100px] md:h-[110px] object-cover rounded-lg
                    ${
-                    item.mediaURL === bannerImage
-                     ? "border-2 border-[#1A8D91]"
-                     : "border border-gray-200 "
-                    }`}
+                     item.mediaURL === bannerImage
+                       ? "border-2 border-[#1A8D91]"
+                       : "border border-gray-200 "
+                   }`}
                     />
                   </div>
                 </CarouselItem>
@@ -173,20 +173,20 @@ export default function ProductDetailPage({
 
           {/* Feature Badges */}
           <div className="flex flex-wrap gap-2">
-            {[
-              "Organic Cotton Top Layer",
-              "Rash-Free Guarantee",
-              "High Absorbency",
-              "Biodegradable Materials",
-              "Dermatologically Tested",
-            ].map((feature) => (
-              <span
-                key={feature}
-                className="bg-[#F0FDFA] text-[#168BA0] text-xs px-3 py-1 rounded-full"
-              >
-                {feature}
+            {activeVariant?.highlights?.length ? (
+              activeVariant.highlights.map((feature: string, index: number) => (
+                <span
+                  key={index}
+                  className="bg-[#F0FDFA] text-[#168BA0] text-xs px-3 py-1 rounded-full"
+                >
+                  {feature}
+                </span>
+              ))
+            ) : (
+              <span className="text-gray-400 text-sm">
+                No highlights available
               </span>
-            ))}
+            )}
           </div>
 
           {/* Price */}

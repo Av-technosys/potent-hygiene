@@ -4,16 +4,13 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { useWishlistStore } from "@/store/WishlistStore";
 import { addToCart as addToCartAction } from "@/store/cartActions";
 import AddToWishlist from "./addToWishlist";
+import Link from "next/link";
 
 export default function CategoryProducts({ products }: any) {
-  const router = useRouter();
-  const wishlistItems = useWishlistStore((state) => state.items);
 
-  const wishlist = wishlistItems.map((i) => i.productVariantId);
+
 
   // ✅ FIXED ADD TO CART
   const addToCart = async (product: any) => {
@@ -47,9 +44,9 @@ export default function CategoryProducts({ products }: any) {
           )}
 
           {/* Image */}
-          <div
+          <Link
             className="relative aspect-square w-full overflow-hidden rounded-md bg-gray-50"
-            onClick={() => router.push(`/product-detail/${value.slug}`)}
+            href={`/product-detail/${value.slug}`}
           >
             <Image
               src={value.bannerImage || "/product.png"}
@@ -58,7 +55,7 @@ export default function CategoryProducts({ products }: any) {
               className="object-cover transition-transform duration-500 hover:scale-105"
               unoptimized
             />
-          </div>
+          </Link>
 
           {/* Badge */}
           <span className="w-fit absolute bottom-31 left-1 rounded-full bg-[#10B981] px-2 py-0.5 text-[10px] text-white">
