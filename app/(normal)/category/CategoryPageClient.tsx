@@ -1,9 +1,9 @@
 "use client";
 
 import React, { Suspense } from "react";
-import FilterBar from "../components/common/category/filterTopBar";
-import FiltersSidebar from "../components/common/category/filterSideBar";
-import CategoryProducts from "../components/common/category/categoryProduct";
+import FilterBar from "../../components/common/category/filterTopBar";
+import FiltersSidebar from "../../components/common/category/filterSideBar";
+import CategoryProducts from "../../components/common/category/categoryProduct";
 
 // initialCategories prop add kiya jo server page se aayega
 export default function CategoryPageClient({ initialCategories }: { initialCategories: any[] }) {

@@ -1,10 +1,8 @@
 import React from "react";
-import FilterBar from "../components/common/category/filterTopBar";
+import FilterBar from "../../components/common/category/filterTopBar";
 export const dynamic = "force-dynamic";
-import FiltersSidebar from "../components/common/category/filterSideBar";
-import { Navbar } from "../components/common/Navbar";
-import CategoryProducts from "../components/common/category/categoryProducts";
-import Footer from "../components/common/Footer";
+import FiltersSidebar from "../../components/common/category/filterSideBar";
+import CategoryProducts from "../../components/common/category/categoryProducts";
 import { getProducts } from "@/helper/product/action";
 
 interface PageProps {
@@ -30,7 +28,7 @@ const Page = async ({ searchParams }: PageProps) => {
 
   return (
     <div>
-      <Navbar />
+ 
       <FilterBar />
       <div className="max-w-7xl mx-auto py-8 px-6 flex gap-8">
         <FiltersSidebar />
@@ -40,7 +38,7 @@ const Page = async ({ searchParams }: PageProps) => {
           currentPage={result.page}
         />
       </div>
-      <Footer />
+  
     </div>
   );
 };

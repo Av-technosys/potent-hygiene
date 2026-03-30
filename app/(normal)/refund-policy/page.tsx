@@ -1,7 +1,3 @@
-import React from "react";
-
-import Footer from "../components/common/Footer";
-import { Navbar } from "../components/common/Navbar";
 
 
 const Page = () => {
@@ -9,7 +5,7 @@ const Page = () => {
     <div className="min-h-screen w-full bg-white">
 
      
-      <Navbar />
+
 
      
            <div className="w-full flex items-start justify-center bg-white py-16 px-0 md:px-8">
@@ -81,7 +77,7 @@ const Page = () => {
           </div>
         </div>
       </div>
-      <Footer/>
+
     </div>
   );
 };
