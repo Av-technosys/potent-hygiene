@@ -149,13 +149,13 @@ export default function AddProductForm() {
           ratio: 2000 / 2000,
         });
 
-        const res = await upload(file, "product");
-        if (res && res.fileKey) {
+         const { preview, fileKey, fileUrl } = await upload(file, "product");
+        if (preview && fileKey) {
           const currentGallery = variants[activeIndex].gallery;
           updateVariant(activeIndex, {
             gallery: [
               ...currentGallery,
-              { key: res.fileKey, preview: res.preview },
+             { key: fileKey, preview: fileUrl as any },
             ],
           });
           toast.success("Image uploaded");

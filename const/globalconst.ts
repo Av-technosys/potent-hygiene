@@ -13,10 +13,7 @@
 //   { value: "mocha", label: "Mocha", hex: "#3B2F2F" },
 //   { value: "tan", label: "Tan", hex: "#D2B48C" },
 
-
-
-
-
+import { User2 } from "lucide-react";
 
 //   { value: "red", label: "Red", hex: "#FF0000" },
 //   { value: "crimson", label: "Crimson", hex: "#DC143C" },
@@ -78,18 +75,18 @@
 //   { value: "champagne", label: "Champagne", hex: "#F7E7CE" },
 // ];
 export const COLORS = [
-    { value: "green", label: "Green", hex: "#008000" },
-    { value: "red", label: "Red", hex: "#FF0000" },
-    { value: "purple", label: "Purple", hex: "#800080" },
-    { value: "gold", label: "Gold", hex: "#FFD700" },
-    { value: "lavender", label: "Lavender", hex: "#E6E6FA" },
-    { value: "yellow", label: "Yellow", hex: "#FFFF00" },
-    { value: "sky-blue", label: "Sky Blue", hex: "#87CEEB" },
-    { value: "violet", label: "Violet", hex: "#8A2BE2" }, // interpreted as light purple
-    { value: "amethyst", label: "Amethyst", hex: "#9966CC" }, // also light purple-ish
-    { value: "gray", label: "Gray", hex: "#808080" },
-    { value: "ash-gray", label: "Ash Gray", hex: "#B2BEB5" },
-    { value: "champagne", label: "Champagne", hex: "#F7E7CE" }, // golden-gray tone
+  { value: "green", label: "Green", hex: "#008000" },
+  { value: "red", label: "Red", hex: "#FF0000" },
+  { value: "purple", label: "Purple", hex: "#800080" },
+  { value: "gold", label: "Gold", hex: "#FFD700" },
+  { value: "lavender", label: "Lavender", hex: "#E6E6FA" },
+  { value: "yellow", label: "Yellow", hex: "#FFFF00" },
+  { value: "sky-blue", label: "Sky Blue", hex: "#87CEEB" },
+  { value: "violet", label: "Violet", hex: "#8A2BE2" }, // interpreted as light purple
+  { value: "amethyst", label: "Amethyst", hex: "#9966CC" }, // also light purple-ish
+  { value: "gray", label: "Gray", hex: "#808080" },
+  { value: "ash-gray", label: "Ash Gray", hex: "#B2BEB5" },
+  { value: "champagne", label: "Champagne", hex: "#F7E7CE" }, // golden-gray tone
 ];
 
 export const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "semi-stitched"];
@@ -171,73 +168,114 @@ export const CATEGORY_1 = [
 ];
 
 export const moreSidebarCategories = [
-    {
-        id: 11,
-        name: "Clearance",
-        slug: "clearance",
-    },
+  {
+    id: 11,
+    name: "Clearance",
+    slug: "clearance",
+  },
 ];
 
 export const CATEGORY_2 = [
-    {
-        id: "7f5a8f99-fbdc-472b-b43a-cc9dc12e1ddd",
-        name: "Summer Vibes",
-        slug: "summer-vibes",
-        image: "/categoryimage.png",
-    },
-    {
-        id: "cbaf4d2b-9fd2-465b-b55e-9c8734ae2eee",
-        name: "Trendy",
-        slug: "trendy",
-        image: "/categoryimage.png",
-    },
-    {
-        id: "52b3df7c-e8b5-4f4a-b2c7-8423dd0f4fff",
-        name: "Festival Season",
-        slug: "festival-season",
-        image: "/categoryimage.png",
-    },
-    {
-        id: "9f2ce7f1-43aa-4a0d-8cfa-b7dc12ab1aaa",
-        name: "Casual",
-        slug: "casual",
-        image: "/categoryimage.png",
-    },
+  {
+    id: "7f5a8f99-fbdc-472b-b43a-cc9dc12e1ddd",
+    name: "Summer Vibes",
+    slug: "summer-vibes",
+    image: "/categoryimage.png",
+  },
+  {
+    id: "cbaf4d2b-9fd2-465b-b55e-9c8734ae2eee",
+    name: "Trendy",
+    slug: "trendy",
+    image: "/categoryimage.png",
+  },
+  {
+    id: "52b3df7c-e8b5-4f4a-b2c7-8423dd0f4fff",
+    name: "Festival Season",
+    slug: "festival-season",
+    image: "/categoryimage.png",
+  },
+  {
+    id: "9f2ce7f1-43aa-4a0d-8cfa-b7dc12ab1aaa",
+    name: "Casual",
+    slug: "casual",
+    image: "/categoryimage.png",
+  },
 ];
 
 export const ORDER_STATUS = [
-    {
-        id: "91ef9b1e-1cb6-4f0f-aee4-77dfbe227a87",
-        status: "pending",
-        color: "#facc15", // yellow
-    },
-    {
-        id: "f2b50957-93ae-4c49-91ea-5b52d3c89743",
-        status: "processing",
-        color: "#60a5fa", // blue
-    },
-    {
-        id: "1c9c5038-94b0-4607-8203-f6ea72b5617d",
-        status: "shipped",
-        color: "#38bdf8", // light blue
-    },
-    {
-        id: "ae0d91c0-736b-4b4c-8e90-2275cd14c47b",
-        status: "delivered",
-        color: "#10b981", // Teal / Success
-    },
+  {
+    id: "91ef9b1e-1cb6-4f0f-aee4-77dfbe227a87",
+    status: "pending",
+    color: "#facc15", // yellow
+  },
+  {
+    id: "f2b50957-93ae-4c49-91ea-5b52d3c89743",
+    status: "processing",
+    color: "#60a5fa", // blue
+  },
+  {
+    id: "1c9c5038-94b0-4607-8203-f6ea72b5617d",
+    status: "shipped",
+    color: "#38bdf8", // light blue
+  },
+  {
+    id: "ae0d91c0-736b-4b4c-8e90-2275cd14c47b",
+    status: "delivered",
+    color: "#10b981", // Teal / Success
+  },
 ];
 
+export const quizQuestions = [
+  {
+    id: 1,
+    question: "What describe your flow ?",
+    options: [
+      { icon: User2, label: "light flow" },
+      { icon: User2, label: "medium flow" },
+      { icon: User2, label: "heavy flow" },
+      { icon: User2, label: "irregular flow" },
+    ],
+  },
+  {
+    id: 2,
+    question: "Do you experience cramps or discomfort?",
+    options: [
+      { icon: User2, label: "No Discomfort" },
+      { icon: User2, label: "Mild Discomfort" },
+      { icon: User2, label: "Severe Cramps" },
+      { icon: User2, label: "Varies" },
+    ],
+  },
+  {
+    id: 3,
+    question: "What is your preferred material for period products?",
+    options: [
+      { icon: User2, label: "Cotton" },
+      { icon: User2, label: "Bamboo" },
+      { icon: User2, label: "Silk" },
+      { icon: User2, label: "Unsure" },
+    ],
+  },
+  {
+    id: 4,
+    question:
+      "Do you have any allergies or sensitivities to certain materials?",
+    options: [
+      { icon: User2, label: "No Allergies" },
+      { icon: User2, label: "Sensitive Skin" },
+      { icon: User2, label: "Allergic Reactions" },
+      { icon: User2, label: "Not Sure" },
+    ],
+  },
+];
 
-
-
-
-export const pageSize =  4
+export const pageSize = 4;
 // export const tempUserId = "c263327b-3958-4fe8-b0b9-1ca3711f7c9c"
 // export const tempUserId = userId
 export const canResendOTPInterval = 10; // in seconds
-export const isUUID = (identifier: string) => /^[0-9a-fA-F-]{36}$/.test(identifier);
+export const isUUID = (identifier: string) =>
+  /^[0-9a-fA-F-]{36}$/.test(identifier);
 
 export const tempUserId = "63089f34-5276-481f-bc92-f75ff1ad24a5";
-export const bestSellingSlug = "best-selling-products"
+export const bestSellingSlug = "best-selling-products";
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
