@@ -4,21 +4,22 @@ import React from "react";
 import { logout } from "@/helper/auth/action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Button } from "@/components/ui/button";
 
 export const LogoutButton: React.FC = () => {
   const router = useRouter();
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await logout();
     toast.success("Logout SuccessFully");
     router.push("/login");
   };
 
   return (
-    <button
+    <Button
       onClick={handleLogout}
-      className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+      className="w-full flex bg-red-200 hover:bg-red-300 items-center justify-center gap-2 px-4 py-3 rounded-xl text-red-500  transition-all"
     >
       Logout
-    </button>
+    </Button>
   );
 };

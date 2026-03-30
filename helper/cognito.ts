@@ -20,7 +20,6 @@ export const cognito = new CognitoIdentityProviderClient({
 });
 
 
-
 export async function cognitoAdminGetUser({ email }: { email: string }) {
     const params = {
         UserPoolId: USER_POOL_ID,

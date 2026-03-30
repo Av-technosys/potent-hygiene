@@ -1,20 +1,15 @@
-
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import Image from "next/image";
 import React, { useState } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { resendOtp, verifyOtp } from "@/helper";
 
- export const EmailVerificationClient = () => {
+export const EmailVerificationClient = () => {
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
@@ -50,42 +45,54 @@ import { resendOtp, verifyOtp } from "@/helper";
       return;
     }
 
+    if (loading) return;
+
+    setLoading(true);
+
+    const toastId = toast.loading("Verifying OTP...");
+
     try {
-      setLoading(true);
-
-      const toastId = toast.loading("Verifying OTP...");
-
       await verifyOtp({
         email: email!,
         code: otp,
       });
 
-      toast.success("Email verified successfully 🎉", { id: toastId });
+      toast.success("Email verified successfully 🎉", {
+        id: toastId,
+      });
 
       setIsVerified(true);
     } catch (error: any) {
       console.error("OTP verification error:", error);
 
-      toast.error(error.message || "Verification failed ❌");
+      toast.error(error.message || "Verification failed ❌", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }
   };
-
   const handleResend = async () => {
-    if (!canResend) return;
+    if (!canResend || loading) return;
+    setLoading(true);
+
+    const toastId = toast.loading("Resending OTP...");
 
     try {
-      const toastId = toast.loading("Resending OTP...");
-
       await resendOtp(email!);
 
-      toast.success("OTP resent successfully 📩", { id: toastId });
+      toast.success("OTP resent successfully 📩", {
+        id: toastId,
+      });
 
       setTimer(30);
       setCanResend(false);
     } catch (err: any) {
-      toast.error(err.message || "Failed to resend OTP ❌");
+      toast.error(err.message || "Failed to resend OTP ❌", {
+        id: toastId,
+      });
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -158,30 +165,26 @@ import { resendOtp, verifyOtp } from "@/helper";
             )} */}
           </div>
 
-<div className="flex items-center justify-between gap-2 text-xs mt-2">
-              <div className="flex justify-between text-xs mt-2">
-              {!canResend ? (
-                <span className="text-black font-semibold">
-                  Resend OTP in 00:{timer.toString().padStart(2, "0")}
-                </span>
-              ) : (
-                <span className="text-green-600 font-semibold">
-                  You can resend OTP
-                </span>
-              )}
+          <div className="flex items-center justify-between text-xs mt-4 w-full">
+            {!canResend ? (
+              <span className="text-black font-semibold">
+                Resend OTP in 00:{timer.toString().padStart(2, "0")}
+              </span>
+            ) : (
+              <span className="text-green-600 font-semibold">
+                You can resend OTP
+              </span>
+            )}
 
-              <button
-                onClick={handleResend}
-                disabled={!canResend}
-                className={`font-medium ${
-                  canResend
-                    ? "text-blue-600"
-                    : "text-gray-400 cursor-not-allowed"
-                }`}
-              >
-                Resend
-              </button>
-            </div>
+            <button
+              onClick={handleResend}
+              disabled={!canResend}
+              className={`font-medium ${
+                canResend ? "text-blue-600" : "text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              Resend
+            </button>
           </div>
 
           <Dialog open={isVerified} onOpenChange={setIsVerified}>
@@ -228,4 +231,3 @@ import { resendOtp, verifyOtp } from "@/helper";
     </div>
   );
 };
-

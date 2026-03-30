@@ -3,19 +3,23 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import {
-  Card, CardContent, CardDescription, CardHeader, CardTitle
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
-import { Plus, Trash2, X } from "lucide-react"; // X icon add kiya for UI
+import { Plus, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { MultiCategorySelect } from "@/components/multiCategorySelect";
-import ImageUpload from "@/components/ImageUpload"; 
+import ImageUpload from "@/components/ImageUpload";
 import { createProduct } from "@/helper/product/action";
 import GallerySection from "../GallerySection";
 import AttributeSection from "../AttributeSection";
@@ -49,6 +53,7 @@ type Variant = {
   isCancelable: boolean;
   isReplacement: boolean;
   returnDays: number;
+  highlights: string[];
   replacementDays: number;
 };
 
@@ -59,43 +64,45 @@ export default function AddProductForm() {
 
   const [availablePlans, setAvailablePlans] = useState<any[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [variants, setVariants] = useState<Variant[]>([{
-    id: crypto.randomUUID(),
-    name: "",
-    sku: "",
-    price: 0,
-    strikethroughPrice: 0,
-    description: "",
-    banner: null,
-    gallery: [],
-    attributes: {},
-    subscriptionPlans: [],
-    isInStock: true,
-    isReturnable: false,
-    isCancelable: false,
-    isReplacement: false,
-    returnDays: 0,
-    replacementDays: 0
-  }]);
+  const [variants, setVariants] = useState<Variant[]>([
+    {
+      id: crypto.randomUUID(),
+      name: "",
+      sku: "",
+      price: 0,
+      strikethroughPrice: 0,
+      description: "",
+      banner: null,
+      gallery: [],
+      attributes: {},
+      subscriptionPlans: [],
+      highlights: [],
+      isInStock: true,
+      isReturnable: false,
+      isCancelable: false,
+      isReplacement: false,
+      returnDays: 0,
+      replacementDays: 0,
+    },
+  ]);
 
-useEffect(() => {
-  const loadPlans = async () => {
-    try {
-      const res = await apiFetch("/subscription-plans");
+  useEffect(() => {
+    const loadPlans = async () => {
+      try {
+        const res = await apiFetch("/subscription-plans");
 
-      if (res.status === 200 && res.data?.success) {
-        setAvailablePlans(res.data.data);
-      } else {
-        console.error("❌ Failed to load plans:", res.data);
+        if (res.status === 200 && res.data?.success) {
+          setAvailablePlans(res.data.data);
+        } else {
+          console.error("❌ Failed to load plans:", res.data);
+        }
+      } catch (err) {
+        console.error("💥 Error loading plans:", err);
       }
+    };
 
-    } catch (err) {
-      console.error("💥 Error loading plans:", err);
-    }
-  };
-
-  loadPlans();
-}, []);
+    loadPlans();
+  }, []);
 
   const [activeIndex, setActiveIndex] = useState(0);
   const galleryRef = useRef<HTMLInputElement>(null);
@@ -109,17 +116,19 @@ useEffect(() => {
       gallery: [],
       isInStock: true,
       attributes: {},
-      subscriptionPlans: [] 
+      subscriptionPlans: [],
     };
     setVariants([...variants, newVariant]);
     setActiveIndex(variants.length);
   };
 
   const removeVariant = (index: number) => {
-    if (variants.length === 1) return toast.error("At least one variant required");
+    if (variants.length === 1)
+      return toast.error("At least one variant required");
     const newVariants = variants.filter((_, i) => i !== index);
     setVariants(newVariants);
-    if (activeIndex >= newVariants.length) setActiveIndex(newVariants.length - 1);
+    if (activeIndex >= newVariants.length)
+      setActiveIndex(newVariants.length - 1);
   };
 
   const updateVariant = (index: number, updates: Partial<Variant>) => {
@@ -128,7 +137,7 @@ useEffect(() => {
     setVariants(newVariants);
   };
 
-   const handleGallery = async (files: FileList | null) => {
+  const handleGallery = async (files: FileList | null) => {
     if (!files) return;
 
     for (const file of Array.from(files)) {
@@ -144,7 +153,10 @@ useEffect(() => {
         if (res && res.fileKey) {
           const currentGallery = variants[activeIndex].gallery;
           updateVariant(activeIndex, {
-            gallery: [...currentGallery, { key: res.fileKey, preview: res.preview }]
+            gallery: [
+              ...currentGallery,
+              { key: res.fileKey, preview: res.preview },
+            ],
           });
           toast.success("Image uploaded");
         }
@@ -156,7 +168,8 @@ useEffect(() => {
 
   const setGalleryForActive = (action: React.SetStateAction<ImageItem[]>) => {
     const currentGallery = variants[activeIndex].gallery;
-    const nextGallery = typeof action === "function" ? (action as any)(currentGallery) : action;
+    const nextGallery =
+      typeof action === "function" ? (action as any)(currentGallery) : action;
     updateVariant(activeIndex, { gallery: nextGallery });
   };
 
@@ -165,63 +178,49 @@ useEffect(() => {
   //   toast.success("Banner uploaded");
   // };
 
-    const handleBanner = async (file?: File) => {
-  if (!file) return;
+  const handleBanner = async (file?: File) => {
+    if (!file) return;
 
-  try {
-    await validateImage(file, {
-      maxSizeMB: 2,
-      maxWidth: 2000,
-      maxHeight: 2000,
-      ratio: 1,
-    });
+    try {
+      await validateImage(file, {
+        maxSizeMB: 2,
+        maxWidth: 2000,
+        maxHeight: 2000,
+        ratio: 1,
+      });
 
-    const { fileKey, fileUrl } = await upload(file, "product");
+      const { fileKey, fileUrl } = await upload(file, "product");
 
-    updateVariant(activeIndex, {
-      banner: {
-        key: fileKey,
-        preview: fileUrl as any, 
-      },
-    });
+      updateVariant(activeIndex, {
+        banner: {
+          key: fileKey,
+          preview: fileUrl as any,
+        },
+      });
 
-    toast.success("Banner uploaded");
-  } catch (err: any) {
-    toast.error(err.message);
-  }
-};
-
-
-//  const handleGallerySuccess = (url: string) => {
-
-//   const currentGallery = variants[activeIndex].gallery;
-
-//   if (currentGallery.length >= 5) {
-//     return toast.error("Maximum 5 images allowed");
-//   }
-
-//   updateVariant(activeIndex, {
-//     gallery: [...currentGallery, { key: url, preview: url }]
-//   });
-
-//   toast.success("Gallery image added");
-// };
+      toast.success("Banner uploaded");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+  };
 
   const handleCreateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (selectedCategories.length === 0) return toast.error("Select a category");
+    if (selectedCategories.length === 0)
+      return toast.error("Select a category");
 
     const formData = new FormData();
     selectedCategories.forEach((catId) => formData.append("category[]", catId));
 
-    const payload = variants.map(v => ({
+    const payload = variants.map((v) => ({
       ...v,
       bannerImage: v.banner?.preview,
-      media: v.gallery.map(g => g.preview),
+      media: v.gallery.map((g) => g.preview),
+      highlights: v.highlights.filter((h) => h.trim().length > 0),
       subscriptionPlans: v.subscriptionPlans, // Send the selected plan IDs to backend
       attributes: Object.entries(v.attributes)
         .map(([attr, val]) => ({ attribute: attr, value: val.value }))
-        .filter(a => a.value.trim().length > 0)
+        .filter((a) => a.value.trim().length > 0),
     }));
 
     formData.append("variants", JSON.stringify(payload));
@@ -252,7 +251,7 @@ useEffect(() => {
 
     const newValue = selectedArray.join(",");
     updateVariant(activeIndex, {
-      attributes: { ...activeVariant.attributes, [key]: { value: newValue } }
+      attributes: { ...activeVariant.attributes, [key]: { value: newValue } },
     });
   };
 
@@ -262,7 +261,13 @@ useEffect(() => {
         <div className="flex justify-between items-center sticky top-0 z-10 py-4 bg-white border-b">
           <h1 className="text-2xl font-bold">Add New Product</h1>
           <div className="flex gap-4">
-            <Button type="button" variant="outline" onClick={() => router.push("/admin/product")}>Cancel</Button>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => router.push("/admin/product")}
+            >
+              Cancel
+            </Button>
             <Button type="submit">Create Product</Button>
           </div>
         </div>
@@ -270,22 +275,48 @@ useEffect(() => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 mt-6">
           <div className="space-y-6">
             <Card>
-              <CardHeader><CardTitle className="text-sm">Categories</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="text-sm">Categories</CardTitle>
+              </CardHeader>
               <CardContent>
-                <MultiCategorySelect selectedCategories={selectedCategories} onCategoriesChange={setSelectedCategories} />
+                <MultiCategorySelect
+                  selectedCategories={selectedCategories}
+                  onCategoriesChange={setSelectedCategories}
+                />
               </CardContent>
             </Card>
 
             <Card>
               <CardHeader className="flex justify-between flex-row items-center">
                 <CardTitle className="text-sm">Variants</CardTitle>
-                <Button type="button" size="sm" variant="ghost" onClick={addVariant}><Plus size={16} /></Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="ghost"
+                  onClick={addVariant}
+                >
+                  <Plus size={16} />
+                </Button>
               </CardHeader>
               <CardContent className="px-2">
                 {variants.map((v, i) => (
-                  <div key={v.id} onClick={() => setActiveIndex(i)} className={`flex items-center justify-between p-2 rounded-lg cursor-pointer mb-1 ${activeIndex === i ? "bg-primary text-white" : "hover:bg-muted"}`}>
-                    <span className="text-sm truncate font-medium">{v.name || "New Variant"}</span>
-                    {variants.length > 1 && <Trash2 size={14} onClick={(e) => { e.stopPropagation(); removeVariant(i); }} />}
+                  <div
+                    key={v.id}
+                    onClick={() => setActiveIndex(i)}
+                    className={`flex items-center justify-between p-2 rounded-lg cursor-pointer mb-1 ${activeIndex === i ? "bg-primary text-white" : "hover:bg-muted"}`}
+                  >
+                    <span className="text-sm truncate font-medium">
+                      {v.name || "New Variant"}
+                    </span>
+                    {variants.length > 1 && (
+                      <Trash2
+                        size={14}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeVariant(i);
+                        }}
+                      />
+                    )}
                   </div>
                 ))}
               </CardContent>
@@ -294,25 +325,132 @@ useEffect(() => {
 
           <div className="lg:col-span-3 space-y-6">
             <Card>
-              <CardHeader><CardTitle>Variant Details</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle>Variant Details</CardTitle>
+              </CardHeader>
               <CardContent className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-4">
-                  <div className="space-y-2"><Label>Variant Name</Label><Input required value={activeVariant.name} onChange={(e) => updateVariant(activeIndex, { name: e.target.value })} /></div>
-                  <div className="space-y-2"><Label>SKU</Label><Input required value={activeVariant.sku} onChange={(e) => updateVariant(activeIndex, { sku: e.target.value })} /></div>
+                  <div className="space-y-2">
+                    <Label>Variant Name</Label>
+                    <Input
+                      required
+                      value={activeVariant.name}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, { name: e.target.value })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>SKU</Label>
+                    <Input
+                      required
+                      value={activeVariant.sku}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, { sku: e.target.value })
+                      }
+                    />
+                  </div>
                 </div>
                 <div className="grid md:grid-cols-3 gap-4">
-                  <div className="space-y-2"><Label>Price</Label><Input type="number" value={activeVariant.price} onChange={(e) => updateVariant(activeIndex, { price: Number(e.target.value) })} /></div>
-                  <div className="space-y-2"><Label>Strike Price</Label><Input type="number" value={activeVariant.strikethroughPrice} onChange={(e) => updateVariant(activeIndex, { strikethroughPrice: Number(e.target.value) })} /></div>
-                  <div className="flex items-center space-x-2 pt-8"><Switch checked={activeVariant.isInStock} onCheckedChange={(c) => updateVariant(activeIndex, { isInStock: c })} /><Label>In Stock</Label></div>
+                  <div className="space-y-2">
+                    <Label>Price</Label>
+                    <Input
+                      type="number"
+                      value={activeVariant.price}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, {
+                          price: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Strike Price</Label>
+                    <Input
+                      type="number"
+                      value={activeVariant.strikethroughPrice}
+                      onChange={(e) =>
+                        updateVariant(activeIndex, {
+                          strikethroughPrice: Number(e.target.value),
+                        })
+                      }
+                    />
+                  </div>
+                  <div className="flex items-center space-x-2 pt-8">
+                    <Switch
+                      checked={activeVariant.isInStock}
+                      onCheckedChange={(c) =>
+                        updateVariant(activeIndex, { isInStock: c })
+                      }
+                    />
+                    <Label>In Stock</Label>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   <Label>Description</Label>
-                  <Textarea value={activeVariant.description} onChange={(e) => updateVariant(activeIndex, { description: e.target.value })} />
+                  <Textarea
+                    value={activeVariant.description}
+                    onChange={(e) =>
+                      updateVariant(activeIndex, {
+                        description: e.target.value,
+                      })
+                    }
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label>Highlights</Label>
+
+                  <div className="flex flex-col gap-2">
+                    {activeVariant.highlights.map((h, i) => (
+                      <div key={i} className="flex gap-2">
+                        <Input
+                          value={h}
+                          onChange={(e) => {
+                            const newHighlights = [...activeVariant.highlights];
+                            newHighlights[i] = e.target.value;
+                            updateVariant(activeIndex, {
+                              highlights: newHighlights,
+                            });
+                          }}
+                          placeholder="Enter highlight"
+                        />
+
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          onClick={() => {
+                            const newHighlights =
+                              activeVariant.highlights.filter(
+                                (_, idx) => idx !== i,
+                              );
+                            updateVariant(activeIndex, {
+                              highlights: newHighlights,
+                            });
+                          }}
+                        >
+                          <X size={14} />
+                        </Button>
+                      </div>
+                    ))}
+
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        updateVariant(activeIndex, {
+                          highlights: [...activeVariant.highlights, ""],
+                        });
+                      }}
+                    >
+                      + Add Highlight
+                    </Button>
+                  </div>
                 </div>
                 <div className="space-y-3">
                   <Label>Banner Image</Label>
                   {/* <ImageUpload onUploadSuccess={handleBannerSuccess} /> */}
-                   <div
+                  <div
                     onClick={() => bannerRef.current?.click()}
                     className="border-2 border-dashed rounded-xl h-48 flex items-center justify-center cursor-pointer relative overflow-hidden"
                   >
@@ -333,27 +471,43 @@ useEffect(() => {
                     accept="image/*"
                     onChange={(e) => handleBanner(e.target.files?.[0])}
                   />
-                  {activeVariant.banner && <img src={activeVariant.banner.preview} className="h-32 w-24 object-cover rounded-md border mt-2" alt="Preview" />}
+                  {activeVariant.banner && (
+                    <img
+                      src={activeVariant.banner.preview}
+                      className="h-32 w-24 object-cover rounded-md border mt-2"
+                      alt="Preview"
+                    />
+                  )}
                 </div>
-                
               </CardContent>
             </Card>
 
             {/* --- SPECIFICATIONS SECTION (MULTI-SELECT) --- */}
             <Card>
-              <CardHeader><CardTitle className="text-sm">Product Specifications</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="text-sm">
+                  Product Specifications
+                </CardTitle>
+              </CardHeader>
               <CardContent className="space-y-6">
                 <div className="space-y-3">
                   <Label>Select Size (Multi-select)</Label>
                   <div className="flex flex-wrap gap-2">
-                    {["Small (240mm)", "Medium (280mm)", "Large (320mm)", "Extra Large (360mm)"].map((s) => {
-                      const isSelected = activeVariant.attributes["size"]?.value.split(",").includes(s);
+                    {[
+                      "Small (240mm)",
+                      "Medium (280mm)",
+                      "Large (320mm)",
+                      "Extra Large (360mm)",
+                    ].map((s) => {
+                      const isSelected = activeVariant.attributes["size"]?.value
+                        .split(",")
+                        .includes(s);
                       return (
-                        <Button 
-                          key={s} 
-                          type="button" 
-                          variant={isSelected ? "default" : "outline"} 
-                          className="rounded-full" 
+                        <Button
+                          key={s}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          className="rounded-full"
                           onClick={() => toggleSpecAttribute("size", s)}
                         >
                           {s} {isSelected && <X size={12} className="ml-1" />}
@@ -365,14 +519,21 @@ useEffect(() => {
                 <div className="space-y-3">
                   <Label>Flow Type (Multi-select)</Label>
                   <div className="flex flex-wrap gap-2">
-                    {["Light Flow", "Regular Flow", "Heavy Flow", "Overnight"].map((f) => {
-                      const isSelected = activeVariant.attributes["flow"]?.value.split(",").includes(f);
+                    {[
+                      "Light Flow",
+                      "Regular Flow",
+                      "Heavy Flow",
+                      "Overnight",
+                    ].map((f) => {
+                      const isSelected = activeVariant.attributes["flow"]?.value
+                        .split(",")
+                        .includes(f);
                       return (
-                        <Button 
-                          key={f} 
-                          type="button" 
-                          variant={isSelected ? "default" : "outline"} 
-                          className="rounded-full" 
+                        <Button
+                          key={f}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          className="rounded-full"
                           onClick={() => toggleSpecAttribute("flow", f)}
                         >
                           {f} {isSelected && <X size={12} className="ml-1" />}
@@ -386,32 +547,45 @@ useEffect(() => {
 
             {/* --- SUBSCRIPTION PLANS --- */}
             <Card>
-              <CardHeader><CardTitle className="text-sm">Available Subscription Plans</CardTitle></CardHeader>
+              <CardHeader>
+                <CardTitle className="text-sm">
+                  Available Subscription Plans
+                </CardTitle>
+              </CardHeader>
               <CardContent>
-                 <div className="space-y-3">
+                <div className="space-y-3">
                   <Label>Select Plans (Multi-select)</Label>
                   <div className="flex flex-wrap gap-2">
                     {availablePlans.map((plan: any) => {
-                      const isSelected = activeVariant.subscriptionPlans.includes(plan.id);
+                      const isSelected =
+                        activeVariant.subscriptionPlans.includes(plan.id);
                       return (
-                        <Button 
-                          key={plan.id} 
-                          type="button" 
-                          variant={isSelected ? "default" : "outline"} 
-                          className="rounded-full" 
+                        <Button
+                          key={plan.id}
+                          type="button"
+                          variant={isSelected ? "default" : "outline"}
+                          className="rounded-full"
                           onClick={() => {
-                              const currentPlans = activeVariant.subscriptionPlans;
-                              const newPlans = isSelected 
-                                ? currentPlans.filter(id => id !== plan.id)
-                                : [...currentPlans, plan.id];
-                              updateVariant(activeIndex, { subscriptionPlans: newPlans });
+                            const currentPlans =
+                              activeVariant.subscriptionPlans;
+                            const newPlans = isSelected
+                              ? currentPlans.filter((id) => id !== plan.id)
+                              : [...currentPlans, plan.id];
+                            updateVariant(activeIndex, {
+                              subscriptionPlans: newPlans,
+                            });
                           }}
                         >
-                          {plan.name} (₹{plan.price}) {isSelected && <X size={12} className="ml-1" />}
+                          {plan.name} (₹{plan.price}){" "}
+                          {isSelected && <X size={12} className="ml-1" />}
                         </Button>
                       );
                     })}
-                    {availablePlans.length === 0 && <span className="text-sm text-gray-500">No subscription plans found in database.</span>}
+                    {availablePlans.length === 0 && (
+                      <span className="text-sm text-gray-500">
+                        No subscription plans found in database.
+                      </span>
+                    )}
                   </div>
                 </div>
               </CardContent>
@@ -424,10 +598,15 @@ useEffect(() => {
               setGallery={setGalleryForActive}
             />
 
-            <AttributeSection productAttributes={activeVariant.attributes} handleValueChange={(k, v) => {
-              const current = activeVariant.attributes;
-              updateVariant(activeIndex, { attributes: { ...current, [k]: { value: v } } });
-            }} />
+            <AttributeSection
+              productAttributes={activeVariant.attributes}
+              handleValueChange={(k, v) => {
+                const current = activeVariant.attributes;
+                updateVariant(activeIndex, {
+                  attributes: { ...current, [k]: { value: v } },
+                });
+              }}
+            />
           </div>
         </div>
       </form>

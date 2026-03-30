@@ -2,7 +2,7 @@ import { Navbar } from "@/app/components/common/Navbar";
 import { Hero } from "@/app/components/common/homepage/HeroSection";
 import { BrandAccordion } from "@/app/components/common/homepage/Brand";
 import { CategoryGrid } from "@/app/components/common/homepage/CategorySection";
-import { BestsellingProducts } from "@/app/components/common/homepage/BestSellingProduct";
+import BestsellingProducts from "@/app/components/common/homepage/BestSellingProduct";
 import { OurStory } from "@/app/components/common/homepage/OurStory";
 import { WhyChooseUs } from "@/app/components/common/homepage/WhyChooseUs";
 import { Testimonials } from "@/app/components/common/homepage/Reviews";
@@ -17,7 +17,6 @@ import Footer from "./components/common/Footer";
 import Faq from "./components/common/homepage/Faq";
 import { ProductCategories } from "./components/common/homepage/ProductCategories";
 import { WhatsAppWidget } from "./components/common/homepage/WhatsAppWidget";
-import ImageUpload from "@/components/ImageUpload";
 
 export default function Home() {
   return (
@@ -33,12 +32,12 @@ export default function Home() {
       <AboutStory />
       <InstagramFeed />
       <Testimonials />
-      <ProductCategories/>
+      <ProductCategories />
       <Newsletter />
       <BlogSection />
-      <Faq/>
-      <WhatsAppWidget/>
-      <Footer/>
+      <Faq />
+      <WhatsAppWidget />
+      <Footer />
     </main>
   );
 }

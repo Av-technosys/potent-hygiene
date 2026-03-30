@@ -8,7 +8,7 @@ import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 
 import { category, product, productCategory, productVariant, productVariantAttribute, productVariantMedia, productVariantSubscriptionPlan } from "@/db/schema";
-import { isUUID } from "@/const/globalconst";
+import {  bestSellingSlug, isUUID } from "@/const/globalconst";
 
 interface GetProductsOptions {
   page?: number;
@@ -45,6 +45,7 @@ interface VariantInput {
   isCancelable: boolean;
   isReplacement: boolean;
   returnDays: number;
+   highlights: string[];
   replacementDays: number;
   attributes: { attribute: string; value: string }[];
   subscriptionPlans?: number[];
@@ -103,6 +104,7 @@ export async function createProduct(formData: FormData) {
         isCancelable: v.isCancelable,
         isReplacement: v.isReplacement,
         returnDays: v.returnDays,
+        highlights: v.highlights || [],
         replacementDays: v.replacementDays,
         rating: 0,
         reviewCount: 0,
@@ -265,6 +267,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
               isReturnable: v.isReturnable,
               isCancelable: v.isCancelable,
               isReplacement: v.isReplacement,
+              highlights: v.highlights || [],
               returnDays: v.returnDays,
               replacementDays: v.replacementDays,
               updatedAt: new Date(),
@@ -697,5 +700,54 @@ export async function getProductsCount() {
   } catch (error) {
     console.error("getProductsCount failed:", error);
     return 0;
+  }
+}
+
+
+
+export async function getBestSellingProducts() {
+
+  try {
+    const products = await db
+      .select({
+        id: productVariant.id,
+        name: productVariant.name,
+        price: productVariant.basePrice,
+        oldPrice: productVariant.strikethroughPrice,
+        image: productVariant.bannerImage,
+        slug: productVariant.slug,
+      })
+      .from(productVariant)
+      .innerJoin(product, eq(product.id, productVariant.productId))
+      .innerJoin(
+        productCategory,
+        eq(productCategory.productId, product.id)
+      )
+      .innerJoin(
+        category,
+        eq(category.id, productCategory.categoryId)
+      )
+      .where(eq(category.slug, bestSellingSlug))
+      .limit(4);
+
+    // fallback
+    if (products.length === 0) {
+      return await db
+        .select({
+          id: productVariant.id,
+          name: productVariant.name,
+          price: productVariant.basePrice,
+          oldPrice: productVariant.strikethroughPrice,
+          image: productVariant.bannerImage,
+          slug: productVariant.slug,
+        })
+        .from(productVariant)
+        .limit(4);
+    }
+
+    return products;
+  } catch (error) {
+    console.error(error);
+    return [];
   }
 }

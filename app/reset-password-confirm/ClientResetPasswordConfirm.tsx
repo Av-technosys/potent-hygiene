@@ -4,17 +4,13 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { confirmForgotPassword } from "@/helper";
 
- export const ClientResetPasswordConfirm = () => {
+export const ClientResetPasswordConfirm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
 
@@ -53,25 +49,30 @@ import { confirmForgotPassword } from "@/helper";
       return;
     }
 
+    if (loading) return;
+
+    setLoading(true);
+
+    const toastId = toast.loading("Resetting password...");
+
     try {
-      setLoading(true);
-
-      const toastId = toast.loading("Resetting password...");
-
-      // 🔥 MAIN API CALL
       await confirmForgotPassword({
         email: email!,
         code: code!,
         newPassword: password,
       });
 
-      toast.success("Password reset successful 🎉", { id: toastId });
+      toast.success("Password reset successful 🎉", {
+        id: toastId,
+      });
 
       setOpenPopup(true);
-
     } catch (err: any) {
       console.error("Error:", err);
-      toast.error(err.message || "Failed to reset password ❌");
+
+      toast.error(err.message || "Failed to reset password ❌", {
+        id: toastId,
+      });
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,6 @@ import { confirmForgotPassword } from "@/helper";
 
   return (
     <div className="relative min-h-screen w-full flex items-center justify-center lg:justify-end">
-
       {/* Background */}
       <Image
         src="/mobilelogin.png"
@@ -99,7 +99,6 @@ import { confirmForgotPassword } from "@/helper";
 
       <div className="w-full md:w-1/2 flex items-center justify-center p-4">
         <div className="bg-white shadow-lg rounded-2xl w-full max-w-sm p-4">
-
           {/* LOGO */}
           <div className="flex justify-center mb-1">
             <Image src="/logo.png" alt="logo" width={100} height={36} />
@@ -114,7 +113,6 @@ import { confirmForgotPassword } from "@/helper";
           </p>
 
           <div className="space-y-3">
-
             {/* Password */}
             <div className="relative">
               <input
@@ -130,7 +128,11 @@ import { confirmForgotPassword } from "@/helper";
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-1 top-2 text-gray-500"
               >
-                {showPassword ? <IconEyeOff size={18} /> : <IconEye size={18} />}
+                {showPassword ? (
+                  <IconEyeOff size={18} />
+                ) : (
+                  <IconEye size={18} />
+                )}
               </button>
             </div>
 
@@ -152,7 +154,6 @@ import { confirmForgotPassword } from "@/helper";
                 {showConfirm ? <IconEyeOff size={18} /> : <IconEye size={18} />}
               </button>
             </div>
-
           </div>
 
           {/* Submit */}
@@ -169,7 +170,6 @@ import { confirmForgotPassword } from "@/helper";
       {/* SUCCESS POPUP */}
       <Dialog open={openPopup} onOpenChange={setOpenPopup}>
         <DialogContent className="max-w-xs w-full rounded-2xl text-center px-4 py-6">
-
           <DialogTitle className="sr-only">
             Password Reset Successfully
           </DialogTitle>
@@ -194,10 +194,8 @@ import { confirmForgotPassword } from "@/helper";
               Login
             </button>
           </Link>
-
         </DialogContent>
       </Dialog>
-
     </div>
   );
 };
