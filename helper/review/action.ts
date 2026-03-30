@@ -9,7 +9,6 @@ export async function createReview(reviewData: any) {
   try {
     const { userId, productVarientId, rating, message, media } = reviewData;
 
-    console.log("Product Varient ID:", productVarientId);
 
     if (!productVarientId) {
       throw new Error("Product Variant ID is required for review submission");
@@ -177,5 +176,5 @@ export async function getUserAllReviews() {
     );
 
     return reviewsWithMedia;
-  } catch (error) {}
+  } catch (error) { }
 }

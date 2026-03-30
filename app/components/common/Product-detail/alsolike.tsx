@@ -13,14 +13,14 @@ export default function RelatedProducts({ products }: any) {
         </h2>
 
         <div
-          className="w-full grid grid-cols-1 gap-6  md:grid-cols-3 lg:grid-cols-4 "
+          className="w-full grid grid-cols-1 sm:grid-cols-2 gap-6  md:grid-cols-3 lg:grid-cols-4 md:gap-6"
         >
           {products.map((product: any, index: number) => (
             <div
               key={index}
               // Laptop: 'md:w-auto' ensures grid controls the size.
               // Mobile: 'w-[280px]' and 'flex-shrink-0' enables the scroll.
-              className="bg-white rounded-2xl shadow-md p-4 relative hover:shadow-lg transition flex-shrink-0 w-[280px] md:w-auto md:flex-shrink"
+              className="bg-white rounded-2xl shadow-md p-4 relative hover:shadow-lg transition shrink-0 md:w-auto md:shrink"
             >
               {/* Wishlist */}
               <button className="absolute top-2 left-2 bg-white rounded-full p-1 shadow">

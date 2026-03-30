@@ -355,7 +355,7 @@ export async function getOrdersByUserId() {
 
     return orderData;
   } catch (error) {
-    console.log(error)
+    console.error(error)
   }
 }
 

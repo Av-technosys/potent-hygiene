@@ -46,7 +46,6 @@ export const MyReviewCard = ({ review }: { review: any }) => (
 
         <div className="w-full mt-3 flex items-center gap-2">
           {review?.media?.map((media: any, index: number) => (
-            // console.log(`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${media.mediaURL}`)
             <img
               className="w-20 h-20 rounded-md"
               key={index}

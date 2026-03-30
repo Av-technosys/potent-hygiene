@@ -31,7 +31,6 @@ export default function ProductDetailPage({
     activeVariant.bannerImage,
   );
 
-  console.log("product-full details", productInfo);
   // Size extraction logic (Aapne jo pehle likha tha)
   const sizeAttr = activeVariant?.attributes?.find(
     (a: any) => a.attribute === "size",
@@ -49,10 +48,10 @@ export default function ProductDetailPage({
   const discount =
     activeVariant?.strikethroughPrice && activeVariant?.basePrice
       ? Math.round(
-          ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
-            activeVariant.strikethroughPrice) *
-            100,
-        )
+        ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
+          activeVariant.strikethroughPrice) *
+        100,
+      )
       : 0;
 
   const router = useRouter();
@@ -92,17 +91,17 @@ export default function ProductDetailPage({
 
   return (
     <div className="min-h-screen py-10">
-      <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+      <div className=" grid grid-cols-1 md:grid-cols-5 md:gap-12 gap-y-6">
         {/* LEFT SIDE */}
-        <div>
-          <div className=" ">
+        <div className="col-span-2 md:sticky w-full top-6 h-fit">
+          <div className="  ">
             <Image
               unoptimized
               src={bannerImage}
               alt="Product"
               width={600}
               height={500}
-              className="rounded-xl object-contain"
+              className="rounded-xl mx-auto md:mx-0 object-contain"
             />
           </div>
 
@@ -112,14 +111,14 @@ export default function ProductDetailPage({
             }}
             className="w-full mt-8"
           >
-            <CarouselContent className="gap-2 md:gap-3">
+            <CarouselContent className="">
               {productInfo?.media?.map((item: any, index: number) => (
                 <CarouselItem
                   key={index}
                   className="
                   basis-[28%]  
                   sm:basis-[36%]
-                  lg:basis-[20%]"
+                  lg:basis-[30%]"
                 >
                   <div
                     onClick={() => setBannerImage(item?.mediaURL)}
@@ -127,12 +126,11 @@ export default function ProductDetailPage({
                   >
                     <img
                       src={item?.mediaURL}
-                      className={`w-full h-[90px] sm:h-[100px] md:h-[110px] object-cover rounded-lg
-                   ${
-                     item.mediaURL === bannerImage
-                       ? "border-2 border-[#1A8D91]"
-                       : "border border-gray-200 "
-                   }`}
+                      className={`w-full h-auto object-cover rounded-lg
+                   ${item.mediaURL === bannerImage
+                          ? "border-2 border-[#1A8D91]"
+                          : "border border-gray-200 "
+                        }`}
                     />
                   </div>
                 </CarouselItem>
@@ -146,7 +144,7 @@ export default function ProductDetailPage({
         </div>
 
         {/* RIGHT SIDE */}
-        <div className="space-y-6">
+        <div className="space-y-6 col-span-3">
           {/* Tags */}
           <div className="flex gap-2">
             <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">
@@ -220,11 +218,10 @@ export default function ProductDetailPage({
                   key={s}
                   type="button"
                   onClick={() => setSelectedSize(s)}
-                  className={`px-4 py-2 text-sm rounded-full border transition ${
-                    selectedSize === s
-                      ? "bg-[#168BA0] text-white border-[#168BA0]"
-                      : "bg-white border-gray-300 hover:border-[#168BA0]"
-                  }`}
+                  className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === s
+                    ? "bg-[#168BA0] text-white border-[#168BA0]"
+                    : "bg-white border-gray-300 hover:border-[#168BA0]"
+                    }`}
                 >
                   {s}
                 </button>
@@ -241,11 +238,10 @@ export default function ProductDetailPage({
                   key={flow}
                   type="button"
                   onClick={() => setSelectedFlow(flow)}
-                  className={`px-4 py-2 text-sm rounded-full border transition ${
-                    selectedFlow === flow
-                      ? "bg-[#168BA0] text-white border-[#168BA0]"
-                      : "bg-white border-gray-300 hover:border-[#168BA0]"
-                  }`}
+                  className={`px-4 py-2 text-sm rounded-full border transition ${selectedFlow === flow
+                    ? "bg-[#168BA0] text-white border-[#168BA0]"
+                    : "bg-white border-gray-300 hover:border-[#168BA0]"
+                    }`}
                 >
                   {flow}
                 </button>
@@ -302,11 +298,10 @@ export default function ProductDetailPage({
               <div
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
-                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
-                  selectedPlan === plan.id
-                    ? "border-teal-600 bg-teal-50"
-                    : "border-gray-200"
-                }`}
+                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan === plan.id
+                  ? "border-teal-600 bg-teal-50"
+                  : "border-gray-200"
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <input

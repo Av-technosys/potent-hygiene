@@ -1,14 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { createOrder } from "@/helper"; 
+import { createOrder } from "@/helper";
 import { RAZORPAY_KEY_SECRET } from "@/env";
 import { getCurrentUser } from "@/helper/user/action";
 
 export async function POST(req: Request) {
   const body = await req.json();
-  const {userId} :any = await getCurrentUser()
-  console.log("getting user id", userId)
+  const { userId }: any = await getCurrentUser()
   const {
     razorpay_order_id,
     razorpay_payment_id,

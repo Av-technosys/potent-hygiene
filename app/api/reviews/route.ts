@@ -14,7 +14,7 @@ export async function GET() {
 
   } catch (error) {
 
-    console.log(error);
+    console.error(error);
 
     return NextResponse.json(
       { error: "Failed to fetch reviews" },
@@ -49,7 +49,7 @@ export async function POST(req: NextRequest) {
 
   } catch (error) {
 
-    console.log(error);
+    console.error(error);
 
     return NextResponse.json(
       { error: "Failed to create review" },

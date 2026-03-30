@@ -35,7 +35,6 @@ export default function Home() {
       <ProductCategories />
       <Newsletter />
       <BlogSection />
-      <Faq />
       <WhatsAppWidget />
       <Footer />
     </main>

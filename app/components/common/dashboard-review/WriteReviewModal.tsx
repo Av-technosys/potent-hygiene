@@ -57,7 +57,7 @@ export const WriteReviewModal = ({ product }: { product: any }) => {
         toast.error(res.data?.error || "❌ Failed to submit review");
       }
     } catch (error) {
-      console.log("💥 Review Error:", error);
+      console.error(" Review Error:", error);
     } finally {
       setLoading(false);
     }
@@ -101,9 +101,8 @@ export const WriteReviewModal = ({ product }: { product: any }) => {
                   key={i}
                   size={26}
                   onClick={() => setRating(i + 1)}
-                  className={`cursor-pointer hover:scale-110 transition-transform ${
-                    rating >= i + 1 ? "text-[#FFD400]" : "text-gray-300"
-                  }`}
+                  className={`cursor-pointer hover:scale-110 transition-transform ${rating >= i + 1 ? "text-[#FFD400]" : "text-gray-300"
+                    }`}
                 />
               ))}
             </div>

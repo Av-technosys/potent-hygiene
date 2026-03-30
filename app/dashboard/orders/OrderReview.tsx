@@ -35,7 +35,6 @@ export const OrderReview = ({
   //   { productId: string; fileKey: string; index: number }[]
   // >([]);
 
-  console.log("orderDetails", orderDetails);
 
   const [previews, setPreviews] = useState<
     { variantId: string; preview: string; index: number }[]
@@ -176,9 +175,9 @@ export const OrderReview = ({
                   </p>
                   {(orderDetails.city || orderDetails.pincode) && (
                     <p className="text-xs font-medium text-gray-700 capitalize">
-                     {orderDetails.addressLine1},{orderDetails.addressLine2},
-                     <br />
-                     {orderDetails.city}, {orderDetails.pincode}
+                      {orderDetails.addressLine1},{orderDetails.addressLine2},
+                      <br />
+                      {orderDetails.city}, {orderDetails.pincode}
                     </p>
                   )}
                 </div>
@@ -247,11 +246,10 @@ export const OrderReview = ({
                             <Star
                               key={star}
                               size={28}
-                              className={`cursor-pointer transition-colors ${
-                                star <= (ratings[variantId] || 0)
+                              className={`cursor-pointer transition-colors ${star <= (ratings[variantId] || 0)
                                   ? "fill-yellow-400 text-yellow-400"
                                   : "text-gray-300"
-                              }`}
+                                }`}
                               onClick={() =>
                                 setRatings((prev) => ({
                                   ...prev,
@@ -323,7 +321,7 @@ export const OrderReview = ({
                           onClick={() => handleSubmitReview(variantId)}
                         >
                           {loadingProduct === variantId &&
-                          loadingProduct !== null
+                            loadingProduct !== null
                             ? "Submitting..."
                             : "Submit Review"}
                         </Button>

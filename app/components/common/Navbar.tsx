@@ -99,7 +99,7 @@ export function Navbar() {
 
   return (
     <nav className="w-full border-b bg-white relative">
-      <div className="container mx-auto max-w-7xl flex h-20 items-center justify-between px-4 md:px-16">
+      <div className="container mx-auto flex h-20 items-center justify-between px-4 md:px-16">
         <div className="flex items-center">
           <div className="md:hidden">
             <Sheet open={open} onOpenChange={setOpen}>
@@ -136,11 +136,10 @@ export function Navbar() {
                           key={link.name}
                           href={link.href}
                           onClick={() => setOpen(false)}
-                          className={`flex items-center space-x-4 px-4 py-4 rounded-r-xl transition-all ${
-                            isActive
-                              ? "bg-[#D1E9EC] text-[#1A8D91] border-l-8 border-[#1A8D91] rounded-md font-semibold"
-                              : "text-gray-600 hover:bg-gray-50"
-                          }`}
+                          className={`flex items-center space-x-4 px-4 py-4 rounded-r-xl transition-all ${isActive
+                            ? "bg-[#D1E9EC] text-[#1A8D91] border-l-8 border-[#1A8D91] rounded-md font-semibold"
+                            : "text-gray-600 hover:bg-gray-50"
+                            }`}
                         >
                           <span
                             className={
