@@ -1,4 +1,4 @@
-"use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -7,10 +7,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 import Link from "next/link";
 
-
-const CheckoutForm = ({ selected, setSelected, address, loading }: any) => {
-  if (loading) return <p>Loading...</p>;
-
+const CheckoutForm = ({ selected, setSelected, address }: any) => {
   return (
     <>
       <div className="col-span-3 md:col-span-2 space-y-4">
@@ -31,17 +28,7 @@ const CheckoutForm = ({ selected, setSelected, address, loading }: any) => {
           onValueChange={setSelected}
           className="space-y-3"
         >
-          {loading ? (
-            [...Array(3)].map((_, i) => (
-              <Card key={i} className="animate-pulse">
-                <CardContent className="p-4">
-                  <div className="h-4 bg-gray-200 rounded w-1/2 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-1/3 mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-2/3"></div>
-                </CardContent>
-              </Card>
-            ))
-          ) : address.length > 0 ? (
+          {address.length > 0 ? (
             address.map((item: any) => {
               const isActive = selected === item.id;
 

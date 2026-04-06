@@ -1,11 +1,9 @@
 // app/cart/page.tsx
 export const dynamic = "force-dynamic";
-import { Navbar } from "@/app/components/common/Navbar";
-import { CartItems } from "../components/common/cart/CartItems";
-import { OrderSummary } from "../components/common/cart/OrderSummary";
-import { WhatsAppWidget } from "../components/common/homepage/WhatsAppWidget";
+import { CartItems } from "../../components/common/cart/CartItems";
+import { OrderSummary } from "../../components/common/cart/OrderSummary";
+import { WhatsAppWidget } from "../../components/common/homepage/WhatsAppWidget";
 // import RelatedProducts from "../components/common/Product-detail/alsolike";
-import Footer from "../components/common/Footer";
 import { getCart } from "@/helper/cart/action";
 import { CartInitializer } from "./CartInitializer";
 
@@ -15,7 +13,6 @@ export default async function CartPage() {
   return (
     <>
       <div className="min-h-screen bg-[#FDFCF9]">
-        <Navbar />
         <main className="container mx-auto px-4 py-10 md:px-16">
           {/* Initialize store with server data */}
           <CartInitializer initialItems={success && items ? items : []} />
@@ -32,7 +29,6 @@ export default async function CartPage() {
         </main>
         <WhatsAppWidget />
       </div>
-      <Footer />
     </>
   );
 }

@@ -2,11 +2,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { AccountInfo } from "@/app/components/common/dashboard-profile/AccountInfo";
 import { EditAddressForm } from "@/app/components/common/dashboard-profile/EditAddress";
 import { ProfileHeader } from "@/app/components/common/dashboard-profile/ProfileHeader";
 import { getProfile, updateProfile } from "@/helper";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 
 interface User {
   fullName: string;
@@ -69,9 +70,46 @@ export default function ProfilePage() {
   if (isLoading || !user) {
     return (
       <div className="space-y-6">
-        <div className="text-center py-10 text-gray-500">
-          Loading profile...
-        </div>
+        <Card className="p-6 border-none shadow-sm bg-white rounded-[15px] flex flex-row justify-between items-center">
+          <div className="space-y-2">
+            <Skeleton className="h-5 w-56 bg-gray-200" />
+            <Skeleton className="h-4 w-40 bg-gray-200" />
+          </div>
+
+          <Skeleton className="h-10 w-32 rounded-lg bg-gray-300" />
+        </Card>
+
+        <Card className="p-8 border-none shadow-sm bg-white rounded-[20px] space-y-6">
+          <Skeleton className="h-4 w-40 bg-gray-300" />
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-24 bg-gray-300" />
+              <Skeleton className="h-12 w-full rounded-xl bg-gray-200" />
+            </div>
+
+            <div className="space-y-2">
+              <Skeleton className="h-3 w-24 bg-gray-300" />
+              <Skeleton className="h-12 w-full rounded-xl bg-gray-200" />
+            </div>
+
+            <div className="md:col-span-2 space-y-2">
+              <Skeleton className="h-3 w-32 bg-gray-300" />
+              <Skeleton className="h-12 w-full rounded-xl bg-gray-200" />
+            </div>
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-4">
+            <Skeleton className="h-14 w-full rounded-xl bg-gray-300" />
+            <Skeleton className="h-14 w-full rounded-xl bg-gray-200" />
+          </div>
+        </Card>
+
+        <Card className="p-6 border-none shadow-sm bg-white rounded-[15px] space-y-3">
+          <Skeleton className="h-4 w-40 bg-gray-300" />
+          <Skeleton className="h-4 w-64 bg-gray-200" />
+          <Skeleton className="h-4 w-52 bg-gray-200" />
+        </Card>
       </div>
     );
   }
