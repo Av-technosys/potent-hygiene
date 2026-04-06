@@ -11,18 +11,54 @@ const feedImages = [
   { id: 5, src: "/dummyLady.png" },
 ];
 
-export function InstagramFeed() {
+type Props = {
+  title: string;
+  username: string;
+  gradientFrom: string;
+  gradientTo: string;
+  textColor: string;
+  buttonColor: string;
+};
+
+export function InstagramFeed({
+  title,
+  username,
+  gradientFrom,
+  gradientTo,
+  textColor,
+  buttonColor,
+}: Props) {
   return (
-    <section className="w-full md:bg-linear-to-r from-[#168BA0] to-[#AFE7F1] py-12 md:py-16 overflow-hidden">
+    <section
+      className="w-full py-12 md:py-16 overflow-hidden"
+      style={{
+        background: `linear-gradient(to right, ${gradientFrom}, ${gradientTo})`,
+      }}
+    >
       <div className="container mx-auto px-4 md:px-16">
+
+        {/* HEADER */}
         <div className="mb-8 md:mb-12 text-center space-y-2">
-          <h2 className="md:text-4xl text-3xl font-serif font-bold text-[#333333] md:text-[#F8F9FA]">Join Our Community</h2>
-          <p className="text-sm md:text-lg md:text-[#F8F9FA] text-[#333333] font-medium">@potenthygiene</p>
+          <h2
+            className="md:text-4xl text-3xl font-serif font-bold"
+            style={{ color: textColor }}
+          >
+            {title}
+          </h2>
+
+          <p
+            className="text-sm md:text-lg font-medium"
+            style={{ color: textColor }}
+          >
+            {username}
+          </p>
         </div>
+
+        {/* IMAGES */}
         <div className="flex overflow-x-auto pb-8 gap-4 md:grid md:grid-cols-4 lg:grid-cols-5 md:overflow-visible no-scrollbar snap-x snap-mandatory">
           {feedImages.map((image) => (
-            <div 
-              key={image.id} 
+            <div
+              key={image.id}
               className="relative aspect-square min-w-[200px] md:min-w-0 w-full overflow-hidden rounded-[20px] md:rounded-[32px] shadow-sm transition-transform hover:scale-105 snap-start"
             >
               <Image
@@ -34,16 +70,27 @@ export function InstagramFeed() {
             </div>
           ))}
         </div>
+
+        {/* BUTTON */}
         <div className="flex justify-center pt-2">
-          <Button 
-            variant="outline" 
-            className="group rounded-full border border-[#F8F9FA] bg-white px-8 py-6 text-[#1A8D91] shadow-sm hover:bg-[#1A8D91] hover:text-white transition-all duration-300"
-          >
-            <Instagram className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
-             <Link href="https://www.instagram.com/potenthygiene" target="_blank">
-            <span className="font-bold text-sm">Follow us on Instagram</span></Link>
-          </Button>
+          <Link href="https://www.instagram.com/potenthygiene" target="_blank">
+            <Button
+              variant="outline"
+              className="group rounded-full px-8 py-6 shadow-sm transition-all duration-300"
+              style={{
+                borderColor: textColor,
+                color: buttonColor,
+                backgroundColor: "#fff",
+              }}
+            >
+              <Instagram className="mr-2 h-5 w-5 transition-transform group-hover:rotate-12" />
+              <span className="font-bold text-sm">
+                Follow us on Instagram
+              </span>
+            </Button>
+          </Link>
         </div>
+
       </div>
     </section>
   );

@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 
 const brands = [
-  { id: 1, name: "Ovy", src: "/ovy.png" },
-  { id: 2, name: "Looway", src: "/loway.png" },
-  { id: 3, name: "Sanitrip", src: "/sanitrio.png" },
+  { id: 1, name: "Ovy", src: "/ovy.png", href: "/ovy" },
+  { id: 2, name: "Looway", src: "/loway.png", href: "/loway" },
+  { id: 3, name: "Sanitrip", src: "/sanitrio.png", href: "/sanitrip" },
 ];
-
 export function BrandAccordion() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
@@ -27,8 +27,9 @@ export function BrandAccordion() {
         </div>
         <div className="flex md:hidden flex-row justify-between items-start gap-2">
           {brands.map((brand) => (
-            <div
+            <Link
               key={brand.id}
+              href={brand.href}
               className="flex flex-col items-center gap-3 flex-1"
             >
               <div className="relative h-28 w-28 rounded-full flex items-center justify-center shadow-lg overflow-hidden">
@@ -52,7 +53,7 @@ export function BrandAccordion() {
               <span className="text-[14px] font-serif font-semibold text-[#000000]">
                 {brand.name}
               </span>
-            </div>
+            </Link>
           ))}
         </div>
         <div
@@ -60,8 +61,9 @@ export function BrandAccordion() {
           onMouseLeave={() => setHoveredId(null)}
         >
           {brands.map((brand) => (
-            <div
+            <Link
               key={brand.id}
+              href={brand.href}
               onMouseEnter={() => setHoveredId(brand.id)}
               className={cn(
                 "relative h-full transition-all duration-500 ease-in-out cursor-pointer overflow-hidden flex-1",
@@ -83,7 +85,7 @@ export function BrandAccordion() {
                     : "opacity-100",
                 )}
               />
-            </div>
+            </Link>
           ))}
         </div>
       </div>

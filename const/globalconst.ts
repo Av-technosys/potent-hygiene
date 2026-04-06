@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // export const COLORS = [
 //   { value: "white", label: "White", hex: "#FFFFFF" },
 //   { value: "off-white", label: "Off White", hex: "#FAF9F6" },
@@ -78,18 +79,18 @@
 //   { value: "champagne", label: "Champagne", hex: "#F7E7CE" },
 // ];
 export const COLORS = [
-    { value: "green", label: "Green", hex: "#008000" },
-    { value: "red", label: "Red", hex: "#FF0000" },
-    { value: "purple", label: "Purple", hex: "#800080" },
-    { value: "gold", label: "Gold", hex: "#FFD700" },
-    { value: "lavender", label: "Lavender", hex: "#E6E6FA" },
-    { value: "yellow", label: "Yellow", hex: "#FFFF00" },
-    { value: "sky-blue", label: "Sky Blue", hex: "#87CEEB" },
-    { value: "violet", label: "Violet", hex: "#8A2BE2" }, // interpreted as light purple
-    { value: "amethyst", label: "Amethyst", hex: "#9966CC" }, // also light purple-ish
-    { value: "gray", label: "Gray", hex: "#808080" },
-    { value: "ash-gray", label: "Ash Gray", hex: "#B2BEB5" },
-    { value: "champagne", label: "Champagne", hex: "#F7E7CE" }, // golden-gray tone
+  { value: "green", label: "Green", hex: "#008000" },
+  { value: "red", label: "Red", hex: "#FF0000" },
+  { value: "purple", label: "Purple", hex: "#800080" },
+  { value: "gold", label: "Gold", hex: "#FFD700" },
+  { value: "lavender", label: "Lavender", hex: "#E6E6FA" },
+  { value: "yellow", label: "Yellow", hex: "#FFFF00" },
+  { value: "sky-blue", label: "Sky Blue", hex: "#87CEEB" },
+  { value: "violet", label: "Violet", hex: "#8A2BE2" }, // interpreted as light purple
+  { value: "amethyst", label: "Amethyst", hex: "#9966CC" }, // also light purple-ish
+  { value: "gray", label: "Gray", hex: "#808080" },
+  { value: "ash-gray", label: "Ash Gray", hex: "#B2BEB5" },
+  { value: "champagne", label: "Champagne", hex: "#F7E7CE" }, // golden-gray tone
 ];
 
 export const SIZES = ["XS", "S", "M", "L", "XL", "XXL", "semi-stitched"];
@@ -171,68 +172,68 @@ export const CATEGORY_1 = [
 ];
 
 export const moreSidebarCategories = [
-    {
-        id: 11,
-        name: "Clearance",
-        slug: "clearance",
-    },
+  {
+    id: 11,
+    name: "Clearance",
+    slug: "clearance",
+  },
 ];
 
 export const CATEGORY_2 = [
-    {
-        id: "7f5a8f99-fbdc-472b-b43a-cc9dc12e1ddd",
-        name: "Summer Vibes",
-        slug: "summer-vibes",
-        image: "/categoryimage.png",
-    },
-    {
-        id: "cbaf4d2b-9fd2-465b-b55e-9c8734ae2eee",
-        name: "Trendy",
-        slug: "trendy",
-        image: "/categoryimage.png",
-    },
-    {
-        id: "52b3df7c-e8b5-4f4a-b2c7-8423dd0f4fff",
-        name: "Festival Season",
-        slug: "festival-season",
-        image: "/categoryimage.png",
-    },
-    {
-        id: "9f2ce7f1-43aa-4a0d-8cfa-b7dc12ab1aaa",
-        name: "Casual",
-        slug: "casual",
-        image: "/categoryimage.png",
-    },
+  {
+    id: "7f5a8f99-fbdc-472b-b43a-cc9dc12e1ddd",
+    name: "Summer Vibes",
+    slug: "summer-vibes",
+    image: "/categoryimage.png",
+  },
+  {
+    id: "cbaf4d2b-9fd2-465b-b55e-9c8734ae2eee",
+    name: "Trendy",
+    slug: "trendy",
+    image: "/categoryimage.png",
+  },
+  {
+    id: "52b3df7c-e8b5-4f4a-b2c7-8423dd0f4fff",
+    name: "Festival Season",
+    slug: "festival-season",
+    image: "/categoryimage.png",
+  },
+  {
+    id: "9f2ce7f1-43aa-4a0d-8cfa-b7dc12ab1aaa",
+    name: "Casual",
+    slug: "casual",
+    image: "/categoryimage.png",
+  },
 ];
 
 export const ORDER_STATUS = [
-    {
-        id: "91ef9b1e-1cb6-4f0f-aee4-77dfbe227a87",
-        status: "pending",
-        color: "#facc15", // yellow
-    },
-    {
-        id: "f2b50957-93ae-4c49-91ea-5b52d3c89743",
-        status: "processing",
-        color: "#60a5fa", // blue
-    },
-    {
-        id: "1c9c5038-94b0-4607-8203-f6ea72b5617d",
-        status: "shipped",
-        color: "#38bdf8", // light blue
-    },
-    {
-        id: "ae0d91c0-736b-4b4c-8e90-2275cd14c47b",
-        status: "delivered",
-        color: "#10b981", // Teal / Success
-    },
+  {
+    id: "91ef9b1e-1cb6-4f0f-aee4-77dfbe227a87",
+    status: "pending",
+    color: "#facc15", // yellow
+  },
+  {
+    id: "f2b50957-93ae-4c49-91ea-5b52d3c89743",
+    status: "processing",
+    color: "#60a5fa", // blue
+  },
+  {
+    id: "1c9c5038-94b0-4607-8203-f6ea72b5617d",
+    status: "shipped",
+    color: "#38bdf8", // light blue
+  },
+  {
+    id: "ae0d91c0-736b-4b4c-8e90-2275cd14c47b",
+    status: "delivered",
+    color: "#10b981", // Teal / Success
+  },
 ];
 
 
 
 
 
-export const pageSize =  4
+export const pageSize = 4
 // export const tempUserId = "c263327b-3958-4fe8-b0b9-1ca3711f7c9c"
 // export const tempUserId = userId
 export const canResendOTPInterval = 10; // in seconds
@@ -241,3 +242,371 @@ export const isUUID = (identifier: string) => /^[0-9a-fA-F-]{36}$/.test(identifi
 export const tempUserId = "63089f34-5276-481f-bc92-f75ff1ad24a5";
 export const bestSellingSlug = "best-selling-products"
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type CategorySection = {
+  type: "categories";
+  props: {
+    title: string;
+    description: string;
+    limit: number;
+  };
+};
+
+type StorySection = {
+  type: "story";
+  props: {
+    badgeText: string;
+    title: string;
+    highlight: string;
+    image: string;
+    primaryColor: string;
+    gradientFrom: string;
+    gradientTo: string;
+    bgAccent: string;
+    paragraphs: string[];
+  };
+};
+
+type Props = {
+  title?: string;
+  bgColor?: string;
+  buttonVariant?: "default" | "outline";
+  buttonColor?: string;
+};
+
+type ProductSection = {
+  type: "products";
+  props: Props;
+};
+
+type StatsSection = {
+  type: "stats";
+  props:
+  | {
+    variant?: "stats";
+    stats: { value: string; label: string }[];
+    bullets: string[];
+    image: string;
+    gradientFrom: string;
+    gradientTo: string;
+  }
+  | {
+    variant: "banner";
+    title: string;
+    highlight: string;
+    subtitle: string;
+    image: string;
+    bgColor: string;
+  };
+};
+
+type BrandWhySection = {
+  type: "brandWhy";
+  props: {
+    title: string;
+    primaryColor: string;
+  };
+};
+
+type ourStory = {
+  badgeText: string;
+  title: string;
+  highlight: string;
+  paragraphs: string[];
+  image: string;
+  primaryColor: string;
+  gradientFrom: string;
+  gradientTo: string;
+  bgAccent: string;
+  tickerText: string;
+};
+
+type OurStorySection = {
+  type: "ourStory";
+  props: ourStory;
+};
+
+type InstagramSectionProps = {
+  title: string;
+  username: string;
+  gradientFrom: string;
+  gradientTo: string;
+  textColor: string;
+  buttonColor: string;
+};
+
+type InstagramSection = {
+  type: "instagram";
+  props: InstagramSectionProps;
+};
+
+type TestimonialsSection = {
+  type: "testimonials";
+  props: {
+    primaryColor: string;
+    bgColor: string;
+  };
+};
+
+type NewsletterSection = {
+  type: "newsletter";
+  props: {
+    buttonColor: string;
+    overlayColor: string;
+  };
+};
+
+type ProductCategoriesSection = {
+  type: "productCategories";
+};
+
+type BlogSection = {
+  type: "blog";
+};
+
+type Section = CategorySection | StorySection | ProductSection | OurStorySection | StatsSection | BrandWhySection | InstagramSection | TestimonialsSection | NewsletterSection | ProductCategoriesSection | BlogSection;
+
+
+export const brandDataMap: Record<
+  string,
+  {
+    hero: any;
+    sections: Section[];
+  }
+> = {
+  ovy: {
+    hero: {
+      logo: "/ovy-main.png",
+      title: "Gentle Care, Beautiful You",
+      subtitle: "Premium, dermatologically-tested products...",
+      description: "Soothing lavender essence",
+      bgImage: "/ovy-bg.png",
+      primaryColor: "#AF71A7",
+      secondaryColor: "#fffff",
+    },
+
+    sections: [
+      {
+        type: "categories",
+        props: {
+          title: "Shop Ovy Categories",
+          description: "Explore Ovy hygiene range",
+          limit: 4,
+        },
+      },
+      {
+        type: "story",
+        props: {
+          badgeText: "Own Your Cycle",
+          title: "The",
+          highlight: "Nakd",
+          image: "/thestory.png",
+          primaryColor: "#AF71A7",
+          gradientFrom: "#C08497",
+          gradientTo: "#F9A8D4",
+          bgAccent: "#FCE7F3",
+          paragraphs: [
+            `Good hygiene is not just about routine — it’s about feeling comfortable, confident, and cared for every single day. At Potent Hygiene, we believe personal care should be simple, honest, and empowering.
+
+Our goal is to make hygiene conversations normal and accessible by providing products and information that support everyday well-being. Whether it’s daily freshness, intimate care, or overall hygiene, we focus on solutions that respect your body and your lifestyle.
+
+We encourage awareness, informed choices, and self-care without hesitation or stigma. Because when hygiene becomes effortless, confidence follows naturally.`
+          ],
+        },
+      },
+      {
+        type: "products",
+        props: {
+          title: "Best Selling Products",
+          bgColor: "#FCE7F3",
+          buttonColor: "#AF71A7",
+        }
+      },
+      {
+        type: "ourStory",
+        props: {
+          badgeText: "Our Story",
+          title: "Built for Women,",
+          highlight: "By Women",
+          image: "/our-story-ovy.png",
+          primaryColor: "#AF71A7",
+          gradientFrom: "#C08497",
+          gradientTo: "#F9A8D4",
+          bgAccent: "#FCE7F3",
+          tickerText: "Ovy - Where Your Wellness Comes First",
+          paragraphs: [
+            `Ovy was created for women who seek gentle, premium care. Infused with natural lavender essence and crafted with the softest materials, every product is designed to pamper and protect.`,
+            `Our mission is to deliver dermatologically-tested, premium hygiene products that combine gentle care with elegant comfort for sensitive skin.`,
+          ],
+        }
+      },
+      {
+        type: "stats",
+        props: {
+          variant: "stats",
+          stats: [
+            { value: "98%", label: "users prefer Ovy" },
+            { value: "96%", label: "improved comfort" },
+            { value: "3.9/5", label: "average rating" },
+            { value: "91%", label: "recommend us" },
+          ],
+          bullets: [
+            "Dermatologist Approved",
+            "Hypoallergenic",
+            "Eco Friendly",
+            "Cruelty Free",
+          ],
+          image: "/stats-ovy.png",
+          gradientFrom: "#C08497",
+          gradientTo: "#A78BFA",
+        },
+      },
+      {
+        type: "brandWhy",
+        props: {
+          title: "Why Choose Ovy?",
+          primaryColor: "#AF71A7",
+        },
+      },{
+  type: "instagram",
+  props: {
+    title: "Join Our Community",
+    username: "@potenthygiene",
+    gradientFrom: "#C08497",
+    gradientTo: "#A78BFA",
+    textColor: "#FFFFFF",
+    buttonColor: "#AF71A7",
+  }
+},{
+  type: "testimonials",
+  props: {
+    primaryColor: "#AF71A7",
+    bgColor: "#FCE7F3",
+  }
+},{
+  type: "newsletter",
+  props: {
+    buttonColor: "#AF71A7",
+    overlayColor: "rgba(0,0,0,0.5)",
+  }
+},{
+  type: "blog",
+}
+,{type : "productCategories"}
+
+    ],
+  },
+
+  loway: {
+    hero: {
+      logo: "/loway-main.png",
+      title: "Bright Comfort, Every Day",
+      subtitle: "Eco-friendly hygiene solutions...",
+      description: "Designed for active lifestyles",
+      bgImage: "/loway-bg.png",
+      primaryColor: "#016271",
+      secondaryColor: "#F6DC52",
+    },
+
+    sections: [
+      {
+        type: "categories",
+        props: {
+          title: "Shop Loway Categories",
+          description: "Discover our range of premium feminine hygiene products, thoughtfully crafted for your comfort and wellness.",
+          limit: 4,
+        },
+      },
+      {
+        type: "story",
+        props: {
+          badgeText: "Own Your Cycle",
+          title: "The",
+          highlight: "Nakd",
+          image: "/loway-story.png",
+          primaryColor: "#FACC15",
+          gradientFrom: "#016171",
+          gradientTo: "#B1D7DE",
+          bgAccent: "#FEF9C3",
+          paragraphs: [
+            `Good hygiene is not just about routine — it’s about feeling comfortable, confident, and cared for every single day. At Potent Hygiene, we believe personal care should be simple, honest, and empowering.
+
+Our goal is to make hygiene conversations normal and accessible by providing products and information that support everyday well-being. Whether it’s daily freshness, intimate care, or overall hygiene, we focus on solutions that respect your body and your lifestyle.
+
+We encourage awareness, informed choices, and self-care without hesitation or stigma. Because when hygiene becomes effortless, confidence follows naturally.`
+          ],
+        },
+      },
+      {
+        type: "products",
+        props: {
+          title: "Best Selling Products",
+          bgColor: "",
+          buttonColor: "#016271",
+        }
+      },
+      {
+        type: "ourStory",
+        props: {
+          badgeText: "Our Story",
+          title: "Built for Women,",
+          highlight: "By Women",
+          image: "/our-story-loway.png",
+          primaryColor: "#FACC15",
+          gradientFrom: "#016171",
+          gradientTo: "#B1D7DE",
+          bgAccent: "#FEF9C3",
+          tickerText: "Loway - Where Your Wellness Comes First",
+          paragraphs: [
+            `Looway was created for women who seek gentle, premium care. Infused with natural lavender essence and crafted with the softest materials, every product is designed to pamper and protect.`,
+            `Our mission is to deliver dermatologically-tested, premium hygiene products that combine gentle care with elegant comfort for sensitive skin.`,
+          ],
+        }
+      }, {
+        type: "stats",
+        props: {
+          variant: "banner",
+          title: "Pure Comfort",
+          highlight: "Naturally Protected",
+          subtitle: "For Modern Feminine Wellness",
+          image: "/stats-loway.png",
+          bgColor: "#016271",
+        },
+      },
+      {
+        type: "brandWhy",
+        props: {
+          title: "Why Choose Loway?",
+          primaryColor: "#3B82F6",
+        },
+      },{
+  type: "instagram",
+  props: {
+    title: "Join Our Community",
+    username: "@potenthygiene",
+    gradientFrom: "#F6DC52",
+    gradientTo: "#FFF7CB",
+    textColor: "#1F2937",
+    buttonColor: "#1F2937",
+  }
+},{
+  type: "testimonials",
+  props: {
+    primaryColor: "#3B82F6",
+    bgColor: "#EFF6FF",
+  }
+},{
+  type: "newsletter",
+  props: {
+    buttonColor: "#016271",
+    overlayColor: "rgba(0,0,0,0.3)",
+  }
+},{
+  type: "blog",
+},
+{
+  type: "productCategories",
+}
+    ],
+  },
+};
