@@ -8,7 +8,7 @@ export default function JournalsSection() {
 
     return (
         <section className="w-full  py-20">
-            <div className="container mx-auto ">
+            <div className=" mx-auto ">
 
                 {/* Header */}
                 <div className="text-center mb-14">

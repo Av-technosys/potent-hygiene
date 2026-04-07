@@ -29,7 +29,7 @@ const features = [
   },
   {
     icon: IconShield,
-    title: "Customer approved and research-backed quality",
+    title: "Customer approved and research - backed quality",
   },
   {
     icon: IconLeaf,
@@ -39,10 +39,10 @@ const features = [
 
 const WhyChooseSection = () => {
   return (
-    <section className="w-full bg-muted/20 py-12 md:py-16">
-      <div className="container mx-auto px-4 md:px-6">
+    <section className="container py-12 md:py-16">
+      <div className="">
 
-        
+
         <div className="text-center mb-8 md:mb-12 space-y-2">
           <h2 className="text-2xl md:text-4xl font-semibold text-foreground tracking-tight">
             Why Choose Potent Hygiene?
@@ -52,7 +52,7 @@ const WhyChooseSection = () => {
           </p>
         </div>
 
-        
+
         <div className="grid gap-4 md:gap-5 sm:grid-cols-2 xl:grid-cols-3">
           {features.map((item, index) => {
             const Icon = item.icon;
@@ -60,15 +60,15 @@ const WhyChooseSection = () => {
             return (
               <div
                 key={index}
-                className="flex items-center gap-4 rounded-2xl bg-white border border-border shadow-sm px-4 md:px-5 py-4 md:py-5"
+                className="flex items-center gap-4 rounded-2xl bg-white border border-border shadow-sm p-4"
               >
-               
-                <div className="shrink-0 flex items-center justify-center rounded-2xl bg-gradient-to-r from-cyan-600 to-cyan-300 text-white p-3 md:p-4">
+
+                <div className="shrink-0 flex items-center justify-center rounded-2xl bg-linear-to-r from-cyan-600 to-cyan-300 text-white p-3 md:p-4">
                   <Icon className="h-6 w-6 md:h-7 md:w-7" stroke={1.8} />
                 </div>
 
-                
-                <p className="text-base md:text-lg text-muted-foreground leading-relaxed font-medium">
+
+                <p className="text-base text-muted-foreground leading-relaxed font-medium">
                   {item.title}
                 </p>
               </div>

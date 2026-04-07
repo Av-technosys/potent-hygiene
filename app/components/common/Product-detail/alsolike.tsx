@@ -7,7 +7,7 @@ import { Heart, Star } from "lucide-react";
 export default function RelatedProducts({ products }: any) {
   return (
     <section className="w-full mx-auto pb-16">
-      <div className=" p-4 mb-8">
+      <div className=" py-4 mb-8">
         <h2 className="text-2xl font-semibold text-gray-900 mb-8">
           You May Also Like
         </h2>

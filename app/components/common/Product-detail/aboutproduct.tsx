@@ -13,7 +13,7 @@ export default function AboutProduct({ variant }: { variant: any }) {
     return (
         <main>
             {/* Tabs */}
-            <div className="container mx-auto px-6 py-6 flex justify-center">
+            <div className=" py-6 flex justify-center">
                 <div className="flex flex-wrap gap-2">
                     {tabs.map((tab) => (
                         <button
@@ -31,19 +31,19 @@ export default function AboutProduct({ variant }: { variant: any }) {
             </div>
 
             {/* Dynamic Content */}
-            <div className="container mx-auto px-10 mb-6 bg-gray-100 rounded-xl border border-gray-200 p-6 md:p-8 min-h-[200px]">
+            <div className=" mb-6 bg-gray-100 rounded-xl border border-gray-200 p-6 md:p-8 min-h-[200px]">
                 {/* Fixed Heading */}
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">
-                    {selectedTab === "Description" ? "Product Description" : 
-                     selectedTab === "Usage" ? "How to Use" : 
-                     selectedTab === "Safety" ? "Safety Information" : 
-                     selectedTab}
+                    {selectedTab === "Description" ? "Product Description" :
+                        selectedTab === "Usage" ? "How to Use" :
+                            selectedTab === "Safety" ? "Safety Information" :
+                                selectedTab}
                 </h2>
 
                 {/* Dynamic Rich Text */}
                 {selectedAttribute && selectedAttribute.value ? (
-                    <div 
-                        dangerouslySetInnerHTML={{ __html: selectedAttribute.value }} 
+                    <div
+                        dangerouslySetInnerHTML={{ __html: selectedAttribute.value }}
                         className="text-sm text-gray-700 leading-relaxed max-w-4xl 
                         [&>ul]:list-disc [&>ul]:pl-5 [&>ul]:mb-4 [&>ul>li]:mb-1 
                         [&>ol]:list-decimal [&>ol]:pl-5 [&>ol]:mb-4 [&>ol>li]:mb-1 

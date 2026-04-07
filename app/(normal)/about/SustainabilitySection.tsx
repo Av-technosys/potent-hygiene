@@ -3,8 +3,8 @@ import { IconTarget, IconEye } from "@tabler/icons-react";
 
 const SustainabilitySection = () => {
   return (
-    <section className="w-full bg-white py-16">
-      <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section className="container bg-white py-16">
+      <div className="">
 
 
         <div className="text-center space-y-3">
@@ -20,7 +20,7 @@ const SustainabilitySection = () => {
         <div className="mt-10 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
 
-          <div className="rounded-2xl border border-green-500 bg-green-50 p-6 sm:p-8">
+          <div className="rounded-2xl border border-green-500 bg-green-50 p-6">
             <div className="inline-flex rounded-2xl bg-green-600 p-4 text-white">
               <IconTarget className="h-7 w-7" />
             </div>
@@ -44,7 +44,7 @@ const SustainabilitySection = () => {
           </div>
 
 
-          <div className="rounded-2xl border border-blue-500 bg-blue-50 p-6 sm:p-8">
+          <div className="rounded-2xl border border-blue-500 bg-blue-50 p-6">
             <div className="inline-flex rounded-2xl bg-blue-600 p-4 text-white">
               <IconEye className="h-7 w-7" />
             </div>
