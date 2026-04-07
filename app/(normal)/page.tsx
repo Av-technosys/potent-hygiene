@@ -1,4 +1,3 @@
-import { Navbar } from "@/app/components/common/Navbar";
 import { Hero } from "@/app/components/common/homepage/HeroSection";
 import { BrandAccordion } from "@/app/components/common/homepage/Brand";
 import { CategoryGrid } from "@/app/components/common/homepage/CategorySection";
@@ -10,13 +9,10 @@ import { InstagramFeed } from "@/app/components/common/homepage/InstaFeed";
 import { BlogSection } from "@/app/components/common/homepage/Blogs";
 import { Newsletter } from "@/app/components/common/homepage/NewsLetter";
 
-import StoryTruth from "./components/common/homepage/StoryTruth";
-import AboutStory from "./components/common/homepage/AboutStory";
-import Footer from "./components/common/Footer";
-
-import Faq from "./components/common/homepage/Faq";
-import { ProductCategories } from "./components/common/homepage/ProductCategories";
-import { WhatsAppWidget } from "./components/common/homepage/WhatsAppWidget";
+import StoryTruth from "../components/common/homepage/StoryTruth";
+import AboutStory from "../components/common/homepage/AboutStory";
+import { ProductCategories } from "../components/common/homepage/ProductCategories";
+import { WhatsAppWidget } from "../components/common/homepage/WhatsAppWidget";
 
 export default function Home() {
   return (
@@ -25,23 +21,23 @@ export default function Home() {
       <Hero />
       <BrandAccordion />
       <CategoryGrid />
-     <StoryTruth
-  badgeText="Own Your Cycle"
-  title="The"
-  highlight="Nakd"
-  image="/thestory.png"
-  primaryColor="#1A8D91"
-  gradientFrom="#168BA0"
-  gradientTo="#AFE7F1"
-  bgAccent="#E6F4F6"
-  paragraphs={[
-    "Good hygiene is not just about routine...",
-    "Our goal is to make hygiene conversations normal...",
-    "We encourage awareness and self-care...",
-  ]}
-/>
+      <StoryTruth
+        badgeText="Own Your Cycle"
+        title="The"
+        highlight="Nakd"
+        image="/thestory.png"
+        primaryColor="#1A8D91"
+        gradientFrom="#168BA0"
+        gradientTo="#AFE7F1"
+        bgAccent="#E6F4F6"
+        paragraphs={[
+          "Good hygiene is not just about routine...",
+          "Our goal is to make hygiene conversations normal...",
+          "We encourage awareness and self-care...",
+        ]}
+      />
       <BestsellingProducts />
- <OurStory
+      <OurStory
         badgeText="Our Story"
         title="Built for Women,"
         highlight="By Women"
@@ -60,14 +56,14 @@ export default function Home() {
       />
       <WhyChooseUs />
       <AboutStory />
-        <InstagramFeed
-  title="Join Our Community"
-  username="@potenthygiene"
-  gradientFrom="#168BA0"
-  gradientTo="#AFE7F1"
-  textColor="#FFFFFF"
-  buttonColor="#1A8D91"
-/>
+      <InstagramFeed
+        title="Join Our Community"
+        username="@potenthygiene"
+        gradientFrom="#168BA0"
+        gradientTo="#AFE7F1"
+        textColor="#FFFFFF"
+        buttonColor="#1A8D91"
+      />
 
       <Testimonials />
       <ProductCategories />

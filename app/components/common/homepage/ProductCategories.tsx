@@ -14,11 +14,11 @@ const categories = [
 export function ProductCategories() {
   return (
     <section className="py-12 md:bg-[#F8F6F1]">
-      <div className="container mx-auto px-6 md:px-20">
+      <div className="container">
         <Carousel opts={{ align: "start", loop: true }}>
-          <CarouselContent className="-ml-4">
+          <CarouselContent>
             {categories.map((cat) => (
-              <CarouselItem key={cat.id} className="pl-4 basis-[75%] md:basis-1/3">
+              <CarouselItem key={cat.id} className=" basis-[75%] md:basis-1/3">
                 <VideoCard category={cat} />
               </CarouselItem>
             ))}
@@ -37,10 +37,10 @@ function VideoCard({ category }: { category: any }) {
   const videoRef = useRef<HTMLVideoElement>(null);
 
   return (
-    <div 
-      className="group overflow-hidden rounded-md border bg-white transition-all  max-w-[300px] mx-auto"
+    <div
+      className="group overflow-hidden rounded-md border bg-white transition-all"
       onMouseEnter={() => videoRef.current?.play()}
-      onMouseLeave={() => { videoRef.current?.pause(); if(videoRef.current) videoRef.current.currentTime = 0; }}
+      onMouseLeave={() => { videoRef.current?.pause(); if (videoRef.current) videoRef.current.currentTime = 0; }}
     >
       <div className="relative aspect-square">
         <video
@@ -57,10 +57,10 @@ function VideoCard({ category }: { category: any }) {
 
       <div className="p-5 text-center">
         <h3 className="text-lg font-bold text-gray-800">{category.title}</h3>
-       <Link href="/shop">
-        <button className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-[#1A8D91]">
-          Shop Now <ArrowRight className="h-3 w-3" />
-        </button></Link>
+        <Link href="/shop">
+          <button className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-[#1A8D91]">
+            Shop Now <ArrowRight className="h-3 w-3" />
+          </button></Link>
       </div>
     </div>
   );

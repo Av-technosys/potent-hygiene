@@ -27,10 +27,10 @@ const Page = async ({ searchParams }: PageProps) => {
   });
 
   return (
-    <div>
- 
+    <div className=" container">
+
       <FilterBar />
-      <div className="max-w-7xl mx-auto py-8 px-6 flex gap-8">
+      <div className=" py-8  flex gap-6">
         <FiltersSidebar />
         <CategoryProducts
           products={result.items}
@@ -38,7 +38,7 @@ const Page = async ({ searchParams }: PageProps) => {
           currentPage={result.page}
         />
       </div>
-  
+
     </div>
   );
 };

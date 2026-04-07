@@ -26,7 +26,7 @@ export default function CategoryProducts({ products }: any) {
   };
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 h-full gap-6 flex-1">
+    <div className="grid grid-cols-2 md:grid-cols-3 h-full gap-6 flex-1">
       {products?.map((value: any) => (
         <div
           key={value.id}

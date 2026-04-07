@@ -15,7 +15,7 @@ export function BrandAccordion() {
 
   return (
     <section className="py-10 md:bg-[#F8F6F1]">
-      <div className="container mx-auto px-4 md:px-16">
+      <div className="container">
         <div className="text-center mb-10 space-y-2">
           <h2 className="md:text-4xl text-3xl font-serif font-bold text-[#333333]">
             Our Trusted Brands
