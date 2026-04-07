@@ -319,7 +319,7 @@ type ourStory = {
   gradientTo: string;
   bgAccent: string;
   tickerText: string;
-  tickerColor: string;
+  tickerColor?: string;
 };
 
 type OurStorySection = {
