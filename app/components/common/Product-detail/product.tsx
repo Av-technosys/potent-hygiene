@@ -93,15 +93,13 @@ export default function ProductDetailPage({
     <div className="min-h-screen py-10">
       <div className=" grid grid-cols-1 md:grid-cols-5 md:gap-12 gap-y-6">
         {/* LEFT SIDE */}
-        <div className="col-span-2 md:sticky w-full top-6 h-fit">
-          <div className="  ">
+        <div>
+          <div className="w-full aspect-[4/3] relative ">
             <Image
-              unoptimized
               src={bannerImage}
               alt="Product"
-              width={600}
-              height={500}
-              className="rounded-xl mx-auto md:mx-0 object-contain"
+              fill
+              className="rounded-xl object-cover"
             />
           </div>
 
