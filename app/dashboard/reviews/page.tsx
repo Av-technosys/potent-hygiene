@@ -5,85 +5,79 @@ import { useEffect, useState } from "react";
 
 import { MyReviewCard } from "@/app/components/common/dashboard-review/MyReviewCard";
 import {
-  ReviewCard,
+
   ReviewHeader,
 } from "@/app/components/common/dashboard-review/ReviewHeader";
-import { apiFetch } from "@/lib/apiFetch";
 import { getUserAllReviews } from "@/helper";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function ReviewPage() {
   const [reviews, setReviews] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    const fetchReviews = async () => {
+      try {
+        const reviews_data: any = await getUserAllReviews();
+        setReviews(reviews_data || []);
+      } finally {
+        setIsLoading(false);
+      }
+    };
 
-  useEffect(
-    ()=>{
-      const fetchReviews = async () => {
-        const reviews_data:any = await getUserAllReviews();
+    fetchReviews();
+  }, []);
 
-        setReviews(reviews_data);
-      };
-      fetchReviews();
-    },[]
-  )
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        {/* 🔹 Header Skeleton */}
+        <div className="bg-white p-6 rounded-[15px] shadow-sm">
+          <Skeleton className="h-5 w-48 bg-gray-300" />
+          <Skeleton className="h-4 w-64 mt-2 bg-gray-200" />
+        </div>
 
-  // const [pendingReviews] = useState([
-  //   {
-  //     id: "1",
-  //     name: "Organic Cotton Pads - Regular Flow",
-  //     orderId: "ORD-2024-1234",
-  //     deliveredDate: "2024-03-18",
-  //   },
-  // ]);
+        {/* 🔹 Reviews Card Skeleton */}
+        <div className="bg-white p-6 rounded-[20px] shadow-sm space-y-6">
+          <Skeleton className="h-5 w-32 bg-gray-300" />
 
-  // const reviews = [
-  //   {
-  //     id: "rev_1",
-  //     product: "Menstrual Cup - Size A",
-  //     rating: 5,
-  //     date: "May, 2025",
-  //     status: "Delivered",
-  //     review:
-  //       "Absolutely love this product! It is comfortable, easy to use, and eco-friendly. Best purchase I have made for my period care routine.",
-  //   },
-  //   {
-  //     id: "rev_2",
-  //     product: "Menstrual Cup - Size A",
-  //     rating: 4,
-  //     date: "April, 2025",
-  //     status: "Delivered",
-  //     review:
-  //       "Good quality product. Took a couple of tries to get used to it, but now it works perfectly.",
-  //   },
-  //   {
-  //     id: "rev_3",
-  //     product: "Menstrual Cup - Size B",
-  //     rating: 3,
-  //     date: "March, 2025",
-  //     status: "Delivered",
-  //     review:
-  //       "The product is decent, but sizing was slightly off for me. Might try a different size next time.",
-  //   },
-  
-    
-  // ];
+          {[...Array(3)].map((_, i) => (
+            <div key={i} className="border-b border-gray-200 pb-6">
+              <div className="flex items-start gap-4">
+                {/* Avatar */}
+                <Skeleton className="w-10 h-10 rounded-full bg-gray-300" />
 
+                <div className="flex-1 space-y-2">
+                  {/* Name + badge */}
+                  <div className="flex items-center gap-3">
+                    <Skeleton className="h-4 w-32 bg-gray-300" />
+                    <Skeleton className="h-4 w-16 rounded-full bg-gray-200" />
+                  </div>
+
+                  {/* Stars + date */}
+                  <div className="flex items-center gap-2">
+                    <Skeleton className="h-4 w-24 bg-gray-200" />
+                  </div>
+
+                  {/* Message */}
+                  <Skeleton className="h-4 w-full bg-gray-200" />
+                  <Skeleton className="h-4 w-3/4 bg-gray-200" />
+
+                  {/* Images */}
+                  <div className="flex gap-2 mt-2">
+                    <Skeleton className="w-20 h-20 rounded-md bg-gray-200" />
+                    <Skeleton className="w-20 h-20 rounded-md bg-gray-200" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-6">
       <ReviewHeader />
-
-      {/* Product You Can Review */}
-
-      {/* <div className="bg-white p-6 rounded-[20px] shadow-sm space-y-4">
-        <h3 className="text-[16px] font-bold text-[#2D3748]">
-          Product You Can Review
-        </h3>
-
-        {pendingReviews.map((item) => (
-          <ReviewCard key={item.id} product={item} />
-        ))}
-      </div> */}
-
-      {/* Your Review */}
-
       <div className="bg-white p-6 rounded-[20px] shadow-sm space-y-4">
         <h3 className="text-[16px] font-bold text-[#2D3748]">Your Review</h3>
 

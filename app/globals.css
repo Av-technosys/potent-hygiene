@@ -134,3 +134,10 @@
     scrollbar-width: none;
   }
 }
+
+.container{
+  max-width: 72rem;
+  padding: 0 16px;
+  width: 100%;
+  margin:  0 auto;
+}

@@ -7,11 +7,11 @@ import Link from "next/link";
 export function Hero() {
   return (
     <section className="relative w-full z-0 bg-[#E6F4F6] py-8 md:py-12 px-6 md:px-16 overflow-hidden">
-      <div className="container mx-auto max-w-6xl">
+      <div className="container">
         <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-2 lg:gap-16">
           <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-5 lg:pr-10 order-1">
             <Badge className="w-fit border-none bg-white px-3 py-2 text-[10px] font-medium text-gray-500 shadow-sm uppercase tracking-widest">
-               Comfort. Care. Confidence
+              Comfort. Care. Confidence
             </Badge>
 
             <h1 className="text-3xl sm:text-4xl font-serif font-bold leading-[1.2] text-[#2C5F63] lg:text-5xl xl:text-5xl">
@@ -26,9 +26,11 @@ export function Hero() {
 
             <div className="flex flex-col sm:flex-row gap-4 pt-2 w-full sm:w-auto">
               <Link href="/category">
-              <Button className="max-w-5xl sm:min-w-[160px] rounded-full bg-gradient-to-r from-[#168BA0] to-[#AFE7F1] px-10 py-6 text-sm font-semibold text-white transition-all hover:scale-105 shadow-md">
-                Shop Now <ArrowRight className="ml-2 h-4 w-4" />
-              </Button></Link>
+                <Button className="max-w-5xl sm:min-w-[160px] rounded-full bg-linear-to-r from-[#168BA0] to-[#AFE7F1] px-10 py-6 text-sm font-semibold text-white transition-all hover:scale-105 shadow-md">
+                  Shop Now
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
             </div>
 
             <div className="flex flex-wrap justify-center lg:justify-start gap-x-8 gap-y-6 pt-6 md:pt-4 text-[11px] md:text-[10px] font-semibold text-[#1A8D91] opacity-80">
@@ -47,7 +49,7 @@ export function Hero() {
             </div>
           </div>
           <div className="relative flex items-center justify-center order-2 mt-12 lg:mt-0">
-            <div className="absolute hidden md:block top-1/2 left-1/2 -z-[1] w-[130%] lg:w-[115%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-40">
+            <div className="absolute hidden md:block top-1/2 left-1/2 -z-1 w-[130%] lg:w-[115%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-40">
               <Image
                 src="/heroSectionBgLayer.png"
                 alt=""
@@ -57,7 +59,7 @@ export function Hero() {
                 priority
               />
             </div>
-            <div className="relative z-10 w-full max-w-[280px] sm:max-w-[350px] lg:max-w-[440px] overflow-hidden rounded-[30px] md:rounded-[40px] border-[10px] border-white">
+            <div className="relative z-10 w-full max-w-[280px] sm:max-w-[350px] lg:max-w-[440px] overflow-hidden rounded-[30px] md:rounded-[40px] border-10 border-white">
               <Image
                 src="/mainProduct.png"
                 alt="Product"
@@ -98,7 +100,7 @@ function FloatingCard({
 }) {
   return (
     <div className="flex items-center gap-2.5 rounded-xl bg-white/95 backdrop-blur-sm p-2 md:p-3 shadow- border border-white/50 w-fit md:w-[155px]">
-      <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full bg-[#D1E9EC] text-[#1A8D91]">
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#D1E9EC] text-[#1A8D91]">
         {icon}
       </div>
       <div className="flex flex-col min-w-0">

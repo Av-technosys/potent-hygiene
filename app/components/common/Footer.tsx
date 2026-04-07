@@ -14,7 +14,7 @@ import {
 const Footer = () => {
   return (
     <footer className="w-full bg-[#11879A] text-white">
-      <div className="mx-auto max-w-screen-xl px-6 py-12">
+      <div className="container py-12!">
 
         {/* TOP SECTION */}
         <div className="grid gap-10 grid-cols-2 md:grid-cols-2 xl:grid-cols-4">

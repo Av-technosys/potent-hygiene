@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 
 import { StatsCards } from "../components/common/dashboard/StatsCards";
 import { RecentOrders } from "../components/common/dashboard/RecentOrders";
-import { RecentRewards } from "../components/common/dashboard/RecentRewards";
+
 
 export default async function DashboardPage() {
   let data;
@@ -43,8 +43,8 @@ export default async function DashboardPage() {
 
         {/* ORDERS */}
         <RecentOrders orders={data.orders} />
-     
-         {/* <RecentRewards/> */}
+
+        {/* <RecentRewards/> */}
       </div>
     </div>
   );

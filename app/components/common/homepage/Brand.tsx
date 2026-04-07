@@ -3,11 +3,10 @@
 import Image from "next/image";
 
 const brands = [
-  { id: 1, name: "Ovy", src: "/ovy.png" },
-  { id: 2, name: "Looway", src: "/loway.png" },
-  { id: 3, name: "Sanitrip", src: "/sanitrio.png" },
+  { id: 1, name: "Ovy", src: "/ovy.png", href: "/ovy" },
+  { id: 2, name: "Looway", src: "/loway.png", href: "/loway" },
+  { id: 3, name: "Sanitrip", src: "/sanitrio.png", href: "/sanitrip" },
 ];
-
 export function BrandAccordion() {
   return (
     <section className="py-12 bg-[#F8F6F1]">
@@ -26,7 +25,7 @@ export function BrandAccordion() {
         {/* Brand Grid */}
         <div className="grid grid-cols-3 md:flex md:flex-wrap md:justify-center gap-8 md:gap-16">
           {brands.map((brand) => (
-            <div
+            <Link
               key={brand.id}
               className="flex flex-col items-center group cursor-pointer"
             >
