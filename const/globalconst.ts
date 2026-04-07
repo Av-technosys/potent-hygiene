@@ -319,6 +319,7 @@ type ourStory = {
   gradientTo: string;
   bgAccent: string;
   tickerText: string;
+  tickerColor?: string;
 };
 
 type OurStorySection = {
@@ -370,19 +371,22 @@ type Section = CategorySection | StorySection | ProductSection | OurStorySection
 export const brandDataMap: Record<
   string,
   {
+    "bg-color": string;
     hero: any;
     sections: Section[];
   }
 > = {
   ovy: {
+    "bg-color": '#FFF4F9',
     hero: {
       logo: "/ovy-main.png",
       title: "Gentle Care, Beautiful You",
-      subtitle: "Premium, dermatologically-tested products...",
+      subtitle: "Premium, dermatologically-tested products with soothing lavender essence for sensitive skin",
       description: "Soothing lavender essence",
       bgImage: "/ovy-bg.png",
       primaryColor: "#AF71A7",
-      secondaryColor: "#fffff",
+      secondaryColor: "#FFFFFF4F",
+      opacity: 0.3,
     },
 
     sections: [
@@ -418,7 +422,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
         type: "products",
         props: {
           title: "Best Selling Products",
-          bgColor: "#FCE7F3",
+          bgColor: "#AF71A7",
           buttonColor: "#AF71A7",
         }
       },
@@ -426,6 +430,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
         type: "ourStory",
         props: {
           badgeText: "Our Story",
+          tickerColor: "",
           title: "Built for Women,",
           highlight: "By Women",
           image: "/our-story-ovy.png",
@@ -440,15 +445,23 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           ],
         }
       },
+       {
+        type: "products",
+        props: {
+          title: "New Arriving Products",
+          bgColor: "#AF71A7",
+          buttonColor: "#AF71A7",
+        }
+      },
       {
         type: "stats",
         props: {
           variant: "stats",
           stats: [
-            { value: "98%", label: "users prefer Ovy" },
-            { value: "96%", label: "improved comfort" },
-            { value: "3.9/5", label: "average rating" },
-            { value: "91%", label: "recommend us" },
+            { value: "98%", label: "of users expressed a preference for OVY our pads & liners" },
+            { value: "96%", label: "of users observed a ehnace osnhances comfort and discietien" },
+            { value: "3.9/5", label: "was the average rating received by OVY product portfolio" },
+            { value: "91%", label: "of user noted enhanced hydration and suppleness of skin after using our products" },
           ],
           bullets: [
             "Dermatologist Approved",
@@ -467,41 +480,44 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           title: "Why Choose Ovy?",
           primaryColor: "#AF71A7",
         },
-      },{
-  type: "instagram",
-  props: {
-    title: "Join Our Community",
-    username: "@potenthygiene",
-    gradientFrom: "#C08497",
-    gradientTo: "#A78BFA",
-    textColor: "#FFFFFF",
-    buttonColor: "#AF71A7",
-  }
-},{
-  type: "testimonials",
-  props: {
-    primaryColor: "#AF71A7",
-    bgColor: "#FCE7F3",
-  }
-},{
-  type: "newsletter",
-  props: {
-    buttonColor: "#AF71A7",
-    overlayColor: "rgba(0,0,0,0.5)",
-  }
-},{
-  type: "blog",
-}
-,{type : "productCategories"}
+      }, {
+        type: "instagram",
+        props: {
+          title: "Join Our Community",
+          username: "@potenthygiene",
+          gradientFrom: "#C08497",
+          gradientTo: "#A78BFA",
+          textColor: "#FFFFFF",
+          buttonColor: "#AF71A7",
+        }
+      }, {
+        type: "testimonials",
+        props: {
+          primaryColor: "#AF71A7",
+          bgColor: "#FCE7F3",
+        }
+      },
+      { type: "productCategories" },
+      {
+        type: "newsletter",
+        props: {
+          buttonColor: "#AF71A7",
+          overlayColor: "rgba(0,0,0,0.5)",
+        }
+      }, {
+        type: "blog",
+      }
+
 
     ],
   },
 
   loway: {
+    "bg-color": "#F8F6F1",
     hero: {
       logo: "/loway-main.png",
       title: "Bright Comfort, Every Day",
-      subtitle: "Eco-friendly hygiene solutions...",
+      subtitle: "Vibrant, eco-friendly hygiene solutions designed for active lifestyles and everyday comfort",
       description: "Designed for active lifestyles",
       bgImage: "/loway-bg.png",
       primaryColor: "#016271",
@@ -542,7 +558,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
         props: {
           title: "Best Selling Products",
           bgColor: "",
-          buttonColor: "#016271",
+          buttonColor: "",
         }
       },
       {
@@ -557,10 +573,18 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           gradientTo: "#B1D7DE",
           bgAccent: "#FEF9C3",
           tickerText: "Loway - Where Your Wellness Comes First",
+          tickerColor: "#016271",
           paragraphs: [
             `Looway was created for women who seek gentle, premium care. Infused with natural lavender essence and crafted with the softest materials, every product is designed to pamper and protect.`,
             `Our mission is to deliver dermatologically-tested, premium hygiene products that combine gentle care with elegant comfort for sensitive skin.`,
           ],
+        }
+      }, {
+        type: "products",
+        props: {
+          title: "New Arriving Products",
+          bgColor: "#AF71A7",
+          buttonColor: "#AF71A7",
         }
       }, {
         type: "stats",
@@ -579,34 +603,35 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           title: "Why Choose Loway?",
           primaryColor: "#3B82F6",
         },
-      },{
-  type: "instagram",
-  props: {
-    title: "Join Our Community",
-    username: "@potenthygiene",
-    gradientFrom: "#F6DC52",
-    gradientTo: "#FFF7CB",
-    textColor: "#1F2937",
-    buttonColor: "#1F2937",
-  }
-},{
-  type: "testimonials",
-  props: {
-    primaryColor: "#3B82F6",
-    bgColor: "#EFF6FF",
-  }
-},{
-  type: "newsletter",
-  props: {
-    buttonColor: "#016271",
-    overlayColor: "rgba(0,0,0,0.3)",
-  }
-},{
-  type: "blog",
-},
-{
-  type: "productCategories",
-}
+      }, {
+        type: "instagram",
+        props: {
+          title: "Join Our Community",
+          username: "@potenthygiene",
+          gradientFrom: "#F6DC52",
+          gradientTo: "#FFF7CB",
+          textColor: "#1F2937",
+          buttonColor: "#1F2937",
+        }
+      }, {
+        type: "testimonials",
+        props: {
+          primaryColor: "#3B82F6",
+          bgColor: "#EFF6FF",
+        }
+      },
+      {
+        type: "productCategories",
+      }, {
+        type: "newsletter",
+        props: {
+          buttonColor: "#016271",
+          overlayColor: "rgba(0,0,0,0.3)",
+        }
+      }, {
+        type: "blog",
+      },
+
     ],
   },
 };

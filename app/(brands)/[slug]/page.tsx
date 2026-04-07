@@ -26,7 +26,7 @@ export default async function BrandPage({
   if (!data) return notFound();
 
   return (
-    <main>
+    <main style={{ backgroundColor: data["bg-color"] }}>
       <BrandHero {...data.hero} />
 
       {data.sections.map((section, i) => {
@@ -38,11 +38,11 @@ export default async function BrandPage({
             return <StoryTruth key={i} {...section.props} />;
 
           case "products":
-            return <BestsellingProducts key={i} />;
-
+            return <BestsellingProducts key={i} {...section.props} />;
           case "ourStory":
             return <OurStory key={i} {...section.props} />;
-
+          case "products":
+            return <BestsellingProducts key={i} {...section.props} />;
           case "stats":
             return (
               <BrandStats
@@ -60,15 +60,14 @@ export default async function BrandPage({
           case "testimonials":
             return <Testimonials key={i} {...section.props} />;
 
-          case "blog":
-            return <BlogSection />;
-            
+          case "productCategories":
+            return <ProductCategories key={i} />;
+
           case "newsletter":
             return <Newsletter key={i} {...section.props} />;
 
-          case "productCategories":
-            return <ProductCategories />;
-
+          case "blog":
+            return <BlogSection key={i} />;
           default:
             return null;
         }
