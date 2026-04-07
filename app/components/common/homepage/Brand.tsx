@@ -8,7 +8,6 @@ import Link from "next/link";
 const brands = [
   { id: 1, name: "Ovy", src: "/ovy.png", href: "/ovy" },
   { id: 2, name: "Looway", src: "/loway.png", href: "/loway" },
-  { id: 3, name: "Sanitrip", src: "/sanitrio.png", href: "/sanitrip" },
 ];
 export function BrandAccordion() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);

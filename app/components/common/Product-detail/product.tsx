@@ -20,6 +20,7 @@ export default function ProductDetailPage({
   categoryName,
   variants,
   productInfo,
+  themeColor,
 }: any) {
   const [quantity, setQuantity] = useState(1);
   const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
@@ -48,10 +49,10 @@ export default function ProductDetailPage({
   const discount =
     activeVariant?.strikethroughPrice && activeVariant?.basePrice
       ? Math.round(
-        ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
-          activeVariant.strikethroughPrice) *
-        100,
-      )
+          ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
+            activeVariant.strikethroughPrice) *
+            100,
+        )
       : 0;
 
   const router = useRouter();
@@ -127,10 +128,11 @@ export default function ProductDetailPage({
                     <img
                       src={item?.mediaURL}
                       className={`w-full h-auto object-cover rounded-lg
-                   ${item.mediaURL === bannerImage
-                          ? "border-2 border-[#1A8D91]"
-                          : "border border-gray-200 "
-                        }`}
+                   ${
+                     item.mediaURL === bannerImage
+                       ? "border-2 border-[#1A8D91]"
+                       : "border border-gray-200 "
+                   }`}
                     />
                   </div>
                 </CarouselItem>
@@ -175,7 +177,10 @@ export default function ProductDetailPage({
               activeVariant.highlights.map((feature: string, index: number) => (
                 <span
                   key={index}
-                  className="bg-[#F0FDFA] text-[#168BA0] text-xs px-3 py-1 rounded-full"
+                  className={`text-xs px-3 py-1 rounded-full ${
+                    themeColor ? "text-white" : "bg-[#F0FDFA] text-[#168BA0]"
+                  }`}
+                  style={themeColor ? { backgroundColor: themeColor } : {}}
                 >
                   {feature}
                 </span>
@@ -207,6 +212,7 @@ export default function ProductDetailPage({
             variants={variants}
             handleVariantChange={handleVariantChange}
             activeVariant={activeVariant}
+            themeColor={themeColor}
           />
           {/* Size Selection */}
           <div>
@@ -218,10 +224,16 @@ export default function ProductDetailPage({
                   key={s}
                   type="button"
                   onClick={() => setSelectedSize(s)}
-                  className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === s
-                    ? "bg-[#168BA0] text-white border-[#168BA0]"
-                    : "bg-white border-gray-300 hover:border-[#168BA0]"
-                    }`}
+                  className={`px-4 py-2 text-sm rounded-full border transition ${
+                    selectedSize === s
+                      ? "text-white"
+                      : "bg-white border-gray-300"
+                  }`}
+                  style={
+                    selectedSize === s
+                      ? { backgroundColor: themeColor, borderColor: themeColor }
+                      : { borderColor: themeColor }
+                  }
                 >
                   {s}
                 </button>
@@ -238,10 +250,16 @@ export default function ProductDetailPage({
                   key={flow}
                   type="button"
                   onClick={() => setSelectedFlow(flow)}
-                  className={`px-4 py-2 text-sm rounded-full border transition ${selectedFlow === flow
-                    ? "bg-[#168BA0] text-white border-[#168BA0]"
-                    : "bg-white border-gray-300 hover:border-[#168BA0]"
-                    }`}
+                  className={`px-4 py-2 text-sm rounded-full border transition ${
+                    selectedFlow === flow
+                      ? "text-white"
+                      : "bg-white border-gray-300"
+                  }`}
+                  style={{
+                    backgroundColor:
+                      selectedFlow === flow ? themeColor : "white",
+                    borderColor: themeColor,
+                  }}
                 >
                   {flow}
                 </button>
@@ -275,7 +293,10 @@ export default function ProductDetailPage({
           <div className="flex gap-4">
             <button
               onClick={addToCart}
-              className="flex-1 bg-[#168BA0] hover:bg-[#44a4b5] text-white py-3 rounded-xl"
+              className="flex-1 text-white py-3 rounded-xl transition"
+              style={{
+                backgroundColor: themeColor || "#168BA0",
+              }}
             >
               Add to Cart
             </button>
@@ -298,10 +319,11 @@ export default function ProductDetailPage({
               <div
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
-                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan === plan.id
-                  ? "border-teal-600 bg-teal-50"
-                  : "border-gray-200"
-                  }`}
+                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
+                  selectedPlan === plan.id
+                    ? "border-teal-600 bg-teal-50"
+                    : "border-gray-200"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <input
@@ -323,7 +345,13 @@ export default function ProductDetailPage({
               <button
                 onClick={subscribeToCart}
                 disabled={isSubscribed}
-                className={`${isSubscribed ? "bg-gray-400 cursor-not-allowed" : "bg-[#168BA0]"} text-white px-6 py-3 rounded-xl transition duration-200`}
+                className={`text-white px-6 py-3 rounded-xl transition duration-200 ${
+                  isSubscribed ? "bg-gray-400 cursor-not-allowed" : ""
+                }`}
+                style={{
+                  backgroundColor: isSubscribed ? "#9CA3AF" : themeColor,
+                  cursor: isSubscribed ? "not-allowed" : "pointer",
+                }}
               >
                 {isSubscribed ? "Subscribed!" : "Subscribe"}
               </button>
@@ -339,10 +367,12 @@ function ProductVarient({
   variants,
   handleVariantChange,
   activeVariant,
+  themeColor,
 }: {
   variants: any;
   handleVariantChange: any;
   activeVariant: any;
+  themeColor?: any;
 }) {
   return (
     <>

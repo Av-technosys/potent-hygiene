@@ -6,8 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import AddToWishlist from "@/app/components/common/category/addToWishlist";
 import { addToCart } from "@/store/cartActions";
+import { usePathname, useRouter } from "next/navigation";
 
-export default function BestsellingCard({ product, buttonColor }: any) {
+export default function BestsellingCard({ product, buttonColor, brand }: any) {
+  const router = useRouter();
+  const pathname = usePathname();
   const discount = product.oldPrice
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0;
@@ -24,8 +27,18 @@ export default function BestsellingCard({ product, buttonColor }: any) {
     });
   };
 
+  const handleRedirect = () => {
+    if (brand) {
+      router.push(`${pathname}/product-detail/${product.slug}`);
+    } else {
+      router.push(`/product-detail/${product.slug}`);
+    }
+  };
   return (
-    <div className="group relative flex flex-col rounded-[24px] bg-white p-3 shadow-sm">
+    <div
+      onClick={handleRedirect}
+      className="group relative flex flex-col rounded-[24px] bg-white p-3 shadow-sm"
+    >
       {/* ✅ Wishlist */}
       <AddToWishlist
         product={{
@@ -80,7 +93,10 @@ export default function BestsellingCard({ product, buttonColor }: any) {
 
         {/* ✅ Add to Cart */}
         <Button
-          onClick={handleAddToCart}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleAddToCart();
+          }}
           className="w-full"
           style={{ backgroundColor: buttonColor || "#1A8D91" }}
         >

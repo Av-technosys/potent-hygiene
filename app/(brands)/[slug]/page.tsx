@@ -38,11 +38,11 @@ export default async function BrandPage({
             return <StoryTruth key={i} {...section.props} />;
 
           case "products":
-            return <BestsellingProducts key={i} {...section.props} />;
+            return <BestsellingProducts key={i} {...section.props} brand={true} />;
           case "ourStory":
             return <OurStory key={i} {...section.props} />;
           case "products":
-            return <BestsellingProducts key={i} {...section.props} />;
+            return <BestsellingProducts key={i} {...section.props} brand={true} />;
           case "stats":
             return (
               <BrandStats

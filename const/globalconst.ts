@@ -635,3 +635,10 @@ We encourage awareness, informed choices, and self-care without hesitation or st
     ],
   },
 };
+
+
+
+export const BrandProductColors = {
+  ovy:"#AF71A7",
+  loway:"#F6DC52"
+}

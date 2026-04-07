@@ -8,8 +8,8 @@ export function Hero() {
   return (
     <section className="relative w-full z-0 bg-[#E6F4F6] py-8 md:py-12 px-6 md:px-16 overflow-hidden">
       <div className="container">
-        <div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-2 lg:gap-16">
-          <div className="flex flex-col items-center text-center lg:items-start lg:text-left space-y-5 lg:pr-10 order-1">
+<div className="grid grid-cols-1 items-center gap-4 lg:grid-cols-2 lg:gap-16">
+          <div className="flex flex-col  order-2 lg:order-1 items-center text-center lg:items-start lg:text-left space-y-5 lg:pr-10">
             <Badge className="w-fit border-none bg-white px-3 py-2 text-[10px] font-medium text-gray-500 shadow-sm uppercase tracking-widest">
               Comfort. Care. Confidence
             </Badge>
@@ -48,7 +48,7 @@ export function Hero() {
               </span>
             </div>
           </div>
-          <div className="relative flex items-center justify-center order-2 mt-12 lg:mt-0">
+          <div className="relative flex order-1 lg:order-2  items-center justify-center  mt-12 lg:mt-0">
             <div className="absolute hidden md:block top-1/2 left-1/2 -z-1 w-[130%] lg:w-[115%] -translate-x-1/2 -translate-y-1/2 pointer-events-none opacity-40">
               <Image
                 src="/heroSectionBgLayer.png"
