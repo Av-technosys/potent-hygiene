@@ -25,11 +25,12 @@ export function BrandAccordion() {
         {/* Brand Grid */}
         <div className="grid grid-cols-3 md:flex md:flex-wrap md:justify-center gap-8 md:gap-16">
           {brands.map((brand) => (
-            <Link
+            <div
               key={brand.id}
               className="flex flex-col items-center group cursor-pointer"
             >
               {/* Circle */}
+
               <div className="relative w-28 h-28 md:w-56 md:h-56 rounded-full overflow-hidden shadow-md transition-transform duration-300 group-hover:scale-105">
                 {/* Background */}
                 <Image
@@ -49,6 +50,7 @@ export function BrandAccordion() {
                   </span>
                 </div>
               </div>
+              
             </div>
           ))}
         </div>

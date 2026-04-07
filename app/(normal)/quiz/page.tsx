@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
 import { quizQuestions } from "@/const/globalconst";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 import React from "react";
 import { toast } from "sonner";
 
@@ -31,6 +31,12 @@ const Page = () => {
   const BackHandler = () => {
     if (quizData?.id > 1) {
       changeQuiz(quizData?.id - 2);
+    }
+  };
+
+  const NextHandler = () => {
+    if (quizData?.id < quizQuestions.length) {
+      changeQuiz(quizData?.id);
     }
   };
 
@@ -72,23 +78,32 @@ const Page = () => {
                 key={index}
                 className={`flex items-center gap-4 justify-start p-4 h-auto rounded-xl
                 transition-all ${
-                 answers[quizData?.id] === index
-                 ? "bg-[#168BA0] text-white" 
-                 : " bg-[#9DD8E2] hover:bg-[#168BA0] text-white"
-                 }`}
+                  answers[quizData?.id] === index
+                    ? "bg-[#168BA0] text-white"
+                    : " bg-[#9DD8E2] hover:bg-[#168BA0] text-white"
+                }`}
               >
-                  <div className="p-2 bg-white rounded-lg text-[#168BA0]">
-                   <Icon size={20} />
-                 </div>
-              <span className="font-medium">{option.label}</span>
+                <div className="p-2 bg-white rounded-lg text-[#168BA0]">
+                  <Icon size={20} />
+                </div>
+                <span className="font-medium">{option.label}</span>
               </Button>
             );
           })}
-          <div>
+        </div>
+
+        <div className={`w-full flex items-center justify-between ${quizData?.id ==  1 && "justify-end"}`}>
+          {quizData?.id > 1 && (
             <Button onClick={() => BackHandler()} variant={"ghost"}>
               <ArrowLeft /> Back
             </Button>
-          </div>
+          )}
+
+          {quizData?.id < quizQuestions.length && (
+            <Button onClick={() => NextHandler()} variant={"ghost"}>
+              Next <ArrowRight />
+            </Button>
+          )}
         </div>
 
         {/* Footer */}
