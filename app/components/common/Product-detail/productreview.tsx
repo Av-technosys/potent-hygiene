@@ -12,7 +12,7 @@ export default function ProductReviews({ reviews }: any) {
   ];
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="py-10">
       {/* TOP SUMMARY CARD */}
       <div className="bg-gray-100 border border-gray-200 rounded-xl p-8 flex flex-col md:flex-row justify-between gap-10">
         {/* LEFT */}
