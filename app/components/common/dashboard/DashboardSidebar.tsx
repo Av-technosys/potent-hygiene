@@ -11,6 +11,7 @@ import {
   IconCalendarTime,
   IconGift,
   IconUsers,
+  IconSparkles,
 } from "@tabler/icons-react";
 import { LogoutButton } from "../LogoutButton";
 
@@ -32,7 +33,7 @@ export const DashboardSidebar = () => {
     { icon: IconHistory, label: "Order History", href: "/dashboard/orders" },
     { icon: IconStar, label: "Review & Rating", href: "/dashboard/reviews" },
     {
-      icon: IconShieldCheck,
+      icon: IconGift,
       label: "Rewards & Security",
       href: "/dashboard/security",
     },
@@ -41,7 +42,7 @@ export const DashboardSidebar = () => {
       label: "Period Tracker",
       href: "/dashboard/tracker",
     },
-    { icon: IconGift, label: "Loyalty Rewards", href: "/dashboard/loyalty" },
+    { icon: IconSparkles, label: "Loyalty Rewards", href: "/dashboard/loyalty" },
     { icon: IconUsers, label: "Referral Program", href: "/dashboard/referral" },
   ];
 
