@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 type BrandHeroProps = {
   logo: string;
   title: string;
@@ -29,27 +31,41 @@ export function BrandHero({
       <div className="bg-black/20 absolute inset-0" />
 
       <div className="relative z-10 text-white space-y-4">
-        <img src={logo} alt="logo" className="mx-auto h-36" />
+        <Image
+          src={logo}
+          alt="logo"
+          className="mx-auto h-36"
+          height={300}
+          width={300}
+        />
 
-        <h1 className="text-4xl font-serif font-bold">{title}</h1>
+        <h1 className="font-playfair  text-4xl max-w-2xl font-semibold">
+          {title}
+        </h1>
 
-        <p className="text-lg">{subtitle}</p>
+        <p className="text-lg max-w-2xl font-roboto">{subtitle}</p>
 
-        <p className="max-w-xl mx-auto text-sm opacity-90">
+        <p className="max-w-xl font-roboto mx-auto text-md opacity-90">
           {description}
         </p>
 
-        <div className="flex justify-center gap-4">
+        <div className="flex justify-center gap-4 pt-4">
           <button
-            className="px-6 py-2 rounded-full"
-            style={{ backgroundColor: primaryColor }}
+            className="px-8 py-3 rounded-xl font-medium transition-transform hover:scale-105 active:scale-95 shadow-lg"
+            style={{
+              backgroundColor: primaryColor,
+              color: "#FFFFFF",
+            }}
           >
             Shop Now
           </button>
 
           <button
-            className="px-6 py-2 rounded-full  text-black"  
-            style={{ backgroundColor: secondaryColor }}
+            className="px-8 py-3 rounded-xl font-medium  transition-all hover:bg-white/10 backdrop-blur-md shadow-lg"
+            style={{
+              backgroundColor: secondaryColor,
+              color: "#FFFFFF",
+            }}
           >
             All Brands
           </button>

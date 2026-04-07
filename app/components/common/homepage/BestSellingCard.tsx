@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import AddToWishlist from "@/app/components/common/category/addToWishlist";
 import { addToCart } from "@/store/cartActions";
 
-export default function BestsellingCard({ product }: any) {
+export default function BestsellingCard({ product, buttonColor }: any) {
   const discount = product.oldPrice
     ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
     : 0;
@@ -39,14 +39,17 @@ export default function BestsellingCard({ product }: any) {
       {/* Discount */}
       {product.oldPrice && (
         <div className="absolute right-2 top-2 z-10">
-          <div className="rounded-xl bg-[#1A8D91] px-2 py-1 text-[10px] font-bold text-white">
+          <div
+            className="rounded-xl px-2 py-1 text-[10px] font-bold text-white"
+            style={{ backgroundColor: buttonColor || "#1A8D91" }}
+          >
             {discount}% OFF
           </div>
         </div>
       )}
 
       {/* Image */}
-      <div className="relative aspect-square w-full overflow-hidden rounded-[20px] bg-gray-50">
+      <div className="relative aspect-square w-full overflow-hidden rounded-4xl bg-gray-50">
         <Image
           src={product.image || "/product.png"}
           alt={product.name}
@@ -56,7 +59,10 @@ export default function BestsellingCard({ product }: any) {
       </div>
 
       <div className="mt-4 space-y-2">
-        <Badge className="bg-[#00D1C1] text-white text-[10px]">
+        <Badge
+          className="text-white text-[10px]"
+          style={{ backgroundColor: buttonColor || "#00D1C1" }}
+        >
           Bestseller
         </Badge>
 
@@ -75,7 +81,8 @@ export default function BestsellingCard({ product }: any) {
         {/* ✅ Add to Cart */}
         <Button
           onClick={handleAddToCart}
-          className="w-full bg-[#1A8D91] text-white"
+          className="w-full"
+          style={{ backgroundColor: buttonColor || "#1A8D91" }}
         >
           Add to Cart
         </Button>

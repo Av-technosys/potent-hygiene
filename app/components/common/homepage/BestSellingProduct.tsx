@@ -41,13 +41,13 @@ import BestsellingCard from "./BestSellingCard";
 
 type Props = {
   title?: string;
-  bgColor?: string;
+  
   buttonColor?: string;
 };
 
 export default async function BestsellingProducts({
   title = "Best Selling Products",
-  bgColor = "#F8F6F1",
+ 
   buttonColor = "#168BA0",
 }: Props) {
   const products = await getBestSellingProducts();
@@ -55,7 +55,7 @@ export default async function BestsellingProducts({
   return (
     <section
       className="py-10 overflow-hidden"
-      style={{ backgroundColor: bgColor }}
+      style={{ backgroundColor: "#F8F6F1" }}
     >
       <div className="container mx-auto px-4 md:px-16">
         
@@ -69,7 +69,7 @@ export default async function BestsellingProducts({
         {/* Products */}
         <div className="grid md:grid-cols-4 gap-6">
           {products.map((product: any) => (
-            <BestsellingCard key={product.id} product={product} />
+            <BestsellingCard key={product.id} product={product} buttonColor={buttonColor} />
           ))}
         </div>
 
