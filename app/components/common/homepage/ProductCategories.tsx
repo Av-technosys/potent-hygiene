@@ -6,9 +6,10 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Link from "next/link";
 
 const categories = [
-  { id: 1, title: "Combo", video: "/videos/combo.mp4", thumb: "/thumb1.png" },
-  { id: 2, title: "Pads", video: "/videos/pads.mp4", thumb: "/thumb2.png" },
-  { id: 3, title: "Menstrual Cup", video: "/videos/cup.mp4", thumb: "/thumb3.png" },
+  { id: 1, title: "Menstrual Cup", video: "/landingVideos/choose_cup.mp4", thumb: "/thumb1.png" },
+  { id: 2, title: "Ovy pads", video: "/landingVideos/ovy_pads.mp4", thumb: "/thumb2.png" },
+  { id: 3, title: "Pee & Puke Bags", video: "/landingVideos/pee_gel.mp4", thumb: "/thumb3.png" },
+  { id: 4, title: "All Pads", video: "/landingVideos/pads.mp4", thumb: "/thumb3.png" },
 ];
 
 export function ProductCategories() {
@@ -18,7 +19,7 @@ export function ProductCategories() {
         <Carousel opts={{ align: "start", loop: true }}>
           <CarouselContent>
             {categories.map((cat) => (
-              <CarouselItem key={cat.id} className=" basis-[75%] md:basis-1/3">
+              <CarouselItem key={cat.id} className=" basis-[75%] md:basis-1/4">
                 <VideoCard category={cat} />
               </CarouselItem>
             ))}
@@ -42,17 +43,16 @@ function VideoCard({ category }: { category: any }) {
       onMouseEnter={() => videoRef.current?.play()}
       onMouseLeave={() => { videoRef.current?.pause(); if (videoRef.current) videoRef.current.currentTime = 0; }}
     >
-      <div className="relative aspect-square">
+      <div className="relative">
         <video
-          ref={videoRef}
           src={category.video}
-          poster={category.thumb}
-          muted loop playsInline
+
+          muted loop autoPlay
           className="h-full w-full object-cover"
         />
-        <div className="absolute inset-0 flex items-center justify-center bg-black/10 ">
+        {/* <div className="absolute inset-0 flex items-center justify-center bg-black/10 ">
           <Play className="h-10 w-10 text-white fill-current " />
-        </div>
+        </div> */}
       </div>
 
       <div className="p-5 text-center">
