@@ -2,7 +2,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <main className="min-h-screen md:mx-12  space-y-6">
+    <main className="container  space-y-6">
 
       {/* Navbar */}
       <div className="flex items-center justify-between px-4 py-3">

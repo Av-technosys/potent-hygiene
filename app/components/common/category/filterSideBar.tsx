@@ -26,7 +26,7 @@ export default function FiltersSidebar() {
   };
 
   return (
-    <Card className="hidden md:block w-72 rounded-2xl shadow-md bg-white">
+    <Card className="hidden md:block w-72 rounded-2xl shadow-md bg-white h-fit sticky top-4 max-h-[96vh] overflow-y-auto no-scrollbar">
       <CardContent className="p-5 space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="font-semibold text-lg">Filters</h2>

@@ -2,10 +2,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function Loading() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 container my-12">
 
       {/* Top Filter Bar */}
-      <div className="max-w-7xl mx-auto m-12 px-6 py-4 flex justify-between items-center">
+      <div className="container m-12 py-4 flex justify-between items-center">
         <Skeleton className="h-8 w-40 bg-gray-200" />
         <div className="flex gap-3">
           <Skeleton className="h-8 w-24 bg-gray-200" />
