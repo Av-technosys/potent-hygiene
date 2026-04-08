@@ -7,8 +7,8 @@ export default function AboutProduct({
   variant,
   themeColor,
 }: {
-  variant: any;
-  themeColor: string;
+  variant?: any;
+  themeColor?: string;
 }) {
   const [selectedTab, setSelectedTab] = useState("Description");
 

@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 
-export default function AboutHero({ themeColor }: { themeColor: string }) {
+export default function AboutHero({ themeColor }: { themeColor?: string }) {
   return (
     <section
       className="w-full py-20"
