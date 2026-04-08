@@ -21,39 +21,9 @@ export default function Home() {
       <Hero />
       <BrandAccordion />
       <CategoryGrid />
-      <StoryTruth
-        badgeText="Own Your Cycle"
-        title="The"
-        highlight="Nakd"
-        image="/thestory.png"
-        primaryColor="#1A8D91"
-        gradientFrom="#168BA0"
-        gradientTo="#AFE7F1"
-        bgAccent="#E6F4F6"
-        paragraphs={[
-          "Good hygiene is not just about routine...",
-          "Our goal is to make hygiene conversations normal...",
-          "We encourage awareness and self-care...",
-        ]}
-      />
+      <StoryTruth key={STORY_CONTENT[0].title} {...STORY_CONTENT[0]} />
       <BestsellingProducts />
-      <OurStory
-        badgeText="Our Story"
-        title="Built for Women,"
-        highlight="By Women"
-        image="/ourStory.png"
-        primaryColor="#1A8D91"
-        gradientFrom="#168BA0"
-        gradientTo="#AFE7F1"
-        bgAccent="#E6F4F6"
-        tickerText="Potent Hygiene - Where Your Wellness Comes First"
-        paragraphs={[
-          `Ovy was created for women who seek gentle, premium care. Infused with natural lavender essence and crafted with the softest materials, every product is designed to pamper and protect.`,
-          ` Today, we are proud to offer a complete range of organic, dermatologically tested 
-                products that prioritize your health and the planet. Our journey is just beginning, 
-                and we are grateful to have you with us.,`
-        ]}
-      />
+      <OurStory key={STORY_CONTENT[0].title} {...STORY_CONTENT[1]} />
       <WhyChooseUs />
       <AboutStory />
       <InstagramFeed
@@ -74,3 +44,39 @@ export default function Home() {
     </main>
   );
 }
+
+
+const STORY_CONTENT = [
+  {
+    component: "StoryTruth",
+    badgeText: "Own Your Cycle",
+    title: "The",
+    highlight: "Nakd",
+    image: "/thestory.png",
+    primaryColor: "#1A8D91",
+    gradientFrom: "#168BA0",
+    gradientTo: "#AFE7F1",
+    bgAccent: "#E6F4F6",
+    paragraphs: [
+      "Good hygiene is not just about routine...",
+      "Our goal is to make hygiene conversations normal...",
+      "We encourage awareness and self-care...",
+    ],
+  },
+  {
+    component: "OurStory",
+    badgeText: "Our Story",
+    title: "Built for Women,",
+    highlight: "By Women",
+    image: "/ourStory.png",
+    primaryColor: "#1A8D91",
+    gradientFrom: "#168BA0",
+    gradientTo: "#AFE7F1",
+    bgAccent: "#E6F4F6",
+    tickerText: "Potent Hygiene - Where Your Wellness Comes First",
+    paragraphs: [
+      `Ovy was created for women who seek gentle, premium care. Infused with natural lavender essence and crafted with the softest materials, every product is designed to pamper and protect.`,
+      `Today, we are proud to offer a complete range of organic, dermatologically tested products that prioritize your health and the planet. Our journey is just beginning, and we are grateful to have you with us.`,
+    ],
+  },
+];

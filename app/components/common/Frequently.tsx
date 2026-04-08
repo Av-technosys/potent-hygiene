@@ -646,11 +646,10 @@ const Frequently = () => {
                 setActiveProduct(product);
                 setActiveCategory("Product Usage");
               }}
-              className={`rounded-full px-5 py-2 text-sm border transition ${
-                activeProduct === product
+              className={`rounded-full px-5 py-2 text-sm border transition ${activeProduct === product
                   ? "bg-[#168BA0] text-white border-[#168BA0]"
                   : "bg-white text-gray-700 border-gray-300"
-              }`}
+                }`}
             >
               {product}
             </button>
@@ -658,16 +657,15 @@ const Frequently = () => {
         </div>
 
         {/* CATEGORY TABS */}
-        <div className="mt-6 flex gap-2 justify-center flex-wrap">
+        <div className="mt-12 flex gap-2 justify-center flex-wrap">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`rounded-full px-4 py-2 text-sm border transition ${
-                activeCategory === cat
+              className={`rounded-full px-4 py-2 text-sm border transition ${activeCategory === cat
                   ? "bg-[#168BA0] text-white border-[#168BA0]"
                   : "bg-white text-gray-700 border-gray-300"
-              }`}
+                }`}
             >
               {cat}
             </button>

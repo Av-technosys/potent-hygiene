@@ -26,7 +26,7 @@ import { Badge } from "@/components/ui/badge";
 //                 confident, and cared for every single day. At Potent Hygiene, we believe 
 //                 personal care should be simple, honest, and empowering.
 //               </p>
-              
+
 //               <p className="hidden md:block text-black/50 leading-relaxed text-sm md:text-base">
 //                 Our goal is to make hygiene conversations normal and accessible by providing 
 //                 products and information that support everyday well-being. Whether it&apos;s daily 
@@ -115,16 +115,15 @@ const StoryTruth = ({
               <span style={{ color: primaryColor }}>
                 {highlight}
               </span>
-               {" "}Truth
+              {" "}Truth
             </h2>
 
             <div className="space-y-2 max-w-xl">
               {paragraphs.map((p, i) => (
                 <p
                   key={i}
-                  className={`leading-relaxed text-sm md:text-base ${
-                    i === 0 ? "text-black/70 font-medium" : "text-black/50 hidden md:block"
-                  }`}
+                  className={`leading-relaxed text-sm md:text-base ${i === 0 ? "text-black/70 font-medium" : "text-black/50 hidden md:block"
+                    }`}
                 >
                   {p}
                 </p>

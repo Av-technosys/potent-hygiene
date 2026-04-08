@@ -13,7 +13,7 @@ type Props = {
   gradientTo: string;
   bgAccent: string;
   tickerColor?: string;
-  tickerText: string;
+  tickerText?: string;
 };
 
 export function OurStory({
