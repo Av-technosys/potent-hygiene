@@ -6,9 +6,9 @@ import { Calendar } from "lucide-react";
 export default function JournalsSection({ themeColor }: { themeColor?: string }) {
   const articles = [1, 2, 3];
 
-  return (
-    <section className="w-full py-20">
-      <div className="container mx-auto">
+    return (
+        <section className="w-full  py-20">
+            <div className=" mx-auto ">
 
         {/* Header */}
         <div className="text-center mb-14">

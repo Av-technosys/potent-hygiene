@@ -14,10 +14,7 @@
 //   { value: "mocha", label: "Mocha", hex: "#3B2F2F" },
 //   { value: "tan", label: "Tan", hex: "#D2B48C" },
 
-
-
-
-
+import { User2 } from "lucide-react";
 
 //   { value: "red", label: "Red", hex: "#FF0000" },
 //   { value: "crimson", label: "Crimson", hex: "#DC143C" },
@@ -79,6 +76,18 @@
 //   { value: "champagne", label: "Champagne", hex: "#F7E7CE" },
 // ];
 export const COLORS = [
+  { value: "green", label: "Green", hex: "#008000" },
+  { value: "red", label: "Red", hex: "#FF0000" },
+  { value: "purple", label: "Purple", hex: "#800080" },
+  { value: "gold", label: "Gold", hex: "#FFD700" },
+  { value: "lavender", label: "Lavender", hex: "#E6E6FA" },
+  { value: "yellow", label: "Yellow", hex: "#FFFF00" },
+  { value: "sky-blue", label: "Sky Blue", hex: "#87CEEB" },
+  { value: "violet", label: "Violet", hex: "#8A2BE2" }, // interpreted as light purple
+  { value: "amethyst", label: "Amethyst", hex: "#9966CC" }, // also light purple-ish
+  { value: "gray", label: "Gray", hex: "#808080" },
+  { value: "ash-gray", label: "Ash Gray", hex: "#B2BEB5" },
+  { value: "champagne", label: "Champagne", hex: "#F7E7CE" }, // golden-gray tone
   { value: "green", label: "Green", hex: "#008000" },
   { value: "red", label: "Red", hex: "#FF0000" },
   { value: "purple", label: "Purple", hex: "#800080" },
@@ -229,18 +238,59 @@ export const ORDER_STATUS = [
   },
 ];
 
+export const quizQuestions = [
+  {
+    id: 1,
+    question: "What describe your flow ?",
+    options: [
+      { icon: User2, label: "light flow" },
+      { icon: User2, label: "medium flow" },
+      { icon: User2, label: "heavy flow" },
+      { icon: User2, label: "irregular flow" },
+    ],
+  },
+  {
+    id: 2,
+    question: "Do you experience cramps or discomfort?",
+    options: [
+      { icon: User2, label: "No Discomfort" },
+      { icon: User2, label: "Mild Discomfort" },
+      { icon: User2, label: "Severe Cramps" },
+      { icon: User2, label: "Varies" },
+    ],
+  },
+  {
+    id: 3,
+    question: "What is your preferred material for period products?",
+    options: [
+      { icon: User2, label: "Cotton" },
+      { icon: User2, label: "Bamboo" },
+      { icon: User2, label: "Silk" },
+      { icon: User2, label: "Unsure" },
+    ],
+  },
+  {
+    id: 4,
+    question:
+      "Do you have any allergies or sensitivities to certain materials?",
+    options: [
+      { icon: User2, label: "No Allergies" },
+      { icon: User2, label: "Sensitive Skin" },
+      { icon: User2, label: "Allergic Reactions" },
+      { icon: User2, label: "Not Sure" },
+    ],
+  },
+];
 
-
-
-
-export const pageSize = 4
+export const pageSize = 4;
 // export const tempUserId = "c263327b-3958-4fe8-b0b9-1ca3711f7c9c"
 // export const tempUserId = userId
 export const canResendOTPInterval = 10; // in seconds
-export const isUUID = (identifier: string) => /^[0-9a-fA-F-]{36}$/.test(identifier);
+export const isUUID = (identifier: string) =>
+  /^[0-9a-fA-F-]{36}$/.test(identifier);
 
 export const tempUserId = "63089f34-5276-481f-bc92-f75ff1ad24a5";
-export const bestSellingSlug = "best-selling-products"
+export const bestSellingSlug = "best-selling-products";
 export const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 type CategorySection = {
