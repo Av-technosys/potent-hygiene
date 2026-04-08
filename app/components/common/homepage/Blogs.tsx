@@ -37,14 +37,13 @@ export async function BlogSection() {
               <article className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition duration-300">
 
                 {/* Image */}
-                <div className="relative h-48 w-full overflow-hidden">
+                <div className="relative w-full h-80  overflow-hidden">
                   <Image
-                    src={article.image || "/placeholder.jpg"}
-                    alt={article.title || "Blog Image"}
-                    fill
-                    className="object-cover transition duration-700 group-hover:scale-110"
-                    unoptimized
-                  />
+                  src={article?.image}
+                  alt={article?.title || "Blog Post"}
+                  fill
+                  className="object-cover object-center group-hover:scale-105 transition duration-500"
+                />
 
                   {/* Category */}
                   {article.blogCategory && (

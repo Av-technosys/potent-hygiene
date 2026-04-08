@@ -58,10 +58,10 @@ const Footer = () => {
             <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
             <ul className="space-y-2 text-sm text-white/90">
               <li><Link href="/shop">Shop All</Link></li>
-              <li><Link href="/sanitary-pads">Sanitary Pads</Link></li>
-              <li><Link href="/menstrual-cups">Menstrual Cups</Link></li>
-              <li><Link href="/pantyliners">Pantyliners</Link></li>
-              <li><Link href="/combo-packs">Combo Packs</Link></li>
+              <li><Link href="/shop?category=sanitary-pads">Sanitary Pads</Link></li>
+              <li><Link href="/shop?category=menstrual-cups">Menstrual Cups</Link></li>
+              <li><Link href="/shop?category=panty-liners">Pantyliners</Link></li>
+              <li><Link href="/shop?category=pee-and-puke-bags-2">Pee & Puke Bags</Link></li>
             </ul>
           </div>
 
