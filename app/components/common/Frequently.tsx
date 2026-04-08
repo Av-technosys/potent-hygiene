@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 import {
   Accordion,
@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { IconSearch } from "@tabler/icons-react";
 
-/* ---------------- PRODUCTS ---------------- */
+
 const products = [
   "Ovy Reusable Menstrual Cup",
   "Ovy Organic Panty Liners",
@@ -24,7 +24,6 @@ const products = [
 
 type ProductType = (typeof products)[number];
 
-/* ---------------- CATEGORIES ---------------- */
 const categories = [
   "Product Usage",
   "Material & Safety",
@@ -36,7 +35,6 @@ const categories = [
 
 type CategoryType = (typeof categories)[number];
 
-/* ---------------- FAQ DATA ---------------- */
 type FAQItem = {
   question: string;
   answer: string;
@@ -601,7 +599,6 @@ Ideal for frequent travellers, daily commuters, or families who want to always b
   },
 };
 
-/* ---------------- COMPONENT ---------------- */
 const Frequently = () => {
   const [activeProduct, setActiveProduct] = useState<ProductType>(
     "Ovy Reusable Menstrual Cup",
@@ -609,6 +606,34 @@ const Frequently = () => {
 
   const [activeCategory, setActiveCategory] =
     useState<CategoryType>("Product Usage");
+
+  const [searchText, setSearchText] = useState("");
+  const [filteredFAQs, setFilteredFAQs] = useState(
+    faqData[activeProduct][activeCategory],
+  );
+
+  useEffect(() => {
+    const filteredFAQ = Object.entries(faqData)
+      .flatMap(([product, categories]) =>
+        Object.entries(categories).flatMap(([category, faqs]) =>
+          faqs.map((faq) => ({
+            product,
+            category,
+            question: faq.question,
+            answer: faq.answer,
+          })),
+        ),
+      )
+      .filter((faq) => {
+        const text = searchText.toLowerCase();
+        return (
+          faq.question.toLowerCase().includes(text) ||
+          faq.answer.toLowerCase().includes(text)
+        );
+      });
+    setFilteredFAQs(filteredFAQ);
+   
+  }, [searchText]);
 
   return (
     <section className="w-full bg-white py-12 sm:py-14">
@@ -631,52 +656,81 @@ const Frequently = () => {
               size={18}
             />
             <Input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
               placeholder="Search for answers"
               className="h-11 rounded-full pl-11"
             />
           </div>
         </div>
 
-        {/* PRODUCT TABS */}
-        <div className="mt-10 flex gap-3 justify-center flex-wrap">
-          {products.map((product) => (
-            <button
-              key={product}
-              onClick={() => {
-                setActiveProduct(product);
-                setActiveCategory("Product Usage");
-              }}
-              className={`rounded-full px-5 py-2 text-sm border transition ${
-                activeProduct === product
-                  ? "bg-[#168BA0] text-white border-[#168BA0]"
-                  : "bg-white text-gray-700 border-gray-300"
-              }`}
-            >
-              {product}
-            </button>
-          ))}
-        </div>
+        {searchText == "" && (
+          <>
+            {/* PRODUCT TABS */}
+            <div className="mt-10 flex gap-3 justify-center flex-wrap">
+              {products.map((product) => (
+                <button
+                  key={product}
+                  onClick={() => {
+                    setActiveProduct(product);
+                    setActiveCategory("Product Usage");
+                  }}
+                  className={`rounded-full px-5 py-2 text-sm border transition ${
+                    activeProduct === product
+                      ? "bg-[#168BA0] text-white border-[#168BA0]"
+                      : "bg-white text-gray-700 border-gray-300"
+                  }`}
+                >
+                  {product}
+                </button>
+              ))}
+            </div>
 
-        {/* CATEGORY TABS */}
-        <div className="mt-6 flex gap-2 justify-center flex-wrap">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              className={`rounded-full px-4 py-2 text-sm border transition ${
-                activeCategory === cat
-                  ? "bg-[#168BA0] text-white border-[#168BA0]"
-                  : "bg-white text-gray-700 border-gray-300"
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+            {/* CATEGORY TABS */}
+            <div className="mt-6 flex gap-2 justify-center flex-wrap">
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`rounded-full px-4 py-2 text-sm border transition ${
+                    activeCategory === cat
+                      ? "bg-[#168BA0] text-white border-[#168BA0]"
+                      : "bg-white text-gray-700 border-gray-300"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+          </>
+        )}
 
-        {/* FAQ */}
         <div className="mt-8 rounded-xl border border-gray-200 p-4">
-          {faqData[activeProduct][activeCategory]?.length === 0 ? (
+          {searchText ? (
+            filteredFAQs.length === 0 ? (
+              <p className="text-center text-gray-500 py-6">
+                No results found.
+              </p>
+            ) : (
+              <Accordion type="single" collapsible>
+                {filteredFAQs.map((faq: any, index: number) => (
+                  <AccordionItem key={index} value={`search-${index}`}>
+                    <AccordionTrigger className="text-left font-medium">
+                      {faq.question}  
+                    </AccordionTrigger>
+
+                    <AccordionContent className="text-gray-600 whitespace-pre-line">
+                      <p className="text-xs  text-teal-600 font-medium ">
+                      {faq?.product} ({faq.category})
+                    </p>
+                      {faq.answer}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            )
+          ) : faqData[activeProduct][activeCategory]?.length === 0 ? (
             <p className="text-center text-gray-500 py-6">
               No FAQs available for this section.
             </p>
