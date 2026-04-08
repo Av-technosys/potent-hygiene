@@ -24,21 +24,30 @@ export default function AboutProduct({
       <div className="py-6 flex justify-center">
         <div className="flex flex-wrap gap-2">
           {tabs.map((tab) => (
-            <button
-              key={tab}
-              onClick={() => setSelectedTab(tab)}
-              className={`px-4 py-2 text-sm rounded-full border transition ${
-                selectedTab === tab
-                  ? "text-white"
-                  : "bg-white border-gray-300"
-              }`}
-              style={{
-                backgroundColor: selectedTab === tab ? themeColor : "white",
-                borderColor: themeColor,
-              }}
-            >
-              {tab}
-            </button>
+          <button
+  key={tab}
+  onClick={() => setSelectedTab(tab)}
+  className={`px-4 py-2 text-sm rounded-full border transition ${
+    selectedTab === tab
+      ? "text-white"
+      : "bg-white border-gray-300"
+  }`}
+  style={
+    themeColor
+      ? {
+          backgroundColor: selectedTab === tab ? themeColor : "white",
+          borderColor: themeColor,
+        }
+      : selectedTab === tab
+      ? {
+          backgroundColor: "#168BA0",
+          borderColor: "#168BA0",
+        }
+      : {}
+  }
+>
+  {tab}
+</button>
           ))}
         </div>
       </div>

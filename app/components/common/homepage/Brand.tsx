@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 
 const brands = [
   { id: 1, name: "Ovy", src: "/ovy.png", href: "/ovy" },
@@ -24,8 +25,9 @@ export function BrandAccordion() {
         {/* Brand Grid */}
         <div className="grid grid-cols-3 md:flex md:flex-wrap md:justify-center gap-8 md:gap-16">
           {brands.map((brand) => (
-            <div
+            <Link
               key={brand.id}
+              href={brand.href}
               className="flex flex-col items-center group cursor-pointer"
             >
               {/* Circle */}
@@ -49,8 +51,7 @@ export function BrandAccordion() {
                   </span>
                 </div>
               </div>
-              
-            </div>
+            </Link>
           ))}
         </div>
       </div>

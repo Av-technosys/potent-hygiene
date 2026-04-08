@@ -90,6 +90,7 @@ export default function ProductDetailPage({
     router.push(`/product-detail/${variant.slug}`);
   };
 
+  const primaryColor = themeColor || "#168BA0";
   return (
     <div className="min-h-screen py-10">
       <div className=" grid grid-cols-1 md:grid-cols-5 md:gap-12 gap-y-6">
@@ -223,15 +224,13 @@ export default function ProductDetailPage({
                   type="button"
                   onClick={() => setSelectedSize(s)}
                   className={`px-4 py-2 text-sm rounded-full border transition ${
-                    selectedSize === s
-                      ? "text-white"
-                      : "bg-white border-gray-300"
+                    selectedSize === s ? "text-white" : "bg-white"
                   }`}
-                  style={
-                    selectedSize === s
-                      ? { backgroundColor: themeColor, borderColor: themeColor }
-                      : { borderColor: themeColor }
-                  }
+                  style={{
+                    backgroundColor:
+                      selectedSize === s ? primaryColor : "white",
+                    borderColor: primaryColor,
+                  }}
                 >
                   {s}
                 </button>
@@ -249,14 +248,12 @@ export default function ProductDetailPage({
                   type="button"
                   onClick={() => setSelectedFlow(flow)}
                   className={`px-4 py-2 text-sm rounded-full border transition ${
-                    selectedFlow === flow
-                      ? "text-white"
-                      : "bg-white border-gray-300"
+                    selectedFlow === flow ? "text-white" : "bg-white"
                   }`}
                   style={{
                     backgroundColor:
-                      selectedFlow === flow ? themeColor : "white",
-                    borderColor: themeColor,
+                      selectedFlow === flow ? primaryColor : "white",
+                    borderColor: primaryColor,
                   }}
                 >
                   {flow}
@@ -264,7 +261,6 @@ export default function ProductDetailPage({
               ))}
             </div>
           </div>
-
           {/* Quantity */}
           <div>
             <p className="text-sm font-medium mb-2">Quantity</p>
