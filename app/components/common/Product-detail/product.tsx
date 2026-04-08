@@ -14,7 +14,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Card, CardContent } from "@/components/ui/card";
 
 export default function ProductDetailPage({
   categoryName,
@@ -95,13 +94,14 @@ export default function ProductDetailPage({
     <div className="min-h-screen py-10">
       <div className=" grid grid-cols-1 md:grid-cols-5 md:gap-12 gap-y-6">
         {/* LEFT SIDE */}
-        <div>
-          <div className="w-full aspect-[4/3] relative ">
+        <div className=" sticky top-4 h-fit col-span-2">
+          <div className="w-full h-auto relative ">
             <Image
               src={bannerImage}
               alt="Product"
-              fill
-              className="rounded-xl object-cover"
+              height={200}
+              width={200}
+              className="rounded-xl w-full h-auto object-cover"
             />
           </div>
 

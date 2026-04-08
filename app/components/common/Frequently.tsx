@@ -632,7 +632,7 @@ const Frequently = () => {
         );
       });
     setFilteredFAQs(filteredFAQ);
-   
+
   }, [searchText]);
 
   return (
@@ -676,11 +676,10 @@ const Frequently = () => {
                     setActiveProduct(product);
                     setActiveCategory("Product Usage");
                   }}
-                  className={`rounded-full px-5 py-2 text-sm border transition ${
-                    activeProduct === product
+                  className={`rounded-full px-5 py-2 text-sm border transition ${activeProduct === product
                       ? "bg-[#168BA0] text-white border-[#168BA0]"
                       : "bg-white text-gray-700 border-gray-300"
-                  }`}
+                    }`}
                 >
                   {product}
                 </button>
@@ -693,11 +692,10 @@ const Frequently = () => {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`rounded-full px-4 py-2 text-sm border transition ${
-                    activeCategory === cat
+                  className={`rounded-full px-4 py-2 text-sm border transition ${activeCategory === cat
                       ? "bg-[#168BA0] text-white border-[#168BA0]"
                       : "bg-white text-gray-700 border-gray-300"
-                  }`}
+                    }`}
                 >
                   {cat}
                 </button>
@@ -717,13 +715,13 @@ const Frequently = () => {
                 {filteredFAQs.map((faq: any, index: number) => (
                   <AccordionItem key={index} value={`search-${index}`}>
                     <AccordionTrigger className="text-left font-medium">
-                      {faq.question}  
+                      {faq.question}
                     </AccordionTrigger>
 
                     <AccordionContent className="text-gray-600 whitespace-pre-line">
                       <p className="text-xs  text-teal-600 font-medium ">
-                      {faq?.product} ({faq.category})
-                    </p>
+                        {faq?.product} ({faq.category})
+                      </p>
                       {faq.answer}
                     </AccordionContent>
                   </AccordionItem>

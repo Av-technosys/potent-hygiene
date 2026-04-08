@@ -3,6 +3,7 @@
 
 import Image from "next/image";
 import { Heart, Star } from "lucide-react";
+import Link from "next/link";
 
 export default function RelatedProducts({ products, themeColor }: any) {
   return (
@@ -42,7 +43,7 @@ export default function RelatedProducts({ products, themeColor }: any) {
               </span>
 
               {/* Product Image */}
-              <div className="rounded-xl overflow-hidden">
+              <Link href={product.slug} className="rounded-xl overflow-hidden">
                 <Image
                   src={product.bannerImage}
                   alt={product.name}
@@ -50,17 +51,19 @@ export default function RelatedProducts({ products, themeColor }: any) {
                   height={150}
                   className="w-full  object-cover"
                 />
-              </div>
+              </Link>
 
               {/* Tag */}
               <span className="inline-block mt-4 bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">
                 {product.category}
               </span>
 
-              {/* Title */}
-              <h3 className="mt-3 text-sm font-medium text-gray-900 leading-snug">
-                {product.name}
-              </h3>
+              <Link href={product.slug} >
+                {/* Title */}
+                <h3 className="mt-3 text-sm font-medium text-gray-900 leading-snug">
+                  {product.name}
+                </h3>
+              </Link>
 
               {/* Rating */}
               <div className="flex items-center gap-1 mt-2 text-yellow-400">

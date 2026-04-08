@@ -1,10 +1,10 @@
-import Frequently from '../components/common/Frequently'
+import Frequently from '../../components/common/Frequently'
 
 
 const page = () => {
   return (
     <div>
-         <Frequently />
+      <Frequently />
     </div>
   )
 }

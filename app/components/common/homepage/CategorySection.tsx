@@ -124,23 +124,23 @@ export async function CategoryGrid({
               href={`/shop?category=${category.slug}`}
               className="group block bg-white rounded-md p-3 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
             >
-              <div className="relative aspect-square w-full overflow-hidden rounded-md mb-4 flex items-center justify-center">
+              <div className="relative h-auto w-full overflow-hidden rounded-md mb-4 flex items-center justify-center">
                 <Image
                   unoptimized
                   src={category.bannerImage || "/placeholder.jpg"}
                   alt={category.name || "Category"}
                   width={350}
                   height={350}
-                  className="object-contain transition-transform duration-500 group-hover:scale-110"
+                  className="object-contain w-full h-auto transition-transform duration-500 group-hover:scale-110"
                 />
               </div>
 
               <div className="px-2 pb-2">
-                <h3 className="text-lg font-semibold text-gray-600">
+                <h3 className="text-lg font-semibold capitalize text-gray-600">
                   {category.name}
                 </h3>
 
-                <p className="text-xs text-gray-500">
+                <p className="text-xs line-clamp-3 text-gray-500">
                   {category.description}
                 </p>
               </div>
