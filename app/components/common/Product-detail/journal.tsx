@@ -2,14 +2,28 @@
 
 import Image from "next/image";
 import { Calendar } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getBlogs } from "@/helper/blog/action";
 
-export default function JournalsSection({ themeColor }: { themeColor?: string }) {
-  const articles = [1, 2, 3];
+export default function JournalsSection({
+  themeColor,
+}: {
+  themeColor?: string;
+}) {
+  const [articles, setArticles] = useState<any>([]);
 
-    return (
-        <section className="w-full  py-20">
-            <div className=" mx-auto ">
+  useEffect(() => {
+    const fetchJournals = async () => {
+      const allBlogs = await getBlogs();
+      setArticles(allBlogs?.slice(0, 3) || []);
+    };
 
+    fetchJournals();
+  }, []);
+
+  return (
+    <section className="w-full  py-20">
+      <div className=" mx-auto ">
         {/* Header */}
         <div className="text-center mb-14">
           <h2
@@ -25,17 +39,15 @@ export default function JournalsSection({ themeColor }: { themeColor?: string })
 
         {/* Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-          {articles.map((item, index) => (
+          {articles.map((item: any, index: number) => (
             <div key={index} className="group">
-
               {/* Image */}
-              <div className="relative rounded-2xl overflow-hidden">
+              <div className="relative w-full h-80 rounded-2xl overflow-hidden">
                 <Image
-                  src="/journal.png"
+                  src={item?.image}
                   alt="Journal"
-                  width={400}
-                  height={260}
-                  className="w-full h-[260px] object-cover group-hover:scale-105 transition duration-500"
+                  fill
+                  className="object-cover object-center group-hover:scale-105 transition duration-500"
                 />
 
                 {/* Category Badge */}
@@ -53,18 +65,17 @@ export default function JournalsSection({ themeColor }: { themeColor?: string })
                   className="w-4 h-4"
                   style={{ color: themeColor || "#0d9488" }}
                 />
-                Jan 15, 2026
+                <span>{item?.date}</span>
               </div>
 
               {/* Title */}
               <h3 className="mt-3 text-lg font-semibold text-gray-900 leading-snug">
-                Understanding Your Menstrual Cycle: A Complete Guide
+                {item?.title}
               </h3>
 
               {/* Description */}
               <p className="mt-3 text-gray-600 text-sm leading-relaxed">
-                Learn about the four phases of your menstrual cycle and how to
-                work with your body for optimal wellness.
+                {item?.metaDescription}
               </p>
             </div>
           ))}
@@ -90,7 +101,6 @@ export default function JournalsSection({ themeColor }: { themeColor?: string })
             View All Articles
           </button>
         </div>
-
       </div>
     </section>
   );

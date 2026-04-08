@@ -31,15 +31,17 @@ export function Newsletter({
     try {
       setLoading(true);
 
-      const formData = new FormData();
-      formData.append("email", email);
+      const res = await subscribeEmail(email);
 
-      await subscribeEmail(formData);
+      if (!res.success) {
+        toast.error(res.message);
+        return;
+      }
 
-      toast.success("Subscribed successfully 🎉");
+      toast.success(res.message);
       setEmail("");
     } catch (err: any) {
-      toast.error(err.message || "Something went wrong");
+      toast.error("Something went wrong");
     } finally {
       setLoading(false);
     }
@@ -49,7 +51,6 @@ export function Newsletter({
     <section className="py-10 md:bg-[#F8F6F1]">
       <div className="container mx-auto px-4 md:px-0">
         <div className="relative overflow-hidden rounded-xl px-8 py-12 lg:px-16 lg:py-20">
-
           {/* BACKGROUND */}
           <div className="absolute inset-0">
             <div
@@ -68,7 +69,6 @@ export function Newsletter({
 
           {/* CONTENT */}
           <div className="relative z-10 grid grid-cols-1 items-center gap-10 lg:grid-cols-2">
-
             {/* TEXT */}
             <div className="space-y-4 text-[#EFEDE0] text-center lg:text-left">
               <h2 className="text-3xl font-serif font-bold lg:text-5xl">
@@ -87,7 +87,6 @@ export function Newsletter({
             {/* INPUT */}
             <div className="flex items-center w-full max-w-md mx-auto lg:max-w-none">
               <div className="relative w-full">
-
                 <Input
                   type="email"
                   placeholder="Enter your Email"
@@ -104,10 +103,8 @@ export function Newsletter({
                 >
                   {loading ? "..." : "Subscribe"}
                 </Button>
-
               </div>
             </div>
-
           </div>
         </div>
       </div>

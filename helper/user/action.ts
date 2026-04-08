@@ -286,20 +286,20 @@ export async function createUserAddress(data: NewAddressInput) {
   }
 }
 
-export async function subscribeEmail(formData: FormData) {
-  const email = formData.get("email") as string;
+export async function subscribeEmail(email: string) {
+  console.log("email",email)
 
   if (!email) {
-    throw new Error("Email is required");
+   return { success: false, message: "Email is required" };
   }
 
   if (!emailRegex.test(email.trim())) {
-    throw new Error("Please enter a valid email address");
+    return { success: false, message: "Please enter a valid email" };
   }
 
   await db.insert(subscriptionPayment).values({
     email,
   });
 
-  return { success: true };
+  return { success: true, message: "Subscribed successfully 🎉" };
 }

@@ -6,10 +6,10 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Link from "next/link";
 
 const categories = [
-  { id: 1, title: "Menstrual Cup", video: "/landingVideos/choose_cup.mp4", thumb: "/thumb1.png" },
-  { id: 2, title: "Ovy pads", video: "/landingVideos/ovy_pads.mp4", thumb: "/thumb2.png" },
-  { id: 3, title: "Pee & Puke Bags", video: "/landingVideos/pee_gel.mp4", thumb: "/thumb3.png" },
-  { id: 4, title: "All Pads", video: "/landingVideos/pads.mp4", thumb: "/thumb3.png" },
+  { id: 1, title: "Menstrual Cup", video: "/landingVideos/choose_cup.mp4", thumb: "/thumb1.png", slug: "menstrual-cups" },
+  { id: 2, title: "Ovy pads", video: "/landingVideos/ovy_pads.mp4", thumb: "/thumb2.png", slug: "organic-sanitary-pads" },
+  { id: 3, title: "Pee & Puke Bags", video: "/landingVideos/pee_gel.mp4", thumb: "/thumb3.png", slug: "pee-and-puke-bags-2" },
+  { id: 4, title: "Big Pads", video: "/landingVideos/pads.mp4", thumb: "/thumb3.png", slug: "big-pads" },
 ];
 
 export function ProductCategories() {
@@ -57,7 +57,7 @@ function VideoCard({ category }: { category: any }) {
 
       <div className="p-5 text-center">
         <h3 className="text-lg font-bold text-gray-800">{category.title}</h3>
-        <Link href="/shop">
+        <Link href={`/shop?category=${category.slug}`}>
           <button className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-[#1A8D91]">
             Shop Now <ArrowRight className="h-3 w-3" />
           </button></Link>
