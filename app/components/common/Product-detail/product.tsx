@@ -14,6 +14,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import SizeSelectorBox from "./sizeSelectorBox";
+import { toast } from "sonner";
 
 export default function ProductDetailPage({
   categoryName,
@@ -31,13 +33,20 @@ export default function ProductDetailPage({
     activeVariant.bannerImage,
   );
 
+  const [cartSizes, setCartSizes] = useState<any>([]);
+
+  const [total, setTotal] = useState(0);
+
+  // this two things come from backend , but for now we are using this static because schema me add nhi huwa hai..
+  const isTypeBox = true ;
+  const isQuantityChangable = false;
+
   // Size extraction logic (Aapne jo pehle likha tha)
   const sizeAttr = activeVariant?.attributes?.find(
     (a: any) => a.attribute === "size",
   );
 
   const sizes = sizeAttr?.value?.split(",").map((s: string) => s.trim()) || [];
-
   const flowAttr = activeVariant?.attributes?.find(
     (a: any) => a.attribute === "flow",
   );
@@ -59,6 +68,13 @@ export default function ProductDetailPage({
   const productId = productInfo.id;
 
   const addToCart = async () => {
+    if (isTypeBox) {
+      if (total !== 12) {
+        toast.error("You must add exactly 12 items to place the order!");
+        return;
+      }
+    }
+
     await addToCartAction({
       productVariantId: activeVariant?.id || productId,
       sku: `${selectedSize}-${selectedFlow}`,
@@ -75,6 +91,10 @@ export default function ProductDetailPage({
             : 219
         : activeVariant?.basePrice || 0,
       originalPrice: activeVariant?.strikethroughPrice,
+      cartSizes: isQuantityChangable ? [] : cartSizes,
+      isQuantityChangable: isQuantityChangable,
+      quantity:quantity,
+       ...(isTypeBox ? { uuid: crypto.randomUUID() } : {}),
     });
   };
 
@@ -207,81 +227,98 @@ export default function ProductDetailPage({
               </>
             )}
           </div>
-          <ProductVarient
-            variants={variants}
-            handleVariantChange={handleVariantChange}
-            activeVariant={activeVariant}
-            themeColor={themeColor}
-          />
-          {/* Size Selection */}
-          <div>
-            <p className="text-sm font-medium mb-2">Select size</p>
+          {!isTypeBox && (
+            <ProductVarient
+              variants={variants}
+              handleVariantChange={handleVariantChange}
+              activeVariant={activeVariant}
+              themeColor={themeColor}
+            />
+          )}
 
-            <div className="flex flex-wrap gap-2">
-              {sizes.map((s: string) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setSelectedSize(s)}
-                  className={`px-4 py-2 text-sm rounded-full border transition ${
-                    selectedSize === s ? "text-white" : "bg-white"
-                  }`}
-                  style={{
-                    backgroundColor:
-                      selectedSize === s ? primaryColor : "white",
-                    borderColor: primaryColor,
-                  }}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-          </div>
+          {!isTypeBox && (
+            <>
+              {/* Size Selection */}
+              <div>
+                <p className="text-sm font-medium mb-2">Select size</p>
 
-          {/* Flow Type - NOW DYNAMIC */}
-          <div>
-            <p className="text-sm font-medium mb-2">Flow Type</p>
-            <div className="flex flex-wrap gap-2">
-              {flows?.map((flow: any) => (
-                <button
-                  key={flow}
-                  type="button"
-                  onClick={() => setSelectedFlow(flow)}
-                  className={`px-4 py-2 text-sm rounded-full border transition ${
-                    selectedFlow === flow ? "text-white" : "bg-white"
-                  }`}
-                  style={{
-                    backgroundColor:
-                      selectedFlow === flow ? primaryColor : "white",
-                    borderColor: primaryColor,
-                  }}
-                >
-                  {flow}
-                </button>
-              ))}
-            </div>
-          </div>
-          {/* Quantity */}
-          <div>
-            <p className="text-sm font-medium mb-2">Quantity</p>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center border rounded-full">
-                <button
-                  onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="p-2"
-                >
-                  <Minus size={16} />
-                </button>
-                <span className="px-4">{quantity}</span>
-                <button
-                  onClick={() => setQuantity((q) => q + 1)}
-                  className="p-2"
-                >
-                  <Plus size={16} />
-                </button>
+                <div className="flex flex-wrap gap-2">
+                  {sizes.map((s: string) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => setSelectedSize(s)}
+                      className={`px-4 py-2 text-sm rounded-full border transition ${
+                        selectedSize === s ? "text-white" : "bg-white"
+                      }`}
+                      style={{
+                        backgroundColor:
+                          selectedSize === s ? primaryColor : "white",
+                        borderColor: primaryColor,
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
+
+              {/* Flow Type - NOW DYNAMIC */}
+              <div>
+                <p className="text-sm font-medium mb-2">Flow Type</p>
+                <div className="flex flex-wrap gap-2">
+                  {flows?.map((flow: any) => (
+                    <button
+                      key={flow}
+                      type="button"
+                      onClick={() => setSelectedFlow(flow)}
+                      className={`px-4 py-2 text-sm rounded-full border transition ${
+                        selectedFlow === flow ? "text-white" : "bg-white"
+                      }`}
+                      style={{
+                        backgroundColor:
+                          selectedFlow === flow ? primaryColor : "white",
+                        borderColor: primaryColor,
+                      }}
+                    >
+                      {flow}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {/* Quantity */}
+              <div>
+                <p className="text-sm font-medium mb-2">Quantity</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center border rounded-full">
+                    <button
+                      onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                      className="p-2"
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span className="px-4">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity((q) => q + 1)}
+                      className="p-2"
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          )}
+
+          {isTypeBox && (
+            <SizeSelectorBox
+              items={sizes}
+              cartSizes={cartSizes}
+              setCartSizes={setCartSizes}
+              total={total}
+              setTotal={setTotal}
+            />
+          )}
 
           {/* Buttons */}
           <div className="flex gap-4">

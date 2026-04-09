@@ -46,7 +46,7 @@ export async function getCart() {
     return { success: false, error: 'Failed to fetch cart' };
   }
 }
-export async function addToCart(productVariantId: string, quantity: number = 1) {
+export async function addToCart(productVariantId: string, quantity: number ) {
   try {
 
     const { userId } = await requireUserWithRefresh()
@@ -134,7 +134,7 @@ export async function addToCart(productVariantId: string, quantity: number = 1) 
   }
 }
 
-export async function removeFromCart(productVariantId: string) {
+export async function removeFromCart(productVariantId: string,uuid?:any) {
   try {
     const { userId } = await requireUserWithRefresh()
     const result = await db.transaction(async (tx) => {
@@ -158,7 +158,8 @@ export async function removeFromCart(productVariantId: string) {
         .where(
           and(
             eq(cartItem.cartId, userCart.id),
-            eq(cartItem.productVariantId, productVariantId)
+            eq(cartItem.productVariantId, productVariantId),
+            // eq(cartItem.uuid,uuid)  yeh krna hai jab cart me uuid set ho jaye tab taki vhi product remove ho jiski uuid match ho nhii toh yeh same productgvareint wale sbhii ko uda dega..
           )
         );
 

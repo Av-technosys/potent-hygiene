@@ -12,6 +12,8 @@ export type CartItem = {
   price: number;          
   originalPrice?: number; 
   quantity: number;
-
+  cartSizes?: any[];
+  isQuantityChangable?: boolean;
   addedAt: number;
+  uuid?: string; 
 };
