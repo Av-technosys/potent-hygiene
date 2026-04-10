@@ -22,6 +22,10 @@ type CartItem = {
   image: string;
   price: number;
   originalPrice?: number;
+  cartSizes?: any[];
+  isQuantityChangable?: boolean;
+  quantity?: number;
+  uuid?: string; 
 };
 
 // Add to cart
@@ -47,6 +51,10 @@ export const addToCart = async (item: CartItem) => {
     image: item.image,
     price: item.price,
     originalPrice: item.originalPrice,
+    cartSizes: item.cartSizes,
+    isQuantityChangable: item.isQuantityChangable,
+    quantity: item.quantity,
+    uuid: item.uuid 
   };
 
   // ✅ optimistic UI
@@ -54,18 +62,18 @@ export const addToCart = async (item: CartItem) => {
 
 
   // ✅ DB sync
-  addToCartDB(item.productVariantId, 1).catch((error) => {
-    console.error("Failed to sync with DB:", error);
-  });
+  // addToCartDB(item.productVariantId, item.quantity).catch((error) => {
+  //   console.error("Failed to sync with DB:", error);
+  // });
 };
 
 // Remove
-export const removeFromCart = async (productVariantId: string, sku?: string) => {
-  useCartStore.getState().removeItem(productVariantId, sku);
+export const removeFromCart = async (productVariantId: string, sku?: string,uuid?:string) => {
+  useCartStore.getState().removeItem(productVariantId, sku,uuid);
 
-  removeFromCartDB(productVariantId).catch((error) => {
-    console.error("Failed to remove from DB:", error);
-  });
+  // removeFromCartDB(productVariantId,uuid).catch((error) => {
+  //   console.error("Failed to remove from DB:", error);
+  // });
 };
 
 // Update quantity

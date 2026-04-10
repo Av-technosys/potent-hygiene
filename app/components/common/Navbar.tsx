@@ -76,6 +76,7 @@ const dashboardLinks = [
 
 export function Navbar() {
   const totalItems = useCartStore((state) => state.totalItems());
+  console.log("totalItems", totalItems);
 
   const [open, setOpen] = useState(false);
   const pathname = usePathname();

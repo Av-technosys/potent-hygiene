@@ -8,7 +8,7 @@ type CartState = {
   items: CartItem[];
 
   addItem: (item: Omit<CartItem, "quantity" | "addedAt">) => void;
-  removeItem: (productVariantId: string, sku?: string) => void;
+  removeItem: (productVariantId: string, sku?: string, uuid?: any) => void;
   updateQuantity: (productVariantId: string, quantity: number, sku?: string) => void;
   clearCart: () => void;
   setCart: (items: CartItem[]) => void;
@@ -17,8 +17,15 @@ type CartState = {
   subtotal: () => number;
 };
 
-const getItemKey = (item: { productVariantId: string; sku?: string }) =>
-  `${item.productVariantId}-${item.sku || "default"}`;
+// const getItemKey = (item: { productVariantId: string; sku?: string, uuid?: any }) =>
+//   `${item.productVariantId}-${item.sku || "default"}`;
+
+const getItemKey = (item: {
+  productVariantId: string;
+  sku?: string;
+  uuid?: string;
+}) =>
+  `${item.productVariantId}-${item.sku || "default"}-${item.uuid || "no-uuid"}`;
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -28,14 +35,14 @@ export const useCartStore = create<CartState>()(
       setCart: (items) => set({ items }),
 
       addItem: (item) =>
-        set((state) => {
+        set((state:any) => {
           const existing = state.items.find(
-            (i) => getItemKey(i) === getItemKey(item)
+            (i:any) => getItemKey(i) === getItemKey(item)
           );
 
-          if (existing) {
+          if (existing && item.isQuantityChangable == true) {
             return {
-              items: state.items.map((i) =>
+              items: state.items.map((i:any) =>
                 getItemKey(i) === getItemKey(item)
                   ? { ...i, quantity: i.quantity + 1 }
                   : i
@@ -46,17 +53,17 @@ export const useCartStore = create<CartState>()(
           return {
             items: [
               ...state.items,
-              { ...item, quantity: 1, addedAt: Date.now() },
+              { ...item,addedAt: Date.now() },
             ],
           };
         }),
 
-      removeItem: (productVariantId, sku) =>
+      removeItem: (productVariantId, sku,uuid) =>
         set((state) => ({
           items: state.items.filter(
             (i) =>
               getItemKey(i) !==
-              getItemKey({ productVariantId, sku })
+              getItemKey({ productVariantId, sku , uuid })
           ),
         })),
 
@@ -75,7 +82,7 @@ export const useCartStore = create<CartState>()(
       clearCart: () => set({ items: [] }),
 
       totalItems: () =>
-        get().items.reduce((sum, item) => sum + item.quantity, 0),
+        get().items.length,
 
       subtotal: () =>
         get().items.reduce(
