@@ -50,11 +50,11 @@ const Page = () => {
               Question {quizData?.id} of {quizQuestions.length}
             </span>
             <span>
-              {Math.round((quizData?.id / quizQuestions.length) * 100)}%
+              {Math.round((answers[quizQuestions.length] >= 0 ? 100 : (quizData.id - 1) * (100 / quizQuestions.length)))}%
             </span>
           </FieldLabel>
           <Progress
-            value={(answers[quizQuestions.length] ? 100 : (quizData.id - 1) * (100 / quizQuestions.length))}
+            value={(answers[quizQuestions.length] >= 0 ? 100 : (quizData.id - 1) * (100 / quizQuestions.length))}
             className="bg-[#168BA0]/50 [&>div]:bg-[#168BA0]"
             id="progress-upload"
           />
