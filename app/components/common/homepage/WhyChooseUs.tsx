@@ -59,21 +59,12 @@ export function WhyChooseUs() {
         {/* --- X-SCROLL GRID --- */}
         {/* Mobile: flex-row with overflow | Laptop: 3-column grid */}
         <div
-          className="
-  flex overflow-x-auto gap-4 pb-8
-  no-scrollbar snap-x snap-mandatory
-"
+          className="flex overflow-x-auto gap-4 pb-8 no-scrollbar snap-x snap-mandatory"
         >
           {features.map((feature, index) => (
             <div
               key={index}
-              className="
-        bg-white p-6 md:p-8 rounded-[28px] md:rounded-[32px]
-        shadow-sm border border-gray-50 transition-all hover:shadow-md group
-        
-       w-[75%] sm:w-[60%] md:w-[45%] lg:w-[30%]
-        flex-shrink-0 snap-start                        
-      "
+              className="bg-white p-6 md:p-8 rounded-[28px] md:rounded-xl shadow-sm border border-gray-50 transition-all hover:shadow-md group w-[75%] sm:w-[60%] md:w-[45%] lg:w-[30%] shrink-0 snap-start"
             >
               {/* Icon */}
               <div className="mb-5 md:mb-6 flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-xl md:rounded-2xl bg-linear-to-br from-[#168BA0] to-[#AFE7F1] shadow-inner group-hover:rotate-6 transition-transform">

@@ -92,13 +92,13 @@ export function Newsletter({
                   placeholder="Enter your Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-14 lg:h-16 w-full rounded-full border-none bg-white px-6 text-gray-800 shadow-xl"
+                  className="h-14 lg:h-16 w-full rounded-full border-none bg-white pr-4 pl-6 text-gray-800 shadow-xl"
                 />
 
                 <Button
                   onClick={handleSubscribe}
                   disabled={loading}
-                  className="absolute right-1.5 top-1.5 h-11 lg:h-14 rounded-full px-6 font-bold text-white"
+                  className="absolute right-1.5 top-1 h-11 lg:h-14 rounded-full px-6 font-bold text-white"
                   style={{ backgroundColor: buttonColor }}
                 >
                   {loading ? "..." : "Subscribe"}
