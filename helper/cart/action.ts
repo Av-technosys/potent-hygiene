@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use server'
 import { db } from '@/src/db';
-import { cart, cartItem, productVariant } from '@/src/db/schema';
+import { cart, cartItem, product } from '@/src/db/schema';
 import { eq, and, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { v4 as uuidv4 } from 'uuid';
@@ -22,19 +22,19 @@ export async function getCart() {
 
     const itemsWithDetails = await db
       .select({
-        productVariantId: cartItem.productVariantId,
+        productId: cartItem.productId,
         quantity: cartItem.quantity,
-        title: productVariant.name,
-        image: productVariant.bannerImage,
-        price: productVariant.basePrice,
-        originalPrice: productVariant.strikethroughPrice,
-        slug: productVariant.slug,
-        sku: productVariant.sku,
+        title: product.name,
+        image: product.bannerImage,
+        price: product.basePrice,
+        originalPrice: product.strikethroughPrice,
+        slug: product.slug,
+        sku: product.sku,
       })
       .from(cartItem)
       .leftJoin(
-        productVariant,
-        eq(cartItem.productVariantId, productVariant.id)
+        product,
+        eq(cartItem.productId, product.id)
       )
       .where(eq(cartItem.cartId, userCart.id));
 
@@ -46,7 +46,7 @@ export async function getCart() {
     return { success: false, error: 'Failed to fetch cart' };
   }
 }
-export async function addToCart(productVariantId: string, quantity: number ) {
+export async function addToCart(productId: string, quantity: number) {
   try {
 
     const { userId } = await requireUserWithRefresh()
@@ -87,7 +87,7 @@ export async function addToCart(productVariantId: string, quantity: number ) {
         .where(
           and(
             eq(cartItem.cartId, existingCart.id),
-            eq(cartItem.productVariantId, productVariantId)
+            eq(cartItem.productId, productId)
           )
         )
         .then(r => r[0]);
@@ -114,7 +114,7 @@ export async function addToCart(productVariantId: string, quantity: number ) {
           .values({
             id: uuidv4(),
             cartId: existingCart.id,
-            productVariantId,
+            productId,
             quantity
           });
 
@@ -134,7 +134,7 @@ export async function addToCart(productVariantId: string, quantity: number ) {
   }
 }
 
-export async function removeFromCart(productVariantId: string,uuid?:any) {
+export async function removeFromCart(productId: string, uuid?: any) {
   try {
     const { userId } = await requireUserWithRefresh()
     const result = await db.transaction(async (tx) => {
@@ -158,7 +158,7 @@ export async function removeFromCart(productVariantId: string,uuid?:any) {
         .where(
           and(
             eq(cartItem.cartId, userCart.id),
-            eq(cartItem.productVariantId, productVariantId),
+            eq(cartItem.productId, productId),
             // eq(cartItem.uuid,uuid)  yeh krna hai jab cart me uuid set ho jaye tab taki vhi product remove ho jiski uuid match ho nhii toh yeh same productgvareint wale sbhii ko uda dega..
           )
         );
@@ -174,7 +174,7 @@ export async function removeFromCart(productVariantId: string,uuid?:any) {
   }
 }
 
-export async function updateCartItemQuantity(productVariantId: string, quantity: number) {
+export async function updateCartItemQuantity(productId: string, quantity: number) {
   try {
 
     const { userId } = await requireUserWithRefresh()
@@ -205,7 +205,7 @@ export async function updateCartItemQuantity(productVariantId: string, quantity:
           .where(
             and(
               eq(cartItem.cartId, userCart.id),
-              eq(cartItem.productVariantId, productVariantId)
+              eq(cartItem.productId, productId)
             )
           );
       } else {
@@ -216,7 +216,7 @@ export async function updateCartItemQuantity(productVariantId: string, quantity:
           .where(
             and(
               eq(cartItem.cartId, userCart.id),
-              eq(cartItem.productVariantId, productVariantId)
+              eq(cartItem.productId, productId)
             )
           );
       }

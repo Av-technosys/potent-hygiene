@@ -38,7 +38,7 @@ export default function ProductDetailPage({
   const [total, setTotal] = useState(0);
 
   // this two things come from backend , but for now we are using this static because schema me add nhi huwa hai..
-  const isTypeBox = true ;
+  const isTypeBox = true;
   const isQuantityChangable = false;
 
   // Size extraction logic (Aapne jo pehle likha tha)
@@ -57,10 +57,10 @@ export default function ProductDetailPage({
   const discount =
     activeVariant?.strikethroughPrice && activeVariant?.basePrice
       ? Math.round(
-          ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
-            activeVariant.strikethroughPrice) *
-            100,
-        )
+        ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
+          activeVariant.strikethroughPrice) *
+        100,
+      )
       : 0;
 
   const router = useRouter();
@@ -93,8 +93,8 @@ export default function ProductDetailPage({
       originalPrice: activeVariant?.strikethroughPrice,
       cartSizes: isQuantityChangable ? [] : cartSizes,
       isQuantityChangable: isQuantityChangable,
-      quantity:quantity,
-       ...(isTypeBox ? { uuid: crypto.randomUUID() } : {}),
+      quantity: quantity,
+      ...(isTypeBox ? { uuid: crypto.randomUUID() } : {}),
     });
   };
 
@@ -147,11 +147,10 @@ export default function ProductDetailPage({
                     <img
                       src={item?.mediaURL}
                       className={`w-full h-auto object-cover rounded-lg
-                   ${
-                     item.mediaURL === bannerImage
-                       ? "border-2 border-[#1A8D91]"
-                       : "border border-gray-200 "
-                   }`}
+                   ${item.mediaURL === bannerImage
+                          ? "border-2 border-[#1A8D91]"
+                          : "border border-gray-200 "
+                        }`}
                     />
                   </div>
                 </CarouselItem>
@@ -196,9 +195,8 @@ export default function ProductDetailPage({
               activeVariant.highlights.map((feature: string, index: number) => (
                 <span
                   key={index}
-                  className={`text-xs px-3 py-1 rounded-full ${
-                    themeColor ? "text-white" : "bg-[#F0FDFA] text-[#168BA0]"
-                  }`}
+                  className={`text-xs px-3 py-1 rounded-full ${themeColor ? "text-white" : "bg-[#F0FDFA] text-[#168BA0]"
+                    }`}
                   style={themeColor ? { backgroundColor: themeColor } : {}}
                 >
                   {feature}
@@ -248,9 +246,8 @@ export default function ProductDetailPage({
                       key={s}
                       type="button"
                       onClick={() => setSelectedSize(s)}
-                      className={`px-4 py-2 text-sm rounded-full border transition ${
-                        selectedSize === s ? "text-white" : "bg-white"
-                      }`}
+                      className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === s ? "text-white" : "bg-white"
+                        }`}
                       style={{
                         backgroundColor:
                           selectedSize === s ? primaryColor : "white",
@@ -272,9 +269,8 @@ export default function ProductDetailPage({
                       key={flow}
                       type="button"
                       onClick={() => setSelectedFlow(flow)}
-                      className={`px-4 py-2 text-sm rounded-full border transition ${
-                        selectedFlow === flow ? "text-white" : "bg-white"
-                      }`}
+                      className={`px-4 py-2 text-sm rounded-full border transition ${selectedFlow === flow ? "text-white" : "bg-white"
+                        }`}
                       style={{
                         backgroundColor:
                           selectedFlow === flow ? primaryColor : "white",
@@ -339,7 +335,7 @@ export default function ProductDetailPage({
             <h2 className="font-semibold text-lg">Choose your Frequency</h2>
 
             <p className="text-sm text-gray-500">
-              Subscribe & Get more discount
+              Delivered & Billed every
             </p>
 
             {[
@@ -350,11 +346,10 @@ export default function ProductDetailPage({
               <div
                 key={plan.id}
                 onClick={() => setSelectedPlan(plan.id)}
-                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
-                  selectedPlan === plan.id
-                    ? "border-teal-600 bg-teal-50"
-                    : "border-gray-200"
-                }`}
+                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan === plan.id
+                  ? "border-teal-600 bg-teal-50"
+                  : "border-gray-200"
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <input
@@ -376,9 +371,8 @@ export default function ProductDetailPage({
               <button
                 onClick={subscribeToCart}
                 disabled={isSubscribed}
-                className={`text-white px-6 py-3 rounded-xl transition duration-200 ${
-                  isSubscribed ? "bg-gray-400 cursor-not-allowed" : ""
-                }`}
+                className={`text-white px-6 py-3 rounded-xl transition duration-200 ${isSubscribed ? "bg-gray-400 cursor-not-allowed" : ""
+                  }`}
                 style={{
                   backgroundColor: isSubscribed ? "#9CA3AF" : themeColor,
                   cursor: isSubscribed ? "not-allowed" : "pointer",

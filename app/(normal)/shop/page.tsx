@@ -34,7 +34,7 @@ const Page = async ({ searchParams }: PageProps) => {
         <FiltersSidebar />
         <CategoryProducts
           products={result.items}
-          total={result.totalPages}
+          total={5}
           currentPage={result.page}
         />
       </div>

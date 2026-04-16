@@ -20,7 +20,6 @@ export const MultiCategorySelect = ({
     async function load() {
       setLoading(true);
       const data = await getCategories();
-
       setCategories(
         data.map((category: any) => ({
           label: category.name,
@@ -37,6 +36,7 @@ export const MultiCategorySelect = ({
   const selectedObjects = categories.filter((cat) =>
     selectedCategories.includes(cat.value)
   );
+
 
   return (
     <div className="space-y-2 pl-1">

@@ -282,7 +282,7 @@ export const quizQuestions = [
   },
 ];
 
-export const pageSize = 4;
+export const pageSize = 10;
 // export const tempUserId = "c263327b-3958-4fe8-b0b9-1ca3711f7c9c"
 // export const tempUserId = userId
 export const canResendOTPInterval = 10; // in seconds
@@ -495,7 +495,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           ],
         }
       },
-       {
+      {
         type: "products",
         props: {
           title: "New Arriving Products",
@@ -689,6 +689,6 @@ We encourage awareness, informed choices, and self-care without hesitation or st
 
 
 export const BrandProductColors = {
-  ovy:"#AF71A7",
-  loway:"#F6DC52"
+  ovy: "#AF71A7",
+  loway: "#F6DC52"
 }

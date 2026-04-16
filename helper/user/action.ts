@@ -287,10 +287,9 @@ export async function createUserAddress(data: NewAddressInput) {
 }
 
 export async function subscribeEmail(email: string) {
-  console.log("email",email)
 
   if (!email) {
-   return { success: false, message: "Email is required" };
+    return { success: false, message: "Email is required" };
   }
 
   if (!emailRegex.test(email.trim())) {

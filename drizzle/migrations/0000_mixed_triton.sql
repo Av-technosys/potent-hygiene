@@ -14,16 +14,6 @@ CREATE TABLE "address" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "admins" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"full_name" text NOT NULL,
-	"email" text NOT NULL,
-	"phone" text NOT NULL,
-	"cognito_id" text,
-	"created_at" timestamp DEFAULT now(),
-	CONSTRAINT "admins_email_unique" UNIQUE("email")
-);
---> statement-breakpoint
 CREATE TABLE "blog" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"title" varchar,
@@ -47,9 +37,11 @@ CREATE TABLE "cart" (
 --> statement-breakpoint
 CREATE TABLE "cart_item" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"cart_id" uuid,
-	"product_variant_id" uuid,
-	"subscription_plan_id" integer,
+	"cart_id" uuid NOT NULL,
+	"product_id" uuid NOT NULL,
+	"product_varient_box_id" uuid,
+	"is_type_subscription" boolean DEFAULT false,
+	"frequency_in_months" integer,
 	"quantity" integer DEFAULT 1,
 	"created_at" timestamp DEFAULT now()
 );
@@ -59,17 +51,9 @@ CREATE TABLE "categories" (
 	"name" varchar NOT NULL,
 	"slug" varchar NOT NULL,
 	"banner_image" varchar,
-	"parent_id" uuid,
-	"parent_count" integer DEFAULT 0,
 	"description" varchar,
-	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
 	CONSTRAINT "categories_slug_unique" UNIQUE("slug")
-);
---> statement-breakpoint
-CREATE TABLE "featured_product_variant" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"product_variant_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE "order" (
@@ -82,7 +66,7 @@ CREATE TABLE "order" (
 	"city" varchar,
 	"state" varchar,
 	"pincode" varchar,
-	"total_amount_paid" integer,
+	"total_amount" integer,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now()
 );
@@ -90,7 +74,8 @@ CREATE TABLE "order" (
 CREATE TABLE "order_item" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"order_id" uuid,
-	"product_variant_id" uuid,
+	"product_id" uuid,
+	"product_varient_box" varchar,
 	"quantity" integer,
 	"product_name" varchar,
 	"product_slug" varchar,
@@ -106,75 +91,98 @@ CREATE TABLE "payment" (
 	"payment_status" varchar,
 	"payment_method" varchar,
 	"payment_amount" integer,
-	"payment_currency" varchar,
+	"payment_order_id" varchar,
+	"payment_meta" jsonb,
 	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "payment_gateway_plans" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar NOT NULL,
+	"price" integer NOT NULL,
+	"descirption" varchar,
+	"billing_frequency" varchar NOT NULL,
+	"frequency_type" varchar DEFAULT 'monthly' NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "payment_gateway_subscription" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"plan_id" uuid,
+	"total_count" integer,
+	"remaining_count" integer,
+	"quantity" integer,
+	"customer_notify" boolean DEFAULT false,
+	"start_at" timestamp,
+	"expire_by" timestamp,
+	"shour_url" varchar,
+	"start_date" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "products" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"created_at" timestamp DEFAULT now(),
-	"updated_at" timestamp DEFAULT now()
-);
---> statement-breakpoint
-CREATE TABLE "product_category" (
-	"product_id" uuid,
-	"category_id" uuid,
-	CONSTRAINT "product_category_product_id_category_id_pk" PRIMARY KEY("product_id","category_id")
-);
---> statement-breakpoint
-CREATE TABLE "product_variant" (
-	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"name" varchar,
 	"sku" varchar NOT NULL,
-	"product_id" uuid,
+	"slug" varchar NOT NULL,
+	"name" varchar,
 	"description" varchar,
-	"short_description" varchar,
 	"base_price" integer,
 	"strikethrough_price" integer,
-	"slug" varchar NOT NULL,
 	"banner_image" varchar,
+	"highlights" varchar[],
+	"has_variant_box" boolean DEFAULT false,
+	"min_box_quintity" integer,
+	"custimize_box_info" text,
 	"is_in_stock" boolean DEFAULT true,
-	"is_returnable" boolean DEFAULT false,
-	"is_cancelable" boolean DEFAULT false,
-	"is_replacement" boolean DEFAULT false,
-	"return_days" integer DEFAULT 0,
-	"replacement_days" integer DEFAULT 0,
-	"rating" integer DEFAULT 0,
-	"review_count" integer DEFAULT 0,
-	"is_free_delivery" boolean DEFAULT false,
+	"rateing_5_star" integer DEFAULT 0,
+	"rateing_4_star" integer DEFAULT 0,
+	"rateing_3_star" integer DEFAULT 0,
+	"rateing_2_star" integer DEFAULT 0,
+	"rateing_1_star" integer DEFAULT 0,
 	"size" varchar,
 	"flow_type" varchar,
 	"created_at" timestamp DEFAULT now(),
 	"updated_at" timestamp DEFAULT now(),
-	CONSTRAINT "product_variant_sku_unique" UNIQUE("sku"),
-	CONSTRAINT "product_variant_slug_unique" UNIQUE("slug")
+	CONSTRAINT "products_sku_unique" UNIQUE("sku"),
+	CONSTRAINT "products_slug_unique" UNIQUE("slug")
 );
 --> statement-breakpoint
-CREATE TABLE "product_variant_attribute" (
+CREATE TABLE "product_attribute" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"product_variant_id" uuid,
+	"product_id" uuid,
 	"attribute" varchar,
 	"value" text
 );
 --> statement-breakpoint
-CREATE TABLE "product_variant_media" (
+CREATE TABLE "product_category" (
+	"product_id" uuid NOT NULL,
+	"category_id" uuid NOT NULL,
+	CONSTRAINT "product_category_product_id_category_id_pk" PRIMARY KEY("product_id","category_id")
+);
+--> statement-breakpoint
+CREATE TABLE "product_filter" (
+	"product_id" uuid,
+	"filter" varchar,
+	CONSTRAINT "product_filter_product_id_filter_pk" PRIMARY KEY("product_id","filter")
+);
+--> statement-breakpoint
+CREATE TABLE "product_media" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-	"product_variant_id" uuid,
+	"product_id" uuid,
 	"media_type" varchar,
 	"media_url" varchar
 );
 --> statement-breakpoint
-CREATE TABLE "product_variant_subscription_plan" (
-	"product_variant_id" uuid,
-	"subscription_plan_id" integer,
-	"discount_percentage" integer DEFAULT 0,
-	CONSTRAINT "product_variant_subscription_plan_product_variant_id_subscription_plan_id_pk" PRIMARY KEY("product_variant_id","subscription_plan_id")
+CREATE TABLE "product_varient_box" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"product_id" uuid,
+	"name" varchar,
+	"description" varchar,
+	"image" varchar
 );
 --> statement-breakpoint
 CREATE TABLE "reviews" (
 	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"user_id" uuid,
-	"product_variant_id" uuid,
+	"product_id" uuid,
 	"name" varchar,
 	"email" varchar,
 	"rating" integer,
@@ -191,20 +199,21 @@ CREATE TABLE "review_media" (
 	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
-CREATE TABLE "subscription_plans" (
-	"id" serial PRIMARY KEY NOT NULL,
-	"name" text,
-	"interval_months" integer,
-	"price" integer
+CREATE TABLE "subscription_payment" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"email" varchar NOT NULL,
+	"created_at" timestamp DEFAULT now()
 );
 --> statement-breakpoint
 CREATE TABLE "subscriptions" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"user_id" uuid,
-	"plan_id" integer,
 	"start_date" timestamp DEFAULT now(),
-	"next_billing_date" timestamp,
-	"status" text DEFAULT 'active'
+	"end_date" timestamp,
+	"frequency_in_months" integer,
+	"next_order_date" timestamp,
+	"status" text DEFAULT 'active',
+	"order_id" uuid
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
@@ -221,28 +230,44 @@ CREATE TABLE "users" (
 	CONSTRAINT "users_email_unique" UNIQUE("email")
 );
 --> statement-breakpoint
+CREATE TABLE "wishlist" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"user_id" uuid,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
+CREATE TABLE "wishlist_item" (
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"wishlist_id" uuid,
+	"product_id" uuid,
+	"created_at" timestamp DEFAULT now()
+);
+--> statement-breakpoint
 ALTER TABLE "address" ADD CONSTRAINT "address_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "cart" ADD CONSTRAINT "cart_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "cart_item" ADD CONSTRAINT "cart_item_cart_id_cart_id_fk" FOREIGN KEY ("cart_id") REFERENCES "public"."cart"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "cart_item" ADD CONSTRAINT "cart_item_product_variant_id_product_variant_id_fk" FOREIGN KEY ("product_variant_id") REFERENCES "public"."product_variant"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "cart_item" ADD CONSTRAINT "cart_item_subscription_plan_id_subscription_plans_id_fk" FOREIGN KEY ("subscription_plan_id") REFERENCES "public"."subscription_plans"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "featured_product_variant" ADD CONSTRAINT "featured_product_variant_product_variant_id_product_variant_id_fk" FOREIGN KEY ("product_variant_id") REFERENCES "public"."product_variant"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "cart_item" ADD CONSTRAINT "cart_item_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "cart_item" ADD CONSTRAINT "cart_item_product_varient_box_id_product_varient_box_id_fk" FOREIGN KEY ("product_varient_box_id") REFERENCES "public"."product_varient_box"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "order" ADD CONSTRAINT "order_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "order" ADD CONSTRAINT "order_subscription_id_subscriptions_id_fk" FOREIGN KEY ("subscription_id") REFERENCES "public"."subscriptions"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "order_item" ADD CONSTRAINT "order_item_order_id_order_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."order"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "order_item" ADD CONSTRAINT "order_item_product_variant_id_product_variant_id_fk" FOREIGN KEY ("product_variant_id") REFERENCES "public"."product_variant"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "order_item" ADD CONSTRAINT "order_item_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payment" ADD CONSTRAINT "payment_order_id_order_id_fk" FOREIGN KEY ("order_id") REFERENCES "public"."order"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "payment_gateway_subscription" ADD CONSTRAINT "payment_gateway_subscription_plan_id_payment_gateway_plans_id_fk" FOREIGN KEY ("plan_id") REFERENCES "public"."payment_gateway_plans"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "product_attribute" ADD CONSTRAINT "product_attribute_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "product_category" ADD CONSTRAINT "product_category_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "product_category" ADD CONSTRAINT "product_category_category_id_categories_id_fk" FOREIGN KEY ("category_id") REFERENCES "public"."categories"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "product_variant" ADD CONSTRAINT "product_variant_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "product_variant_attribute" ADD CONSTRAINT "product_variant_attribute_product_variant_id_product_variant_id_fk" FOREIGN KEY ("product_variant_id") REFERENCES "public"."product_variant"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "product_variant_media" ADD CONSTRAINT "product_variant_media_product_variant_id_product_variant_id_fk" FOREIGN KEY ("product_variant_id") REFERENCES "public"."product_variant"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "product_variant_subscription_plan" ADD CONSTRAINT "product_variant_subscription_plan_product_variant_id_product_variant_id_fk" FOREIGN KEY ("product_variant_id") REFERENCES "public"."product_variant"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "product_variant_subscription_plan" ADD CONSTRAINT "product_variant_subscription_plan_subscription_plan_id_subscription_plans_id_fk" FOREIGN KEY ("subscription_plan_id") REFERENCES "public"."subscription_plans"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "product_filter" ADD CONSTRAINT "product_filter_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "product_media" ADD CONSTRAINT "product_media_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "product_varient_box" ADD CONSTRAINT "product_varient_box_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "reviews" ADD CONSTRAINT "reviews_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "reviews" ADD CONSTRAINT "reviews_product_variant_id_product_variant_id_fk" FOREIGN KEY ("product_variant_id") REFERENCES "public"."product_variant"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "reviews" ADD CONSTRAINT "reviews_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "review_media" ADD CONSTRAINT "review_media_review_id_reviews_id_fk" FOREIGN KEY ("review_id") REFERENCES "public"."reviews"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-ALTER TABLE "subscriptions" ADD CONSTRAINT "subscriptions_plan_id_subscription_plans_id_fk" FOREIGN KEY ("plan_id") REFERENCES "public"."subscription_plans"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
-CREATE INDEX "name_idx" ON "product_variant" USING btree ("name");--> statement-breakpoint
-CREATE INDEX "slug_idx" ON "product_variant" USING btree ("slug");
+ALTER TABLE "wishlist" ADD CONSTRAINT "wishlist_user_id_users_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."users"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "wishlist_item" ADD CONSTRAINT "wishlist_item_wishlist_id_wishlist_id_fk" FOREIGN KEY ("wishlist_id") REFERENCES "public"."wishlist"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "wishlist_item" ADD CONSTRAINT "wishlist_item_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
+CREATE INDEX "name_idx" ON "products" USING btree ("name");--> statement-breakpoint
+CREATE INDEX "slug_idx" ON "products" USING btree ("slug");--> statement-breakpoint
+CREATE INDEX "filter_idx" ON "product_filter" USING btree ("filter");--> statement-breakpoint
+CREATE INDEX "product_id_idx" ON "product_filter" USING btree ("product_id");

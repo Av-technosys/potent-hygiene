@@ -11,7 +11,7 @@ import { revalidatePath } from "next/cache";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
-import { category, productCategory, productVariant } from "@/db/schema";
+import { category, productCategory, product } from "@/db/schema";
 
 
 interface GetCategoriesOptions {
@@ -28,7 +28,6 @@ export async function createCategory(categoryData: any) {
       name,
       slug,
       description,
-      parentId: parentId || null,
       bannerImage: bannerImage || null,
     });
 
@@ -52,7 +51,6 @@ export async function updateCategory(categoryData: any) {
         name,
         slug: slugify(name, { lower: true }),
         description,
-        parentId: parentId || null,
         bannerImage: bannerImage || null,
 
       })
@@ -144,7 +142,7 @@ export async function getCategoriesPagination({
     page,
     pageSize,
     where: whereClause,
-    orderBy: desc(category.createdAt),
+    // orderBy: desc(category.createdAt),
   });
 
   return {
@@ -188,7 +186,6 @@ export async function getCategories() {
     return await db
       .select()
       .from(category)
-      .orderBy(asc(category.createdAt));
   } catch (error) {
     console.error(error);
     return [];
@@ -199,23 +196,23 @@ export async function getAllProductsByCategorySlug(slug: string) {
   try {
     const products = await db
       .select({
-        id: productVariant.id,
-        name: productVariant.name,
-        basePrice: productVariant.basePrice,
-        strikethroughPrice: productVariant.strikethroughPrice,
-        slug: productVariant.slug,
-        bannerImage: productVariant.bannerImage,
-        rateing1Star: productVariant.rateing1Star,
-        rateing2Star: productVariant.rateing2Star,
-        rateing3Star: productVariant.rateing3Star,
-        rateing4Star: productVariant.rateing4Star,
-        rateing5Star: productVariant.rateing5Star,
-        sku: productVariant.sku,
+        id: product.id,
+        name: product.name,
+        basePrice: product.basePrice,
+        strikethroughPrice: product.strikethroughPrice,
+        slug: product.slug,
+        bannerImage: product.bannerImage,
+        rateing1Star: product.rateing1Star,
+        rateing2Star: product.rateing2Star,
+        rateing3Star: product.rateing3Star,
+        rateing4Star: product.rateing4Star,
+        rateing5Star: product.rateing5Star,
+        sku: product.sku,
       })
-      .from(productVariant)
+      .from(product)
       .innerJoin(
         productCategory,
-        eq(productVariant.productId, productCategory.productId),
+        eq(product.id, productCategory.productId),
       )
       .innerJoin(
         category,

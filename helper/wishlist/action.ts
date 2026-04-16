@@ -3,12 +3,12 @@ import { db } from "@/db";
 import {
   wishlist,
   wishlistItem,
-  productVariant,
+  product,
 } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { requireUserWithRefresh } from "../user/action";
 
-export async function addToWishlistDB(productVariantId: string) {
+export async function addToWishlistDB(productId: string) {
   const { userId } = await requireUserWithRefresh();
 
   const userWishlist = await db
@@ -36,7 +36,7 @@ export async function addToWishlistDB(productVariantId: string) {
     .where(
       and(
         eq(wishlistItem.wishlistId, wishlistId),
-        eq(wishlistItem.productVariantId, productVariantId)
+        eq(wishlistItem.productId, productId)
       )
     );
 
@@ -44,11 +44,11 @@ export async function addToWishlistDB(productVariantId: string) {
 
   await db.insert(wishlistItem).values({
     wishlistId,
-    productVariantId,
+    productId,
   });
 }
 
-export async function removeFromWishlistDB(productVariantId: string) {
+export async function removeFromWishlistDB(productId: string) {
   const { userId } = await requireUserWithRefresh();
 
   const userWishlist = await db
@@ -64,7 +64,7 @@ export async function removeFromWishlistDB(productVariantId: string) {
     .where(
       and(
         eq(wishlistItem.wishlistId, userWishlist[0].id),
-        eq(wishlistItem.productVariantId, productVariantId)
+        eq(wishlistItem.productId, productId)
       )
     );
 }
@@ -74,15 +74,15 @@ export async function getWishlistDB() {
 
   const result = await db
     .select({
-      productVariantId: wishlistItem.productVariantId,
-      name: productVariant.name,
-      price: productVariant.basePrice,
-      image: productVariant.bannerImage,
+      productId: wishlistItem.productId,
+      name: product.name,
+      price: product.basePrice,
+      image: product.bannerImage,
     })
     .from(wishlistItem)
     .innerJoin(
-      productVariant,
-      eq(productVariant.id, wishlistItem.productVariantId)
+      product,
+      eq(product.id, wishlistItem.productId)
     )
     .innerJoin(
       wishlist,
