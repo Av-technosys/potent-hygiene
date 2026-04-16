@@ -67,6 +67,7 @@ export {
   getProductSimilarProducts,
   getFullProduct,
   getBestSellingProducts,
+  getCategoryName,
 } from "./product/action";
 
 export {

@@ -7,8 +7,16 @@ import { revalidatePath } from "next/cache";
 import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 
-import { category, product, productCategory, productVariant, productVariantAttribute, productVariantMedia, productVariantSubscriptionPlan } from "@/db/schema";
-import {  bestSellingSlug, isUUID } from "@/const/globalconst";
+import {
+  category,
+  product,
+  productCategory,
+  productVariant,
+  productVariantAttribute,
+  productVariantMedia,
+  productVariantSubscriptionPlan,
+} from "@/db/schema";
+import { bestSellingSlug, isUUID } from "@/const/globalconst";
 
 interface GetProductsOptions {
   page?: number;
@@ -45,7 +53,7 @@ interface VariantInput {
   isCancelable: boolean;
   isReplacement: boolean;
   returnDays: number;
-   highlights: string[];
+  highlights: string[];
   replacementDays: number;
   attributes: { attribute: string; value: string }[];
   subscriptionPlans?: number[];
@@ -63,7 +71,6 @@ export async function createProduct(formData: FormData) {
     const variants: VariantInput[] = JSON.parse(variantsData);
 
     const productId = await db.transaction(async (tx) => {
-
       // 1. Create the parent product
       const [createdProduct] = await tx
         .insert(product)
@@ -84,10 +91,9 @@ export async function createProduct(formData: FormData) {
 
       const slugs = await Promise.all(
         variants.map((v) =>
-          generateUniqueSlug(tx, v.name, productVariant.slug)
-        )
+          generateUniqueSlug(tx, v.name, productVariant.slug),
+        ),
       );
-
 
       const variantInsertData = variants.map((v, index) => ({
         productId: pId,
@@ -114,7 +120,6 @@ export async function createProduct(formData: FormData) {
         .insert(productVariant)
         .values(variantInsertData)
         .returning({ id: productVariant.id });
-
 
       const allMediaRows: {
         productVariantId: string;
@@ -164,7 +169,7 @@ export async function createProduct(formData: FormData) {
           for (const planId of v.subscriptionPlans) {
             allSubscriptionRows.push({
               productVariantId: variantId,
-              subscriptionPlanId: planId
+              subscriptionPlanId: planId,
             });
           }
         }
@@ -179,7 +184,9 @@ export async function createProduct(formData: FormData) {
       }
 
       if (allSubscriptionRows.length) {
-        await tx.insert(productVariantSubscriptionPlan).values(allSubscriptionRows);
+        await tx
+          .insert(productVariantSubscriptionPlan)
+          .values(allSubscriptionRows);
       }
       return pId;
     });
@@ -344,9 +351,9 @@ export async function updateProduct(formData: FormData): Promise<void> {
           await tx.insert(productVariantSubscriptionPlan).values(
             v.subscriptionPlans.map((planId) => ({
               productVariantId: vId!,
-              subscriptionPlanId: planId
-            }))
-          )
+              subscriptionPlanId: planId,
+            })),
+          );
         }
       }
     });
@@ -358,8 +365,6 @@ export async function updateProduct(formData: FormData): Promise<void> {
   }
 }
 
-
-
 export async function getFullProduct(identifier: string) {
   try {
     if (!identifier) throw new Error("Missing product identifier");
@@ -369,18 +374,30 @@ export async function getFullProduct(identifier: string) {
     let targetVariantId: string | null = null;
 
     if (isThroughId) {
-      const [pg] = await db.select().from(product).where(eq(product.id, identifier)).limit(1);
+      const [pg] = await db
+        .select()
+        .from(product)
+        .where(eq(product.id, identifier))
+        .limit(1);
       if (pg) {
         productGroupId = pg.id;
       } else {
-        const [productVariendMatch] = await db.select().from(productVariant).where(eq(productVariant.id, identifier)).limit(1);
+        const [productVariendMatch] = await db
+          .select()
+          .from(productVariant)
+          .where(eq(productVariant.id, identifier))
+          .limit(1);
         if (productVariendMatch) {
           productGroupId = productVariendMatch.productId;
           targetVariantId = productVariendMatch.id;
         }
       }
     } else {
-      const [v] = await db.select().from(productVariant).where(eq(productVariant.slug, identifier)).limit(1);
+      const [v] = await db
+        .select()
+        .from(productVariant)
+        .where(eq(productVariant.slug, identifier))
+        .limit(1);
       if (v) {
         productGroupId = v.productId;
         targetVariantId = v.id;
@@ -455,9 +472,27 @@ export async function getFullProduct(identifier: string) {
   }
 }
 
+export async function getCategoryName(categoryId: any) {
+  try {
+    const categoryName = await db
+      .select({ name: category.name })
+      .from(category)
+      .where(eq(category.id, categoryId))
+      .limit(1);
+    return categoryName[0].name;
+  } catch (error) {
+    console.error("getCategoryName failed:", error);
+    throw new Error("Unable to fetch category name");
+  }
+}
+
 export async function getProductSimilarProducts(slug: string | any) {
   try {
-    const [v] = await db.select().from(productVariant).where(eq(productVariant.slug, slug)).limit(1);
+    const [v] = await db
+      .select()
+      .from(productVariant)
+      .where(eq(productVariant.slug, slug))
+      .limit(1);
     if (!v || !v.productId) return [];
 
     const productWithCategory = await db
@@ -482,17 +517,14 @@ export async function getProductSimilarProducts(slug: string | any) {
         rateing4Star: productVariant.rateing4Star,
         rateing5Star: productVariant.rateing5Star,
         strikethroughPrice: productVariant.strikethroughPrice,
-        category: category.name
+        category: category.name,
       })
       .from(productVariant)
       .innerJoin(
         productCategory,
         eq(productCategory.productId, productVariant.productId),
       )
-      .innerJoin(
-        category,
-        eq(category.id, productCategory.categoryId),
-      )
+      .innerJoin(category, eq(category.id, productCategory.categoryId))
       .where(
         and(
           eq(productCategory.categoryId, categoryId),
@@ -506,7 +538,6 @@ export async function getProductSimilarProducts(slug: string | any) {
     console.error("getProductSimilarProducts failed:", error);
   }
 }
-
 
 export async function deleteProduct(id: string) {
   try {
@@ -703,10 +734,7 @@ export async function getProductsCount() {
   }
 }
 
-
-
 export async function getBestSellingProducts() {
-
   try {
     const products = await db
       .select({
@@ -719,14 +747,8 @@ export async function getBestSellingProducts() {
       })
       .from(productVariant)
       .innerJoin(product, eq(product.id, productVariant.productId))
-      .innerJoin(
-        productCategory,
-        eq(productCategory.productId, product.id)
-      )
-      .innerJoin(
-        category,
-        eq(category.id, productCategory.categoryId)
-      )
+      .innerJoin(productCategory, eq(productCategory.productId, product.id))
+      .innerJoin(category, eq(category.id, productCategory.categoryId))
       .where(eq(category.slug, bestSellingSlug))
       .limit(4);
 

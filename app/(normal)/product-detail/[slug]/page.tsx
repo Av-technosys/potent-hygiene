@@ -8,6 +8,7 @@ import AboutHero from "../../../components/common/Product-detail/abouthero";
 import JournalsSection from "../../../components/common/Product-detail/journal";
 import RelatedProducts from "../../../components/common/Product-detail/alsolike";
 import {
+  getCategoryName,
   getFullProduct,
   getProductReviews,
   getProductSimilarProducts,
@@ -19,13 +20,13 @@ export default async function Page({ params }: any) {
   const product = await getFullProduct(slug);
   const similarProducts = (await getProductSimilarProducts(slug)) || [];
   const reviewWithMedia = await getProductReviews(slug);
-  const catetoryName = similarProducts[0]?.category;
+  const catetoryName = await getCategoryName(product?.categoryIds[0]);
 
   if (!product) {
     return <div className="text-center py-20">Product not found</div>;
   }
   return (
-    <div className=" container">
+    <div className="container">
       <div className="">
         <Product
           categoryName={catetoryName}
