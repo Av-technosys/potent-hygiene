@@ -24,10 +24,34 @@ export const users = pgTable("users", {
   phone: varchar("phone", { length: 15 }).notNull(),
   password: text("password").notNull(),
   emailVerified: boolean("email_verified").default(false),
+  rewardOrderCoins: integer("reward_order_coins").default(0),
+  referralCoins: integer("referral_coins").default(0),
+
+
   otp: varchar("otp", { length: 6 }),
   otpExpiresAt: timestamp("otp_expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const rewardOrderCoinsHistory = pgTable("reward_order_coins_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  coins: integer("coins").notNull(),
+  type: varchar("type"),
+  orderId: uuid("order_id").references(() => order.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const rewardCoinsHistory = pgTable("reward_coins_history", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").references(() => users.id).notNull(),
+  coins: integer("coins").notNull(),
+  type: varchar("type"),
+  orderId: uuid("order_id").references(() => order.id),
+  fullName: varchar("full_name"),
+  newUserId: uuid("new_user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 
