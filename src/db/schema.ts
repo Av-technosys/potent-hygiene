@@ -34,7 +34,7 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
-export const rewardOrderCoinsHistory = pgTable("reward_order_coins_history", {
+export const rewardCoinsHistory = pgTable("reward_coins_history", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   coins: integer("coins").notNull(),
@@ -43,13 +43,12 @@ export const rewardOrderCoinsHistory = pgTable("reward_order_coins_history", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
-export const rewardCoinsHistory = pgTable("reward_coins_history", {
+export const referralCoinHistory = pgTable("referral_coin_history", {
   id: uuid("id").primaryKey().defaultRandom(),
   userId: uuid("user_id").references(() => users.id).notNull(),
   coins: integer("coins").notNull(),
   type: varchar("type"),
-  orderId: uuid("order_id").references(() => order.id),
-  fullName: varchar("full_name"),
+  newUserName: varchar("new_user_name"),
   newUserId: uuid("new_user_id").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });

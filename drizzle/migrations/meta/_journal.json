@@ -15,6 +15,13 @@
       "when": 1776320371517,
       "tag": "0001_reward_and_referral",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1776344144647,
+      "tag": "0002_black_mentor",
+      "breakpoints": true
     }
   ]
 }

@@ -1,23 +1,45 @@
 import { Card, CardContent } from "@/components/ui/card";
+import { db } from "@/db";
+import { users } from "@/db/schema";
+import { requireUserWithRefresh } from "@/helper/user/action";
+import { eq } from "drizzle-orm";
 import { Coins } from "lucide-react";
 
-const RewardReferrelOverview = ({
+const RewardReferrelOverview = async ({
   tittle,
-  amount,
   description,
   cards,
 }: any) => {
+  let details = {
+    coint: 0,
+    id: ""
+  }
+
+  const { email } = await requireUserWithRefresh();
+  if (tittle == "Referral Program") {
+    const [rewardCoins] = await db.select({ id: users.id, rewardOrderCoins: users.rewardOrderCoins }).from(users).where(eq(users.email, email));
+    details.coint = rewardCoins?.rewardOrderCoins || 0;
+    details.id = rewardCoins?.id || "";
+  } else {
+    const [rewardCoins] = await db.select({ id: users.id, referralCoins: users.referralCoins }).from(users).where(eq(users.email, email));
+    details.coint = rewardCoins?.referralCoins || 0;
+    details.id = rewardCoins?.id || "";
+  }
+
+
+
+
   return (
     <>
       <div className="w-full  rounded-2xl overflow-hidden border-0 shadow-md">
         <div className="p-0">
-          <div className="bg-gradient-to-r from-[#1f8a9e] to-[#9ccbd3] p-6 sm:p-8 flex flex-col gap-6">
+          <div className="bg-linear-to-r from-[#1f8a9e] to-[#9ccbd3] p-6 sm:p-8 flex flex-col gap-6">
             {/* TOP SECTION */}
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-white/80">{tittle}</p>
                 <h2 className="text-4xl sm:text-5xl font-bold text-white mt-1">
-                  ₹{amount}
+                  ₹{details.coint}
                 </h2>
                 <p className="text-white/80 text-sm mt-1">{description}</p>
               </div>
@@ -31,7 +53,7 @@ const RewardReferrelOverview = ({
             {/* BOTTOM SECTION */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* PER PURCHASE */}
-              {cards.map((item: any, index: number) => {
+              {cards && cards.map((item: any, index: number) => {
                 return (
                   <div
                     key={index}

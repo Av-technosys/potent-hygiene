@@ -7,11 +7,8 @@ import {
   IconAddressBook,
   IconHistory,
   IconStar,
-  IconShieldCheck,
-  IconCalendarTime,
   IconGift,
   IconUsers,
-  IconSparkles,
 } from "@tabler/icons-react";
 import { LogoutButton } from "../LogoutButton";
 
@@ -37,12 +34,6 @@ export const DashboardSidebar = () => {
       label: "Rewards & Security",
       href: "/dashboard/security",
     },
-    {
-      icon: IconCalendarTime,
-      label: "Period Tracker",
-      href: "/dashboard/tracker",
-    },
-    { icon: IconSparkles, label: "Loyalty Rewards", href: "/dashboard/loyalty" },
     { icon: IconUsers, label: "Referral Program", href: "/dashboard/referral" },
   ];
 
@@ -55,11 +46,10 @@ export const DashboardSidebar = () => {
             <Link
               key={item.label}
               href={item.href}
-              className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${
-                isActive
-                  ? "bg-[#C9E6EA] text-[#333333] font-semibold"
-                  : "text-[#333333] hover:bg-gray-50"
-              }`}
+              className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group ${isActive
+                ? "bg-[#C9E6EA] text-[#333333] font-semibold"
+                : "text-[#333333] hover:bg-gray-50"
+                }`}
             >
               {isActive && (
                 <div className="absolute left-0 top-0 bottom-0 w-3 bg-[#168BA0] rounded-l-md" />

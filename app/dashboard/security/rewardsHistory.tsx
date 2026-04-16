@@ -1,4 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { db } from "@/db";
+import { rewardCoinsHistory, users } from "@/db/schema";
+import { requireUserWithRefresh } from "@/helper/user/action";
+import { eq } from "drizzle-orm";
 import { ShoppingCart, UserPlus } from "lucide-react";
 
 const rewardsData = [
@@ -32,7 +36,13 @@ const rewardsData = [
   },
 ];
 
-export default function RewardsHistory() {
+export default async function RewardsHistory() {
+
+  const { email } = await requireUserWithRefresh();
+
+  const [userInfo] = await db.select({ userId: users.id }).from(users).where(eq(users.email, email));
+
+  const rewardHistoryRes = await db.select().from(rewardCoinsHistory).where(eq(rewardCoinsHistory.userId, userInfo.userId));
   return (
     <Card className="w-full max-w-4xl mx-auto rounded-2xl shadow-sm">
       {/* HEADER */}
@@ -42,7 +52,7 @@ export default function RewardsHistory() {
 
       {/* CONTENT */}
       <CardContent className="space-y-4">
-        {rewardsData.map((item, index) => (
+        {(rewardHistoryRes && rewardHistoryRes.length > 0) ? rewardHistoryRes.map((item, index) => (
           <div
             key={index}
             className="flex items-center justify-between gap-4 rounded-xl border p-4 hover:shadow-sm transition"
@@ -51,11 +61,10 @@ export default function RewardsHistory() {
             <div className="flex items-center gap-4">
               {/* ICON */}
               <div
-                className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                  item.type === "purchase"
-                    ? "bg-red-100 text-red-500"
-                    : "bg-yellow-100 text-yellow-600"
-                }`}
+                className={`w-12 h-12 rounded-xl flex items-center justify-center ${item.type === "purchase"
+                  ? "bg-red-100 text-red-500"
+                  : "bg-yellow-100 text-yellow-600"
+                  }`}
               >
                 {item.type === "purchase" ? (
                   <ShoppingCart className="w-5 h-5" />
@@ -66,11 +75,11 @@ export default function RewardsHistory() {
 
               {/* TEXT */}
               <div>
-                <p className="font-medium text-gray-800">{item.title}</p>
-                {item.desc && (
-                  <p className="text-sm text-gray-500">{item.desc}</p>
+                <p className="font-medium text-gray-800">{item.orderId}</p>
+                {item.type && (
+                  <p className="text-sm text-gray-500">{item.type}</p>
                 )}
-                <p className="text-xs text-gray-400 mt-1">{item.date}</p>
+                <p className="text-xs text-gray-400 mt-1">{item.createdAt?.toDateString()}</p>
               </div>
             </div>
 
@@ -79,7 +88,7 @@ export default function RewardsHistory() {
               {item.coins}
             </div>
           </div>
-        ))}
+        )) : <p>No rewards history found</p>}
       </CardContent>
     </Card>
   );

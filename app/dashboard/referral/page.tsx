@@ -2,45 +2,20 @@ import RewardReferrelOverview from "@/app/components/common/reward&ReferrelOverv
 import RewardsReferrelHeader from "@/app/components/common/rewards&ReferrelHeader";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Check, Copy, Gift, Mail, Share2, ShoppingCart } from "lucide-react";
+import { Gift, Share2, ShoppingCart } from "lucide-react";
+import { ReferralHistory } from "./ReferrakHistory";
+import { requireUserWithRefresh } from "@/helper/user/action";
+import { users } from "@/db/schema";
+import { db } from "@/db";
+import { eq } from "drizzle-orm";
+import ShareReferralClient from "./ShareReferralClient";
 
-const cards = [
-  {
-    title: "Available Credit",
-    description: "₹1600",
-  },
-  {
-    title: "Used Credit",
-    description: "₹800",
-  },
-];
+const page = async () => {
 
-const referralHistory = [
-  {
-    name: "Priya Sharma",
-    referred: "Dec 18, 2024",
-    purchased: "Dec 20, 2024",
-    reward: "+₹200",
-  },
-  {
-    name: "Priya Sharma",
-    referred: "Dec 18, 2024",
-    purchased: "Dec 20, 2024",
-    reward: "+₹200",
-  },
-];
+  const { email } = await requireUserWithRefresh();
+  const [userDetail] = await db.select({ id: users.id }).from(users).where(eq(users.email, email));
 
-const programTerms = [
-  "Your friend must be a new customer to Potent Hygiene",
-  "Minimum order value of ₹500 required for referral to be valid",
-  "You earn ₹200 credit once your friend completes their first purchase",
-  "Your friend gets ₹100 off on their first order",
-  "Maximum ₹500 referral credit can be used per order",
-  "Referral credits have no expiry date",
-];
 
-const page = () => {
   return (
     <div className="flex flex-col gap-6">
       <RewardsReferrelHeader
@@ -51,7 +26,6 @@ const page = () => {
         tittle="Total Earnings"
         amount="1600"
         description="From 8 successful referrals"
-        cards={cards}
       />
       <div className="w-full space-y-6">
         <Card className="rounded-2xl">
@@ -103,39 +77,13 @@ const page = () => {
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {/* REFERRAL CODE */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Your Referral Code</p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Input value="SARAH100" readOnly className="flex-1 border border-[#168BA0] text-[#168BA0] font-semibold" />
-                <Button className="flex items-center bg-[#168BA0] hover:bg-[#168BA0]/80  gap-2">
-                  <Copy size={16} />
-                  Copy Code
-                </Button>
-              </div>
-            </div>
-
-            {/* REFERRAL LINK */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium">Your Referral Link</p>
-              <div className="flex flex-col sm:flex-row gap-3">
-                <Input
-                  value="https://potenthygiene.com/ref/SARAH2024"
-                  readOnly
-                  className="flex-1 border border-[#168BA0] text-[#168BA0] font-semibold"
-                />
-                <Button className="flex items-center bg-[#168BA0] hover:bg-[#168BA0]/80 gap-2">
-                  <Copy size={16} />
-                  Copy Link
-                </Button>
-              </div>
-            </div>
+            <ShareReferralClient userDetail={userDetail} />
 
             {/* SHARE BUTTONS */}
             <div className="space-y-2">
               <p className="text-sm font-medium">Share Via</p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <Button className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2">
+                <Button className="bg-green-500 hover:bg-green-600 text-white flex items-center gap-2 h-10">
                   {/* whatsapp icon manually */}
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -149,77 +97,17 @@ const page = () => {
                   Whatsapp
                 </Button>
 
-                <Button className="bg-gray-600 hover:bg-gray-700 text-white flex items-center gap-2">
+                {/* <Button className="bg-gray-600 hover:bg-gray-700 text-white flex items-center gap-2">
                   <Mail size={16} />
                   Email
-                </Button>
+                </Button> */}
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="w-full space-y-6">
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle>Referral History</CardTitle>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            {referralHistory.map((item, index) => (
-              <div
-                key={index}
-                className="flex items-center justify-between gap-4 rounded-xl border p-4"
-              >
-                {/* LEFT */}
-                <div className="flex items-center gap-4">
-                  {/* ICON */}
-                  <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
-                    <Check className="text-green-600 w-5 h-5" />
-                  </div>
-
-                  {/* TEXT */}
-                  <div>
-                    <p className="font-medium text-gray-800">{item.name}</p>
-                    <p className="text-sm text-gray-500">
-                      Referred on {item.referred}
-                    </p>
-                    <p className="text-sm text-gray-500">
-                      Purchased on {item.purchased}
-                    </p>
-                  </div>
-                </div>
-
-                {/* RIGHT */}
-                <div className="text-green-600 font-semibold whitespace-nowrap">
-                  {item.reward}
-                </div>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-
-        
-        <Card className="rounded-2xl">
-          <CardHeader>
-            <CardTitle>Program Terms</CardTitle>
-          </CardHeader>
-
-          <CardContent className="space-y-4">
-            {programTerms.map((term, index) => (
-              <div key={index} className="flex items-start gap-3">
-                {/* ICON */}
-                <div className="mt-1 w-6 h-6 rounded-full bg-[#C9E6EA] flex items-center justify-center">
-                  <Check className="text-teal-600 w-4 h-4" />
-                </div>
-
-               
-                <p className="text-sm text-gray-700">{term}</p>
-              </div>
-            ))}
-          </CardContent>
-        </Card>
-      </div>
+      <ReferralHistory />
     </div>
   );
 };
