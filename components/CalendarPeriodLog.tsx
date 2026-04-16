@@ -1,36 +1,3 @@
-// "use client"
-
-// import * as React from "react"
-
-// import { CalendarPL } from "@/components/ui/calendarPL"
-
-// export function CalendarPeriodLog({ dateArray }: any) {
-//     const [date, setDate] = React.useState<Date | undefined>(new Date())
-//     const range1 = { from: new Date(2026, 4, 5), to: new Date(2026, 4, 9) }
-//     const range2 = { from: new Date(2026, 4, 11), to: new Date(2026, 4, 15) }
-//     return (
-//         <CalendarPL
-//             mode="single"
-//             selected={date}
-//             onSelect={setDate}
-//             className="rounded-lg border"
-//             // captionLayout="dropdown"
-//             dateArray={{
-//                 pmsRange: {
-//                     from: new Date(2026, 3, 8),
-//                     to: new Date(2026, 3, 10),
-//                 },
-//                 periodRange: {
-//                     from: new Date(2026, 3, 11),
-//                     to: new Date(2026, 3, 15),
-//                 },
-//             }}
-//         />
-//     )
-// }
-
-
-
 "use client";
 
 import {
@@ -41,7 +8,26 @@ import {
   getDay,
 } from "date-fns";
 
-// helpers
+export function getNextDate(selectedDate: Date, daysToAdd: number) {
+  const date = new Date(selectedDate);
+  date.setDate(date.getDate() + daysToAdd);
+  return date;
+}
+
+
+export function getNextXDays(startDate: Date, numberOfDays: number) {
+  const dates = [];
+  const date = new Date(startDate);
+
+  for (let i = 0; i < numberOfDays; i++) {
+    const newDate = new Date(date);
+    newDate.setDate(date.getDate() + i);
+    dates.push(newDate);
+  }
+
+  return dates;
+}
+
 function getDatesBetween(start: Date, end: Date) {
   const dates: Date[] = [];
   let current = new Date(start);
@@ -58,46 +44,7 @@ function isSameDay(d1: Date, d2: Date) {
   return d1.toDateString() === d2.toDateString();
 }
 
-// 🔥 CORE LOGIC
-// function calculateData(startDate: Date, cycle: number, periodLength: number) {
-//   const periodDates: Date[] = [];
-//   const fertileDates: Date[] = [];
 
-//   const shift = 30 - cycle;
-
-//   const startMonth = startDate.getMonth();
-//   const startYear = startDate.getFullYear();
-
-//   for (let i = 0; i < 6; i++) {
-//     const base = addDays(startDate, i * cycle);
-
-//     const currentMonth = base.getMonth();
-//     const currentYear = base.getFullYear();
-
-//     // 🔴 FIRST MONTH
-//     if (currentMonth === startMonth && currentYear === startYear) {
-//       const monthStart = new Date(startYear, startMonth, 1);
-
-//       const periodStart = addDays(startDate, 1);
-//       const periodEnd = addDays(periodStart, periodLength - 1);
-
-//       periodDates.push(...getDatesBetween(monthStart, periodEnd));
-//       continue;
-//     }
-
-//     // 🟣 NEXT MONTHS
-//     const periodStart = addDays(startDate, i * cycle + 1 - shift);
-//     const periodEnd = addDays(periodStart, periodLength - 1);
-
-//     const fertileStart = addDays(periodStart, -6);
-//     const fertileEnd = addDays(periodStart, -2);
-
-//     periodDates.push(...getDatesBetween(periodStart, periodEnd));
-//     fertileDates.push(...getDatesBetween(fertileStart, fertileEnd));
-//   }
-
-//   return { periodDates, fertileDates };
-// }
 
 function calculateData(
   startDate: Date,
@@ -107,49 +54,35 @@ function calculateData(
   const periodDates: Date[] = [];
   const fertileDates: Date[] = [];
 
-  const shift = 30 - cycle;
+  const fnStartDate = new Date(startDate);
+  fnStartDate.setDate(fnStartDate.getDate() + 1);
 
-  const startMonth = startDate.getMonth();
-  const startYear = startDate.getFullYear();
+  const currentMonthDays = getNextXDays(fnStartDate, periodLength);
+  periodDates.push(...currentMonthDays);
 
-  for (let i = 0; i < 6; i++) {
-    // ✅ FIX: adjust base date FIRST
-    const adjustedBase = addDays(startDate, i * cycle - shift);
+  const nextMonthFertilityDay = getNextDate(startDate, cycle - 5);
+  const nextMonthFertileDays = getNextXDays(nextMonthFertilityDay, 5);
+  fertileDates.push(...nextMonthFertileDays);
 
-    const currentMonth = adjustedBase.getMonth();
-    const currentYear = adjustedBase.getFullYear();
+  const nextMonthDay = getNextDate(fnStartDate, cycle);
+  const nextMonthPeriodStart = getNextXDays(nextMonthDay, periodLength);
+  periodDates.push(...nextMonthPeriodStart);
 
-    // 🔴 FIRST MONTH
-    if (currentMonth === startMonth && currentYear === startYear) {
-      const monthStart = new Date(startYear, startMonth, 1);
+  const thirdMonthDay = getNextDate(fnStartDate, cycle * 2);
+  const thirdMonthPeriodStart = getNextXDays(thirdMonthDay, periodLength);
+  periodDates.push(...thirdMonthPeriodStart);
 
-      const periodStart = addDays(adjustedBase, 1);
-      const periodEnd = addDays(periodStart, periodLength - 1);
+  const thridMonthFertilityDay = getNextDate(startDate, cycle * 2 - 5);
+  const thirdMonthFertileDays = getNextXDays(thridMonthFertilityDay, 5);
+  fertileDates.push(...thirdMonthFertileDays);
 
-      periodDates.push(...getDatesBetween(monthStart, periodEnd));
-      continue;
-    }
-
-    // 🟣 NEXT MONTHS
-    const periodStart = addDays(adjustedBase, 1);
-    const periodEnd = addDays(periodStart, periodLength - 1);
-
-//    const fertileStart = addDays(periodStart, -6 - shift);
-// const fertileEnd   = addDays(periodStart, -2 - shift);
-
-const fertileWindowSize = 5;
-
-const fertileEnd = addDays(periodStart, -1 - shift);
-const fertileStart = addDays(fertileEnd, -(fertileWindowSize - 1));
-    periodDates.push(...getDatesBetween(periodStart, periodEnd));
-    fertileDates.push(...getDatesBetween(fertileStart, fertileEnd));
-  }
 
   return { periodDates, fertileDates };
 }
 
 // UI components
 function Day({ date, periodDates, fertileDates }: any) {
+
   const isPeriod = periodDates.some((d: Date) => isSameDay(d, date));
   const isFertile =
     !isPeriod && fertileDates.some((d: Date) => isSameDay(d, date));
@@ -181,7 +114,7 @@ function Month({ month, periodDates, fertileDates }: any) {
       </h3>
 
       <div className="grid grid-cols-7 text-xs text-gray-400 mb-2 text-center">
-        {["S","M","T","W","T","F","S"].map((d) => (
+        {["S", "M", "T", "W", "T", "F", "S"].map((d) => (
           <div key={d}>{d}</div>
         ))}
       </div>
@@ -209,6 +142,7 @@ export function CalendarPeriodLog({
   cycle,
   periodTime,
 }: any) {
+  console.log(startDate, cycle, periodTime)
   const { periodDates, fertileDates } = calculateData(
     startDate,
     cycle,
@@ -220,7 +154,8 @@ export function CalendarPeriodLog({
     startDate.getMonth(),
     1
   );
-
+  console.log(periodDates);
+  console.log(fertileDates);
   return (
     <div className="grid md:grid-cols-3 gap-6">
       {[0, 1, 2].map((i) => (
