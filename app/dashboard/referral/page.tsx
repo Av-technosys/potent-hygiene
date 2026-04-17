@@ -9,6 +9,7 @@ import { users } from "@/db/schema";
 import { db } from "@/db";
 import { eq } from "drizzle-orm";
 import ShareReferralClient from "./ShareReferralClient";
+import { Suspense } from "react";
 
 const page = async () => {
 
@@ -97,17 +98,13 @@ const page = async () => {
                   Whatsapp
                 </Button>
 
-                {/* <Button className="bg-gray-600 hover:bg-gray-700 text-white flex items-center gap-2">
-                  <Mail size={16} />
-                  Email
-                </Button> */}
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
 
-      <ReferralHistory />
+      <Suspense fallback={<div>Loading...</div>}><ReferralHistory /></Suspense>
     </div>
   );
 };

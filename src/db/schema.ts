@@ -11,7 +11,8 @@ import {
   integer,
   index,
   primaryKey,
-  jsonb
+  jsonb,
+  pgEnum
 } from "drizzle-orm/pg-core";
 
 
@@ -106,6 +107,8 @@ export const category = pgTable("categories", {
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
+export const productBrandEnum = pgEnum("product_brand", ["ovy", "loway"]);
+
 
 // ================= PRODUCT =================
 
@@ -123,6 +126,7 @@ export const product = pgTable("products", {
 
   bannerImage: varchar("banner_image"),
   highlights: varchar("highlights").array(),
+  brand: productBrandEnum("brand").default("ovy"),
 
   hasVarientBox: boolean("has_variant_box").default(false),
   minBoxQuintity: integer("min_box_quintity"),
