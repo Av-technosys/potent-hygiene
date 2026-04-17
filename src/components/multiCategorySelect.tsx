@@ -46,6 +46,7 @@ export const MultiCategorySelect = ({
         <Loader2 size={20} className="animate-spin" />
       ) : (
         <MultipleSelector
+        key={categories.length}
           value={selectedObjects}
           defaultOptions={categories}
           onChange={(values: any[]) => {

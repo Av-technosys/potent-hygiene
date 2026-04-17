@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Card,
   CardContent,
@@ -25,7 +25,16 @@ import AttributeSection from "../AttributeSection";
 import { updateProduct } from "@/helper/product/action";
 import { validateImage } from "@/lib/validateImage";
 import { useFileUpload } from "@/helper";
-import { productAttributeType, productMediaType, productType, productVarientType } from "@/types/productTypes";
+import {
+  productAttributeType,
+  productMediaType,
+  productType,
+  productVarientType,
+} from "@/types/productTypes";
+import ProductFilters from "../productFilter";
+import { PRODUCT_FILTER } from "@/const/filters";
+import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 type ImageItem = {
   key: string;
@@ -64,17 +73,71 @@ type ProductDetailsType = {
   productMediaRes: productMediaType[];
 } & productType;
 
-export default function EditProduct({
-  productDetails,
-}: any) {
+export default function EditProduct({ productDetails }: any) {
   const router = useRouter();
   const { upload, uploading } = useFileUpload();
   const bannerRef = useRef<HTMLInputElement>(null);
 
-  const { prodcutVarientBoxRes, categoryRes, productAttributeRes, productMediaRes, ...product }: ProductDetailsType = productDetails;
+  const [productType, setProductType] = useState<any[]>([]);
+  const [sustainability, setSustainability] = useState<any[]>([]);
+  const [flowType, setFlowType] = useState<any[]>([]);
+  const [purpose, setPurpose] = useState<any[]>([]);
+  const [features, setFeatures] = useState<any[]>([]);
 
-  const [selectedCategories, setSelectedCategories] =
-    useState<string[]>(categoryRes.map((c: any) => c.id));
+  const[brand,setBrand] = useState<any>(productDetails.brand);
+
+  const [varientBox, setVarientBox] = useState(productDetails.hasVarientBox);
+
+  const [variantBoxes, setVariantBoxes] = useState<any[]>([]);
+
+  const fileRefs = useRef<any>([]);
+
+  useEffect(() => {
+    if (productDetails?.prodcutVarientBoxRes?.length) {
+      setVariantBoxes(
+        productDetails.prodcutVarientBoxRes.map((v: any) => ({
+          id: v.id,
+          name: v.name || "",
+          description: v.description || "",
+          image: v.image || "",
+        })),
+      );
+    }
+  }, [productDetails]);
+
+
+  const extractSlugs = (filters: any[]) => filters.map((f) => f.filter);
+
+  const mapSlugsToObjects = (slugs: string[], source: any[]) =>
+    source.filter((item) => slugs.includes(item.slug));
+
+  useEffect(() => {
+    if (!productDetails?.filters) return;
+
+    const slugs = extractSlugs(productDetails.filters);
+
+    setProductType(mapSlugsToObjects(slugs, PRODUCT_FILTER.product_type));
+
+    setSustainability(mapSlugsToObjects(slugs, PRODUCT_FILTER.sustainability));
+
+    setFlowType(mapSlugsToObjects(slugs, PRODUCT_FILTER.flow_or_usage_type));
+
+    setPurpose(mapSlugsToObjects(slugs, PRODUCT_FILTER.purpose));
+
+    setFeatures(mapSlugsToObjects(slugs, PRODUCT_FILTER.features));
+  }, [productDetails]);
+
+  const {
+    prodcutVarientBoxRes,
+    categoryRes,
+    productAttributeRes,
+    productMediaRes,
+    ...product
+  }: ProductDetailsType = productDetails;
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    categoryRes.map((c: any) => c?.categories?.id),
+  );
 
   // Mapping Initial Data to Variant State
   const [variants, setVariants] = useState<any>({
@@ -100,8 +163,7 @@ export default function EditProduct({
     ),
     isInStock: product.isInStock ?? true,
     highlights: product.highlights || [],
-  }
-  );
+  });
 
   // const initialActiveIndex = initialVariants.findIndex(
   //   (v) => v.id === targetVariantId,
@@ -111,15 +173,29 @@ export default function EditProduct({
   // );
   const galleryRef = useRef<HTMLInputElement>(null);
 
-
   // Helper to update state
-  const updateVariant = (index: number, updates: Partial<Variant>) => {
-    const newVariants = [...variants];
-    newVariants[index] = { ...newVariants[index], ...updates };
-    setVariants(newVariants);
+  // const updateVariant = (index: number, updates: Partial<Variant>) => {
+  //   const newVariants = [...variants];
+  //   newVariants[index] = { ...newVariants[index], ...updates };
+  //   setVariants(newVariants);
+  // };
+
+  const updateVariantBox = (index: number, key: string, value: any) => {
+    const updated = [...variantBoxes];
+    updated[index] = { ...updated[index], [key]: value };
+    setVariantBoxes(updated);
   };
 
+  const addVariantBox = () => {
+    setVariantBoxes([
+      ...variantBoxes,
+      { name: "", description: "", image: "" },
+    ]);
+  };
 
+  const removeVariantBox = (index: number) => {
+    setVariantBoxes(variantBoxes.filter((_, i) => i !== index));
+  };
 
   const handleBanner = async (file?: File) => {
     if (!file) return;
@@ -141,6 +217,14 @@ export default function EditProduct({
       //   },
       // });
 
+      setVariants((prev: any) => ({
+        ...prev,
+        banner: {
+          key: fileKey,
+          preview: fileUrl as any,
+        },
+      }));
+
       toast.success("Banner uploaded");
     } catch (err: any) {
       toast.error(err.message);
@@ -159,12 +243,16 @@ export default function EditProduct({
     }
 
     const newValue = selectedArray.join(",");
-    // updateVariant(activeIndex, {
-    //   attributes: {
-    //     ...activeVariant.attributes,
-    //     [key]: { ...activeVariant.attributes[key], value: newValue },
-    //   },
-    // });
+    setVariants((prev: any) => ({
+      ...prev,
+      attributes: {
+        ...prev.attributes,
+        [key]: {
+          ...prev.attributes[key],
+          value: newValue,
+        },
+      },
+    }));
   };
 
   const handleGallery = async (files: FileList | null) => {
@@ -186,10 +274,32 @@ export default function EditProduct({
         //     { key: fileKey, preview: fileUrl as any },
         //   ],
         // });
+        setVariants((prev: any) => ({
+          ...prev,
+          gallery: [...prev.gallery, { key: fileKey, preview: fileUrl as any }],
+        }));
         toast.success("Image uploaded");
       } catch (err: any) {
         toast.info(err.message);
       }
+    }
+  };
+
+  const handleVariantImage = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+    index: number,
+  ) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const { fileKey, fileUrl } = await upload(file, "product"); // tera existing upload fn
+
+      const updated = [...variantBoxes];
+      updated[index].image = fileUrl;
+      setVariantBoxes(updated);
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -200,6 +310,7 @@ export default function EditProduct({
     // updateVariant(activeIndex, {
     //   gallery: nextGallery,
     // });
+    setVariants((prev: any) => ({ ...prev, gallery: nextGallery }));
   };
 
   const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -211,18 +322,34 @@ export default function EditProduct({
     formData.append("id", variants.id);
     selectedCategories.forEach((catId) => formData.append("category[]", catId));
 
-    const payload = variants.map((v: any) => ({
-      ...v,
-      id: v.isExisting ? v.id : undefined, // Old variants keep ID, new ones don't
-      bannerImage: v.banner?.preview,
-      media: v.gallery.map((g: any) => g.preview),
-      highlights: v.highlights.filter((h: string) => h.trim().length > 0),
-      attributes: Object.entries(v.attributes)
-        .map(([attr, val]: [string, any]) => ({ attribute: attr, value: val.value }))
+    const payload = {
+      ...variants,
+      id: variants.isExisting ? variants.id : undefined, // Old variants keep ID, new ones don't
+      brand: brand,
+      bannerImage: variants.banner?.preview,
+      media: variants.gallery.map((g: any) => g.preview),
+      highlights: variants.highlights.filter(
+        (h: string) => h.trim().length > 0,
+      ),
+      attributes: Object.entries(variants.attributes)
+        .map(([attr, val]: [string, any]) => ({
+          attribute: attr,
+          value: val.value,
+        }))
         .filter((a: any) => a.value.trim().length > 0),
-    }));
+      filters: [
+        ...(productType || []),
+        ...(sustainability || []),
+        ...(flowType || []),
+        ...(purpose || []),
+        ...(features || []),
+      ],
+      VarientBoxes: varientBox ? variantBoxes : [],
+      hasVarientBox:varientBox
+    };
 
     formData.append("variants", JSON.stringify(payload));
+
 
     try {
       await updateProduct(formData);
@@ -305,7 +432,10 @@ export default function EditProduct({
                       type="number"
                       value={variants.price}
                       onChange={(e) =>
-                        setVariants({ ...variants, price: Number(e.target.value) })
+                        setVariants({
+                          ...variants,
+                          price: Number(e.target.value),
+                        })
                       }
                     />
                   </div>
@@ -315,7 +445,10 @@ export default function EditProduct({
                       type="number"
                       value={variants.strikethroughPrice}
                       onChange={(e) =>
-                        setVariants({ ...variants, strikethroughPrice: Number(e.target.value) })
+                        setVariants({
+                          ...variants,
+                          strikethroughPrice: Number(e.target.value),
+                        })
                       }
                     />
                   </div>
@@ -349,7 +482,10 @@ export default function EditProduct({
                           onChange={(e) => {
                             const newHighlights = [...variants.highlights];
                             newHighlights[i] = e.target.value;
-                            setVariants({ ...variants, highlights: newHighlights });
+                            setVariants({
+                              ...variants,
+                              highlights: newHighlights,
+                            });
                           }}
                           placeholder="Enter highlight"
                         />
@@ -358,11 +494,13 @@ export default function EditProduct({
                           type="button"
                           variant="destructive"
                           onClick={() => {
-                            const newHighlights =
-                              variants.highlights.filter(
-                                (_: string, idx: number) => idx !== i,
-                              );
-                            setVariants({ ...variants, highlights: newHighlights });
+                            const newHighlights = variants.highlights.filter(
+                              (_: string, idx: number) => idx !== i,
+                            );
+                            setVariants({
+                              ...variants,
+                              highlights: newHighlights,
+                            });
                           }}
                         >
                           <X size={14} />
@@ -374,7 +512,10 @@ export default function EditProduct({
                       type="button"
                       variant="outline"
                       onClick={() => {
-                        setVariants({ ...variants, highlights: [...variants.highlights, ""] });
+                        setVariants({
+                          ...variants,
+                          highlights: [...variants.highlights, ""],
+                        });
                       }}
                     >
                       + Add Highlight
@@ -479,6 +620,145 @@ export default function EditProduct({
               </CardContent>
             </Card>
 
+             <Card>
+              <CardHeader>Brand Name</CardHeader>
+              <CardContent>
+                <RadioGroup
+                  value={brand}
+                  onValueChange={(value) => {
+                    setBrand(value);
+                    console.log("Selected brand:", value);
+                  }}
+                  className="w-fit"
+                >
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="ovy" id="r1" />
+                    <Label htmlFor="r1">Ovy</Label>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="loway" id="r2" />
+                    <Label htmlFor="r2">Loway</Label>
+                  </div>
+                </RadioGroup>
+              </CardContent>
+            </Card>
+
+            {/* filter section */}
+            <ProductFilters
+              productType={productType}
+              setProductType={setProductType}
+              sustainability={sustainability}
+              setSustainability={setSustainability}
+              flowType={flowType}
+              setFlowType={setFlowType}
+              purpose={purpose}
+              setPurpose={setPurpose}
+              features={features}
+              setFeatures={setFeatures}
+            />
+
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center justify-between">
+                  <span className="flex items-center gap-2">Variant Sizes</span>
+
+                  <Checkbox
+                    checked={varientBox}
+                    onCheckedChange={(val) => setVarientBox(!!val)}
+                  />
+                </CardTitle>
+              </CardHeader>
+
+              {varientBox && (
+                <CardContent className="space-y-4">
+                  {/* LIST */}
+                  {variantBoxes.map((item, index) => (
+                    <div
+                      key={index}
+                      className="border rounded-xl p-4 grid md:grid-cols-6 gap-4 items-center"
+                    >
+                      
+                      <div className="col-span-1">
+                        <div
+                          onClick={() => fileRefs.current[index]?.click()}
+                          className="h-20 w-20 border rounded-md overflow-hidden flex items-center justify-center bg-gray-100 cursor-pointer hover:opacity-80"
+                        >
+                          {item.image ? (
+                            <img
+                              src={item.image}
+                              className="h-full w-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-xs text-gray-400">
+                              Upload
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Hidden Input */}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          hidden
+                          ref={(el:any) => (fileRefs.current[index] = el)} 
+                          onChange={(e) => handleVariantImage(e, index)}
+                        />
+                      </div>
+
+                      {/* Name */}
+                      <div className="col-span-2">
+                        <Input
+                          placeholder="Size Name (e.g. Small)"
+                          value={item.name}
+                          onChange={(e) =>
+                            updateVariantBox(index, "name", e.target.value)
+                          }
+                        />
+                      </div>
+
+                      {/* Description */}
+                      <div className="col-span-2">
+                        <Input
+                          placeholder="Description"
+                          value={item.description}
+                          onChange={(e) =>
+                            updateVariantBox(
+                              index,
+                              "description",
+                              e.target.value,
+                            )
+                          }
+                        />
+                      </div>
+
+                      {/* Delete */}
+                      <div className="col-span-1 flex justify-end">
+                        <Button
+                        type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => removeVariantBox(index)}
+                        >
+                          <Trash2 size={16} />
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+
+                  {/* ADD BUTTON */}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={addVariantBox}
+                  >
+                    <Plus size={16} className="mr-2" />
+                    Add Variant
+                  </Button>
+                </CardContent>
+              )}
+            </Card>
+
             <GallerySection
               gallery={variants.gallery}
               galleryRef={galleryRef}
@@ -490,7 +770,10 @@ export default function EditProduct({
               productAttributes={variants.attributes}
               handleValueChange={(k, v) => {
                 const current = variants.attributes;
-                setVariants({ ...variants, attributes: { ...current, [k]: { ...current[k], value: v } } });
+                setVariants({
+                  ...variants,
+                  attributes: { ...current, [k]: { ...current[k], value: v } },
+                });
               }}
             />
           </div>
