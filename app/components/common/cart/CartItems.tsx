@@ -14,6 +14,8 @@ export function CartItems() {
   // ✅ reactive Zustand state
   const items = useCartStore((state) => state.items);
 
+ 
+
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
       <div className="space-y-1">
@@ -37,7 +39,7 @@ export function CartItems() {
         <div className="space-y-4">
           {items.map((item: any) => (
             <div
-              key={`${item.productVariantId}-${item.sku || "default"}`}
+              key={`${item.productId}-${item.sku || "default"}`}
               className="flex flex-col sm:flex-row  gap-4 p-4 border rounded-lg bg-white shadow-sm"
             >
               {/* Product Image */}
@@ -90,7 +92,7 @@ export function CartItems() {
                         size="sm"
                         className="flex items-center gap-2 text-red-500 hover:text-red-600 hover:bg-red-50 transition-all"
                         onClick={() =>
-                          removeFromCart(item.productVariantId, item.sku, item?.uuid)
+                          removeFromCart(item.productId, item.sku, item?.uuid,item?.cartSizes)
                         }
                       >
                         <Trash2 className="h-4 w-4" />
@@ -109,7 +111,7 @@ export function CartItems() {
                           className="h-8 w-8 rounded-md hover:bg-gray-100"
                           onClick={() =>
                             updateCartQuantity(
-                              item.productVariantId,
+                              item.productId,
                               item.quantity - 1,
                               item.sku,
                             )
@@ -129,7 +131,7 @@ export function CartItems() {
                           className="h-8 w-8 rounded-md hover:bg-gray-100"
                           onClick={() =>
                             updateCartQuantity(
-                              item.productVariantId,
+                              item.productId,
                               item.quantity + 1,
                               item.sku,
                             )
@@ -145,7 +147,7 @@ export function CartItems() {
                         size="sm"
                         className="text-red-500 hover:text-red-700 hover:bg-red-50"
                         onClick={() =>
-                          removeFromCart(item.productVariantId, item.sku, item?.uuid)
+                          removeFromCart(item.productId, item.sku, item?.uuid)
                         }
                       >
                         <Trash2 className="h-4 w-4 mr-1" />

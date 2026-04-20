@@ -36,7 +36,7 @@ async function refreshUserTokens() {
   if (!refreshToken || !idToken) return null;
   try {
 
-    const res = await fetch(`${process.env.BASE_API_URL}/auth/refersh-token`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_AUTH_API_URL}/refersh-token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

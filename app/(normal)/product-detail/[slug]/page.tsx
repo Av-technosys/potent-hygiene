@@ -8,18 +8,19 @@ import AboutHero from "../../../components/common/Product-detail/abouthero";
 import JournalsSection from "../../../components/common/Product-detail/journal";
 import RelatedProducts from "../../../components/common/Product-detail/alsolike";
 import {
-  getFullProduct,
   getProductReviews,
   getProductSimilarProducts,
 } from "@/helper";
+import { getFullProductDetails } from "@/helper/product/action";
 
 export default async function Page({ params }: any) {
   const { slug } = await params;
 
-  const product = await getFullProduct(slug);
+  const product = await getFullProductDetails(slug);
   const similarProducts = (await getProductSimilarProducts(slug)) || [];
   const reviewWithMedia = await getProductReviews(slug);
-  const catetoryName = similarProducts[0]?.category;
+  // const catetoryName = similarProducts[0]?.category;
+
 
   if (!product) {
     return <div className="text-center py-20">Product not found</div>;
@@ -28,13 +29,13 @@ export default async function Page({ params }: any) {
     <div className=" container">
       <div className="">
         <Product
-          categoryName={catetoryName}
-          variants={product.variants}
-          productInfo={product.targetVariant}
+          // categoryName={catetoryName}
+          // variants={product}
+          productInfo={product}
         />
         <TrustBadges />
-        <AboutProduct variant={product.targetVariant} />
-        <ProductReviews reviews={reviewWithMedia} />
+        <AboutProduct variant={product} />
+        <ProductReviews reviews={reviewWithMedia} product={product} />
         <div className="  ">
           <Image
             src="/review.png"

@@ -16,7 +16,7 @@ const RewardReferrelOverview = async ({
   }
 
   const { email } = await requireUserWithRefresh();
-  if (tittle == "Referral Program") {
+  if (tittle == "Your Reward Balance") {
     const [rewardCoins] = await db.select({ id: users.id, rewardOrderCoins: users.rewardOrderCoins }).from(users).where(eq(users.email, email));
     details.coint = rewardCoins?.rewardOrderCoins || 0;
     details.id = rewardCoins?.id || "";

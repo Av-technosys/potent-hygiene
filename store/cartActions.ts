@@ -15,7 +15,7 @@ import { toast } from "sonner";
 
 // Types
 type CartItem = {
-  productVariantId: string;
+  productId: string;
   sku?: string;
   slug: string;
   title: string;
@@ -43,8 +43,10 @@ export const addToCart = async (item: CartItem) => {
     return; // ✅ stop execution
   }
 
+ 
+
   const normalizedItem = {
-    productVariantId: item.productVariantId,
+    productId: item.productId,
     sku: item.sku,
     slug: item.slug,
     title: item.title,
@@ -60,31 +62,51 @@ export const addToCart = async (item: CartItem) => {
   // ✅ optimistic UI
   useCartStore.getState().addItem(normalizedItem);
 
-
+  if(item.isQuantityChangable){
   // ✅ DB sync
-  // addToCartDB(item.productVariantId, item.quantity).catch((error) => {
-  //   console.error("Failed to sync with DB:", error);
-  // });
+  toast.success("Item added to cart");
+  addToCartDB(item.productId, item.quantity).catch((error) => {
+    console.error("Failed to sync with DB:", error);
+  });
+  }else{
+     // ✅ DB sync
+  toast.success("Item added to cart");
+  addToCartDB(item.productId, item.quantity, item.cartSizes).catch((error) => {
+    console.error("Failed to sync with DB:", error);
+  });
+  }
+
+
+ 
 };
 
 // Remove
-export const removeFromCart = async (productVariantId: string, sku?: string,uuid?:string) => {
-  useCartStore.getState().removeItem(productVariantId, sku,uuid);
+export const removeFromCart = async (productId: string, sku?: string,uuid?:string,cartSizes?:any) => {
+  useCartStore.getState().removeItem(productId, sku,uuid);
 
-  // removeFromCartDB(productVariantId,uuid).catch((error) => {
-  //   console.error("Failed to remove from DB:", error);
-  // });
+  if(!cartSizes || cartSizes.length === 0){
+  removeFromCartDB(productId, sku).catch((error) => {
+    console.error("Failed to remove from DB:", error);
+  });
+  toast.success("Item removed from cart");
+  }else{
+    removeFromCartDB(productId, sku,cartSizes).catch((error) => {
+      console.error("Failed to remove from DB:", error);
+    });
+    toast.success("Item removed from cart");
+
+  }
 };
 
 // Update quantity
 export const updateCartQuantity = async (
-  productVariantId: string,
+  productId: string,
   quantity: number,
   sku?: string
 ) => {
-  useCartStore.getState().updateQuantity(productVariantId, quantity, sku);
+  useCartStore.getState().updateQuantity(productId, quantity, sku);
 
-  updateCartItemQuantity(productVariantId, quantity).catch((error) => {
+  updateCartItemQuantity(productId, quantity).catch((error) => {
     console.error("Failed to update DB:", error);
   });
 };
@@ -96,6 +118,7 @@ export const clearCart = async () => {
   clearCartDB().catch((error) => {
     console.error("Failed to clear DB:", error);
   });
+  toast.success("Cart cleared");
 };
 
 // Sync from DB
@@ -104,7 +127,7 @@ export const syncCartFromDB = async () => {
 
   if (result.success && result.items) {
     const formattedItems = result.items.map((item: any) => ({
-      productVariantId: item.productVariantId,
+      productId: item.productId,
       sku: item.sku || "",
       slug: item.slug || "",
       title: item.title || "Product",

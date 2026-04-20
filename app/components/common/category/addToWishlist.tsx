@@ -12,7 +12,7 @@ const AddToWishlist = ({ product }: any) => {
   const items = useWishlistStore((state) => state.items);
 
   const isActive = items.some(
-    (i) => i.productVariantId === product.id
+    (i) => i.productId === product.id
   );
 
   const toggleWishlist = async () => {
@@ -20,10 +20,12 @@ const AddToWishlist = ({ product }: any) => {
       await removeFromWishlist(product.id);
     } else {
       await addToWishlist({
-        productVariantId: product.id,
+        productId: product.id,
         name: product.name,
         price: product.basePrice,
         image: product.bannerImage || "/product.png",
+        hasVarientBox: product.hasVarientBox,
+        slug: product.slug,
       });
     }
   };

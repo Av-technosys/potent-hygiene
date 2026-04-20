@@ -6,8 +6,10 @@ export default function SizeSelectorBox({ items,cartSizes,setCartSizes,total,set
 
   useEffect(() => {
     const formatted = items.map((item: any, index: number) => ({
-      name: item,
-      id: index + 1,
+      name: item.name,
+      description: item.description,
+      image: item.image,
+      id: item.id,
       qty: 0,
     }));
 
@@ -44,7 +46,19 @@ export default function SizeSelectorBox({ items,cartSizes,setCartSizes,total,set
           <div key={item.id || index}>
             <div className="flex items-center justify-between">
               {/* LEFT */}
-              <p className="text-sm sm:text-base font-medium">{item.name}</p>
+             <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+               <div className="w-10 h-10 rounded-full overflow-hidden border border-gray-200">
+                 <img
+                  src={item.image}
+                  alt={item.name}
+                  className="object-cover "
+                />
+               </div>
+                <span className="text-sm sm:text-base font-medium">{item.name}</span>
+              </div>
+               <p >{item.description}</p>
+             </div>
 
               {/* RIGHT */}
               <div className="flex items-center gap-3">

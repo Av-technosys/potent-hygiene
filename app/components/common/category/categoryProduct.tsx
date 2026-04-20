@@ -18,7 +18,7 @@ export default function CategoryProducts({ categories }: CategoryProductsProps) 
   const items = useWishlistStore((state) => state.items);
 
   const isWishlisted = (id: string) =>
-    items.some((i) => i.productVariantId === id);
+    items.some((i) => i.productId === id);
 
   const toggleWishlist = async (product: any) => {
     const exists = isWishlisted(product.id);
@@ -27,7 +27,7 @@ export default function CategoryProducts({ categories }: CategoryProductsProps) 
       await removeFromWishlist(product.id);
     } else {
       await addToWishlist({
-        productVariantId: product.id,
+        productId: product.id,
         name: product.name,
         image: product.bannerImage,
         price: product.basePrice || 0,

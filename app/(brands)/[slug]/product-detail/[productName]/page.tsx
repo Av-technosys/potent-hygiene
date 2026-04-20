@@ -34,14 +34,14 @@ export default async function Page({ params }: any) {
       <div className="max-w-7xl mx-auto">
         <div className="px-4 md:px-10">
           <Product
-            categoryName={catetoryName}
-            variants={product.variants}
-            productInfo={product.targetVariant}
+            // categoryName={catetoryName}
+            // variants={product}
+            productInfo={product}
             themeColor={themeColor}
           />
           <TrustBadges themeColor={themeColor} />
           <AboutProduct
-            variant={product.targetVariant}
+            variant={product}
             themeColor={themeColor}
           />
           <ProductReviews reviews={reviewWithMedia} />

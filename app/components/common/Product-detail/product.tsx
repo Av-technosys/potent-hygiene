@@ -18,8 +18,8 @@ import SizeSelectorBox from "./sizeSelectorBox";
 import { toast } from "sonner";
 
 export default function ProductDetailPage({
-  categoryName,
-  variants,
+  // categoryName,
+  // variants,
   productInfo,
   themeColor,
 }: any) {
@@ -33,25 +33,29 @@ export default function ProductDetailPage({
     activeVariant.bannerImage,
   );
 
+  
+
   const [cartSizes, setCartSizes] = useState<any>([]);
 
   const [total, setTotal] = useState(0);
 
   // this two things come from backend , but for now we are using this static because schema me add nhi huwa hai..
-  const isTypeBox = true;
-  const isQuantityChangable = false;
+  const isTypeBox = productInfo.hasVarientBox;
+  const isQuantityChangable = productInfo.hasVarientBox ? false : true;
 
   // Size extraction logic (Aapne jo pehle likha tha)
-  const sizeAttr = activeVariant?.attributes?.find(
+  const sizeAttr = activeVariant?.productAttributeRes?.find(
     (a: any) => a.attribute === "size",
   );
 
   const sizes = sizeAttr?.value?.split(",").map((s: string) => s.trim()) || [];
-  const flowAttr = activeVariant?.attributes?.find(
+  const flowAttr = activeVariant?.productAttributeRes?.find(
     (a: any) => a.attribute === "flow",
   );
 
+
   const flows = flowAttr?.value?.split(",").map((s: string) => s.trim()) || [];
+  
 
   // Discount percentage calculate karne ke liye
   const discount =
@@ -76,7 +80,7 @@ export default function ProductDetailPage({
     }
 
     await addToCartAction({
-      productVariantId: activeVariant?.id || productId,
+      productId: activeVariant?.id || productId,
       sku: `${selectedSize}-${selectedFlow}`,
       slug: productInfo?.slug || "",
       title: isSubscribed
@@ -132,7 +136,7 @@ export default function ProductDetailPage({
             className="w-full mt-8"
           >
             <CarouselContent className="">
-              {productInfo?.media?.map((item: any, index: number) => (
+              {productInfo?.productMediaRes?.map((item: any, index: number) => (
                 <CarouselItem
                   key={index}
                   className="
@@ -168,7 +172,7 @@ export default function ProductDetailPage({
           {/* Tags */}
           <div className="flex gap-2">
             <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">
-              {categoryName}
+              {productInfo.brand == "loway" ? "Looway" : "Ovy"}
             </span>
           </div>
 
@@ -225,14 +229,14 @@ export default function ProductDetailPage({
               </>
             )}
           </div>
-          {!isTypeBox && (
+          {/* {!isTypeBox && (
             <ProductVarient
               variants={variants}
               handleVariantChange={handleVariantChange}
               activeVariant={activeVariant}
               themeColor={themeColor}
             />
-          )}
+          )} */}
 
           {!isTypeBox && (
             <>
@@ -308,7 +312,7 @@ export default function ProductDetailPage({
 
           {isTypeBox && (
             <SizeSelectorBox
-              items={sizes}
+              items={productInfo.prodcutVarientBoxRes}
               cartSizes={cartSizes}
               setCartSizes={setCartSizes}
               total={total}

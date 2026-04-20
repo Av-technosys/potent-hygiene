@@ -4,8 +4,10 @@
 import Image from "next/image";
 import { Heart, Star } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function RelatedProducts({ products, themeColor }: any) {
+ 
   return (
     <section className="w-full mx-auto pb-16">
       <div className=" py-4 mb-8">
@@ -88,7 +90,17 @@ export default function RelatedProducts({ products, themeColor }: any) {
               </div>
 
               {/* Button */}
-              <button
+             
+
+
+              {product.hasVarientBox ? (
+              <Link href={`/product-detail/${product.slug}`}>
+                <Button className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]">
+                  Add to Cart
+                </Button>
+              </Link>
+            ) : (
+               <button
                 className="w-full mt-4 text-white text-sm py-2.5 rounded-lg transition"
                 style={{ backgroundColor: themeColor || "#168BA0" }}
                 onMouseEnter={(e) => {
@@ -100,6 +112,8 @@ export default function RelatedProducts({ products, themeColor }: any) {
               >
                 Add to Cart
               </button>
+            )}
+
             </div>
           ))}
         </div>

@@ -10,7 +10,7 @@ const cards = [
   },
   {
     title: "Per Referrel",
-    description: "100 Coins"
+    description: "200 Coins"
   }
 ];
 

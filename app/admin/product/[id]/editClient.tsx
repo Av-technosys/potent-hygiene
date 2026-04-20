@@ -627,7 +627,7 @@ export default function EditProduct({ productDetails }: any) {
                   value={brand}
                   onValueChange={(value) => {
                     setBrand(value);
-                    console.log("Selected brand:", value);
+                   
                   }}
                   className="w-fit"
                 >

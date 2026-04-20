@@ -38,6 +38,7 @@ export async function signUp(payload: {
   password: string;
   phone: string;
   name: string;
+  ref: string;
 }) {
   return request("/sign-up", {
     method: "POST",

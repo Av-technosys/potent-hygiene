@@ -113,17 +113,17 @@ interface VariantInput {
 //     //     .values(variantInsertData)
 //     //     .returning({ id: product.id });
 //     //   const allMediaRows: {
-//     //     productVariantId: string;
+//     //     productId: string;
 //     //     mediaType: string;
 //     //     mediaURL: string;
 //     //   }[] = [];
 //     //   const allAttributeRows: {
-//     //     productVariantId: string;
+//     //     productId: string;
 //     //     attribute: string;
 //     //     value: string;
 //     //   }[] = [];
 //     //   const allSubscriptionRows: {
-//     //     productVariantId: string;
+//     //     productId: string;
 //     //     subscriptionPlanId: number;
 //     //   }[] = [];
 //     //   for (let i = 0; i < variants.length; i++) {
@@ -133,7 +133,7 @@ interface VariantInput {
 //     //     if (v.media?.length) {
 //     //       for (const url of v.media) {
 //     //         allMediaRows.push({
-//     //           productVariantId: variantId,
+//     //           productId: variantId,
 //     //           mediaType: "image",
 //     //           mediaURL: url,
 //     //         });
@@ -143,7 +143,7 @@ interface VariantInput {
 //     //     if (v.attributes?.length) {
 //     //       for (const attr of v.attributes) {
 //     //         allAttributeRows.push({
-//     //           productVariantId: variantId,
+//     //           productId: variantId,
 //     //           attribute: attr.attribute,
 //     //           value: attr.value,
 //     //         });
@@ -153,7 +153,7 @@ interface VariantInput {
 //     //     if (v.subscriptionPlans?.length) {
 //     //       for (const planId of v.subscriptionPlans) {
 //     //         allSubscriptionRows.push({
-//     //           productVariantId: variantId,
+//     //           productId: variantId,
 //     //           subscriptionPlanId: planId
 //     //         });
 //     //       }
@@ -183,16 +183,16 @@ export async function createProduct(formData: FormData): Promise<void> {
       ...new Set(formData.getAll("category[]").filter(Boolean)),
     ] as string[];
 
-    console.log("categoryIds", categoryIds);
+    
 
     const variantsData = str(formData, "variants");
     if (!variantsData) throw new Error("No variants provided");
 
-    console.log("variantsData without parse", variantsData);
+    
 
     const variants: any = JSON.parse(variantsData);
 
-    console.log("variants after parse", variants);
+    
 
     await db.transaction(async (tx) => {
       const slug = await generateUniqueSlug(tx, variants.name, product.slug);
@@ -289,16 +289,16 @@ export async function updateProduct(formData: FormData): Promise<void> {
       ...new Set(formData.getAll("category[]").filter(Boolean)),
     ] as string[];
 
-    console.log("categoryIds", categoryIds);
+
 
     const variantsData = str(formData, "variants");
     if (!variantsData) throw new Error("No variants provided");
 
-    console.log("variantsData without parse", variantsData);
+   
 
     const variants: any = JSON.parse(variantsData);
 
-    console.log("variants after parse", variants);
+    
 
     await db.transaction(async (tx) => {
       // 1. Update categories for the parent product
@@ -390,11 +390,11 @@ export async function updateProduct(formData: FormData): Promise<void> {
       // Update Subscriptions
       // await tx
       //   .delete(productVariantSubscriptionPlan)
-      //   .where(eq(productVariantSubscriptionPlan.productVariantId, vId!));
+      //   .where(eq(productVariantSubscriptionPlan.productId, vId!));
       // if (v.subscriptionPlans?.length) {
       //   await tx.insert(productVariantSubscriptionPlan).values(
       //     v.subscriptionPlans.map((planId) => ({
-      //       productVariantId: vId!,
+      //       productId: vId!,
       //       subscriptionPlanId: planId
       //     }))
       //   )
@@ -408,8 +408,69 @@ export async function updateProduct(formData: FormData): Promise<void> {
   }
 }
 
+export async function getFullProductDetails(identifier: string) {
+  try {
+   
+    if (!identifier) throw new Error("Missing product identifier");
+
+    // const isThroughId = isUUID(identifier);
+    // if (!isThroughId) throw new Error("Invalid product identifier");
+
+    const [productDeails] = await db
+      .select()
+      .from(product)
+      .where(eq(product.slug, identifier))
+      .limit(1);
+    if (!productDeails) throw new Error("Product not found");
+
+    const [
+      prodcutVarientBoxRes,
+      categoryRes,
+      productAttributeRes,
+      productMediaRes,
+      filters
+    ] = await Promise.all([
+      db
+        .select()
+        .from(productVarientBox)
+        .where(eq(productVarientBox.productId, productDeails.id)),
+      db
+        .select()
+        .from(category)
+        .leftJoin(productCategory, eq(category.id, productCategory.categoryId))
+        .where(eq(productCategory.productId, productDeails.id)),
+      db
+        .select()
+        .from(productAttribute)
+        .where(eq(productAttribute.productId, productDeails.id)),
+      db
+        .select()
+        .from(productMedia)
+        .where(eq(productMedia.productId, productDeails.id)),
+
+      db
+        .select()
+        .from(productFilter)
+        .where(eq(productFilter.productId,  productDeails.id)),
+    ]);
+
+    return {
+      ...productDeails,
+      prodcutVarientBoxRes,
+      categoryRes,
+      productAttributeRes,
+      productMediaRes,
+      filters
+    };
+  } catch (error) {
+    console.error("getFullProduct failed:", error);
+    throw new Error("Unable to fetch product");
+  }
+}
+
 export async function getFullProduct(identifier: string) {
   try {
+   
     if (!identifier) throw new Error("Missing product identifier");
 
     const isThroughId = isUUID(identifier);
@@ -497,6 +558,7 @@ export async function getProductSimilarProducts(slug: string | any) {
         rateing3Star: product.rateing3Star,
         rateing4Star: product.rateing4Star,
         rateing5Star: product.rateing5Star,
+        hasVarientBox: product.hasVarientBox,
         strikethroughPrice: product.strikethroughPrice,
         category: category.name,
       })
@@ -579,13 +641,14 @@ export async function getProducts({
         id: product.id,
         name: product.name,
         slug: product.slug,
+        hasVarientBox:product.hasVarientBox,
         basePrice: product.basePrice,
         strikethroughPrice: product.strikethroughPrice,
         bannerImage: product.bannerImage,
         createdAt: product.createdAt,
       })
       .from(product)
-      .leftJoin(productCategory, eq(productCategory.productId, product.id))
+      // .leftJoin(productCategory, eq(productCategory.productId, product.id))
       .where(whereClause)
       .orderBy(desc(product.createdAt))
       .limit(pageSize)

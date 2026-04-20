@@ -6,7 +6,7 @@ import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 
 import { revalidatePath } from "next/cache";
-import { product } from "@/db/schema";
+import { cart, cartItem, product, rewardCoinsHistory } from "@/db/schema";
 import { order, orderItem, payment, users } from "@/db/schema";
 import { requireUserWithRefresh } from "../user/action";
 
@@ -61,7 +61,6 @@ export const fetchOrderDetails = async (orderId: string) => {
       .from(orderItem)
       .leftJoin(product, eq(orderItem.productId, product.id))
       .where(eq(orderItem.orderId, orderId));
-
 
     const items = rawItems.map((row) => ({
       ...row.item,
@@ -128,9 +127,7 @@ export async function updateOrderStatus(id: string, status: string | any) {
 
 //     const productMap = new Map(products.map((p) => [p.id, p]));
 
-
 //     const safeAmount = Math.round(fixedAmount);
-
 
 //     const result = await db.transaction(async (tx) => {
 //       const insertedOrder = await tx
@@ -148,7 +145,6 @@ export async function updateOrderStatus(id: string, status: string | any) {
 //         .returning({ id: order.id });
 
 //       const orderId = insertedOrder[0].id;
-
 
 //       const orderItemsToInsert = items.map((item) => {
 //         const Id = (item as any).productId || (item as any).productId;
@@ -211,7 +207,6 @@ export async function updateOrderStatus(id: string, status: string | any) {
 //   }
 // }
 
-
 export async function createOrder({
   items,
   fixedAmount,
@@ -221,7 +216,7 @@ export async function createOrder({
   razorpayOrderId,
 }: {
   items: any;
-  userId: any
+  userId: any;
   fixedAmount: number;
   address: any;
   razorpayPaymentId: string;
@@ -231,23 +226,27 @@ export async function createOrder({
     if (!items || items.length === 0) {
       throw new Error("Order items are required");
     }
+
     const productIds = items
       .map((i: any) => i.productId)
-      .filter((id: any): id is string => !!id);
+      .filter((id: any): id is string => typeof id === "string");
 
+    const uniqueProductIds: any = [...new Set(productIds)];
 
+    if (uniqueProductIds.length === 0) {
+      throw new Error("No product IDs provided");
+    }
 
     const products = await db
       .select()
       .from(product)
-      .where(inArray(product.id, productIds));
+      .where(inArray(product.id, uniqueProductIds));
 
-    if (products.length !== items.length) {
+    if (products.length !== uniqueProductIds.length) {
       throw new Error("Some products not found");
     }
 
     const productMap = new Map(products.map((p) => [p.id, p]));
-
 
     const safeAmount = Math.round(fixedAmount);
 
@@ -255,14 +254,14 @@ export async function createOrder({
       const insertedOrder = await tx
         .insert(order)
         .values({
-          // userId,
-          // status: "paid",
-          // totalAmountPaid: safeAmount,
-          // addressLine1: address.street,
-          // addressLine2: address.locality,
-          // city: address.city,
-          // state: address.state,
-          // pincode: address.pincode,
+          userId,
+          status: "paid",
+          totalAmount: safeAmount,
+          addressLine1: address.street,
+          addressLine2: address.locality,
+          city: address.city,
+          state: address.state,
+          pincode: address.pincode,
         })
         .returning({ id: order.id });
 
@@ -282,6 +281,7 @@ export async function createOrder({
           orderId,
           productId: p.id,
           quantity: item.quantity,
+          productVarientBox: item.productVarientBox,
           productName: p.name,
           productSlug: p.slug,
           productImage: p.bannerImage ?? null,
@@ -292,15 +292,27 @@ export async function createOrder({
 
       await Promise.all([
         tx.insert(orderItem).values(orderItemsToInsert),
-        // tx.insert(payment).values({
-        //   orderId,
-        //   paymentId: razorpayPaymentId,
-        //   paymentStatus: "success",
-        //   paymentMethod: "razorpay",
-        //   paymentAmount: safeAmount,
-        //   paymentCurrency: "INR",
-        //   //  paymentGatewayOrderId: razorpayOrderId,
-        // }),
+        tx.insert(payment).values({
+          orderId: orderId,
+          paymentId: razorpayPaymentId,
+          paymentStatus: "success",
+          paymentMethod: "razorpay",
+          paymentAmount: safeAmount,
+          paymentMeta: "success",
+          paymentOrderId: razorpayOrderId,
+        }),
+        tx.insert(rewardCoinsHistory).values({
+          orderId: orderId,
+          userId: userId,
+          coins: safeAmount,
+        }),
+
+        await tx
+          .update(users)
+          .set({
+            rewardOrderCoins: sql`${users.rewardOrderCoins} + ${safeAmount}`,
+          })
+          .where(eq(users.id, userId)),
       ]);
 
       return { orderId };
@@ -312,11 +324,18 @@ export async function createOrder({
     //   where: eq(cart.userId, userId),
     // });
 
-    // if (cartRes) {
-    //   await db.delete(cartItem).where(eq(cartItem.cartId, cartRes.id));
+    const cartRes = await db
+      .select()
+      .from(cart)
+      .where(eq(cart.userId, userId))
+      .limit(1);
 
-    //   await db.delete(cart).where(eq(cart.id, cartRes.id));
-    // }
+    if (cartRes.length > 0) {
+      const cartData = cartRes[0];
+
+      await db.delete(cartItem).where(eq(cartItem.cartId, cartData.id));
+      await db.delete(cart).where(eq(cart.id, cartData.id));
+    }
 
     return {
       success: true,
@@ -333,7 +352,7 @@ export async function createOrder({
 
 export async function getOrdersByUserId() {
   try {
-    const { userId } = await requireUserWithRefresh()
+    const { userId } = await requireUserWithRefresh();
     const orders = await db
       .select()
       .from(order)
@@ -351,15 +370,13 @@ export async function getOrdersByUserId() {
           order_items: items,
         };
       }),
-    )
+    );
 
     return orderData;
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 }
-
-
 
 export async function getOrderById(orderId: string) {
   const rows = await db

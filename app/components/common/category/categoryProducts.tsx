@@ -9,19 +9,20 @@ import AddToWishlist from "./addToWishlist";
 import Link from "next/link";
 
 export default function CategoryProducts({ products }: any) {
-
-
+  
 
   // ✅ FIXED ADD TO CART
   const addToCart = async (product: any) => {
     await addToCartAction({
-      productVariantId: product.id,
+      productId: product.id,
       sku: "default",
       slug: product.slug || "",
       title: product.name,
       image: product.bannerImage || "/product.png",
       price: product.basePrice || 0,
       originalPrice: product.strikethroughPrice,
+      quantity: 1,
+      isQuantityChangable:true
     });
   };
 
@@ -80,12 +81,20 @@ export default function CategoryProducts({ products }: any) {
               )}
             </div>
 
-            <Button
-              className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]"
-              onClick={() => addToCart(value)}
-            >
-              Add to Cart
-            </Button>
+            {value.hasVarientBox ? (
+              <Link href={`/product-detail/${value.slug}`}>
+                <Button className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]">
+                  Add to Cart
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]"
+                onClick={() => addToCart(value)}
+              >
+                Add to Cart
+              </Button>
+            )}
           </div>
         </div>
       ))}

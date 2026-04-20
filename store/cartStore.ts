@@ -8,8 +8,8 @@ type CartState = {
   items: CartItem[];
 
   addItem: (item: Omit<CartItem, "quantity" | "addedAt">) => void;
-  removeItem: (productVariantId: string, sku?: string, uuid?: any) => void;
-  updateQuantity: (productVariantId: string, quantity: number, sku?: string) => void;
+  removeItem: (productId: string, sku?: string, uuid?: any) => void;
+  updateQuantity: (productId: string, quantity: number, sku?: string) => void;
   clearCart: () => void;
   setCart: (items: CartItem[]) => void;
 
@@ -17,15 +17,15 @@ type CartState = {
   subtotal: () => number;
 };
 
-// const getItemKey = (item: { productVariantId: string; sku?: string, uuid?: any }) =>
-//   `${item.productVariantId}-${item.sku || "default"}`;
+// const getItemKey = (item: { productId: string; sku?: string, uuid?: any }) =>
+//   `${item.productId}-${item.sku || "default"}`;
 
 const getItemKey = (item: {
-  productVariantId: string;
+  productId: string;
   sku?: string;
   uuid?: string;
 }) =>
-  `${item.productVariantId}-${item.sku || "default"}-${item.uuid || "no-uuid"}`;
+  `${item.productId}-${item.sku || "default"}-${item.uuid || "no-uuid"}`;
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -58,21 +58,21 @@ export const useCartStore = create<CartState>()(
           };
         }),
 
-      removeItem: (productVariantId, sku,uuid) =>
+      removeItem: (productId, sku,uuid) =>
         set((state) => ({
           items: state.items.filter(
             (i) =>
               getItemKey(i) !==
-              getItemKey({ productVariantId, sku , uuid })
+              getItemKey({ productId, sku , uuid })
           ),
         })),
 
-      updateQuantity: (productVariantId, quantity, sku) =>
+      updateQuantity: (productId, quantity, sku) =>
         set((state) => ({
           items: state.items
             .map((i) =>
               getItemKey(i) ===
-              getItemKey({ productVariantId, sku })
+              getItemKey({ productId, sku })
                 ? { ...i, quantity }
                 : i
             )

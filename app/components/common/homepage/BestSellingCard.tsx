@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import AddToWishlist from "@/app/components/common/category/addToWishlist";
 import { addToCart } from "@/store/cartActions";
 import { usePathname, useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function BestsellingCard({ product, buttonColor, brand }: any) {
   const router = useRouter();
@@ -17,12 +18,14 @@ export default function BestsellingCard({ product, buttonColor, brand }: any) {
 
   const handleAddToCart = async () => {
     await addToCart({
-      productVariantId: product.id,
+      productId: product.id,
       slug: product.slug || "",
       title: product.name,
       image: product.image || "/product.png",
       price: product.price || 0,
       originalPrice: product.oldPrice,
+      quantity: 1,
+      isQuantityChangable: true,
       sku: "default",
     });
   };
@@ -92,16 +95,25 @@ export default function BestsellingCard({ product, buttonColor, brand }: any) {
         </div>
 
         {/* ✅ Add to Cart */}
-        <Button
-          onClick={(e) => {
-            e.stopPropagation();
-            handleAddToCart();
-          }}
-          className="w-full"
-          style={{ backgroundColor: buttonColor || "#1A8D91" }}
-        >
-          Add to Cart
-        </Button>
+
+        {product.hasVarientBox ? (
+          <Link href={`/product-detail/${product.slug}`}>
+            <Button className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]">
+              Add to Cart
+            </Button>
+          </Link>
+        ) : (
+          <Button
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAddToCart();
+            }}
+            className="w-full"
+            style={{ backgroundColor: buttonColor || "#1A8D91" }}
+          >
+            Add to Cart
+          </Button>
+        )}
       </div>
     </div>
   );

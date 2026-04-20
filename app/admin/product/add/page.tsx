@@ -295,7 +295,7 @@ export default function AddProductForm() {
       hasVarientBox: varientBox,
     };
 
-    console.log("payload", payload);
+  
     formData.append("variants", JSON.stringify(payload));
 
     try {
@@ -570,7 +570,7 @@ export default function AddProductForm() {
                   value={brand}
                   onValueChange={(value) => {
                     setBrand(value);
-                    console.log("Selected brand:", value);
+                   
                   }}
                   className="w-fit"
                 >
