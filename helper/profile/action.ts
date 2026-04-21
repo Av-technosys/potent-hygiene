@@ -30,7 +30,7 @@ export async function getUserProfile() {
   const totalOrders = userOrders.length;
 
   const totalSpent = userOrders.reduce(
-    (sum, o) => sum + Number(o.totalAmountPaid || 0),
+    (sum, o) => sum + Number(o.totalAmount || 0),
     0
   );
 

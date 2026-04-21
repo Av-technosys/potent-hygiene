@@ -1,9 +1,9 @@
 import { db } from "@/db"
-import { subscriptionPlans } from "@/db/schema"
+import { subscriptions } from "@/db/schema"
 
 export async function GET() {
 
-  const plans = await db.select().from(subscriptionPlans)
+  const plans = await db.select().from(subscriptions)
 
   return Response.json(plans)
 }

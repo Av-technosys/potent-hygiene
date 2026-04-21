@@ -35,7 +35,7 @@ export async function POST(req: Request) {
     await db.insert(cartItem).values({
       cartId: userCart.id,
       productId,
-      subscriptionPlanId,
+      // subscriptionPlanId,
       quantity
     })
 
