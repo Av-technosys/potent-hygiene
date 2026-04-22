@@ -264,7 +264,7 @@ export const cartItem = pgTable("cart_item", {
   productVarientBox: uuid("product_varient_box_id").references(() => productVarientBox.id),
   isTypeSubscription: boolean("is_type_subscription").default(false),
   frequencyInMonths: integer("frequency_in_months"),
-
+  clientCartItemId: uuid("client_cart_item_id"), //can be same for different varient for same product item added at a time which means a single cart item.
   quantity: integer("quantity").default(1),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -359,12 +359,13 @@ export const paymentGatewayPlans = pgTable("payment_gateway_plans", {
   price: integer("price").notNull(),
   descirption: varchar("descirption"),
   billingFrequency: varchar("billing_frequency").notNull(),
+  planId: varchar("plan_id").notNull().unique(),
   frequencyType: varchar("frequency_type").notNull().default("monthly"),
 });
 
 export const paymentGatewaySubscription = pgTable("payment_gateway_subscription", {
   id: uuid("id").primaryKey().defaultRandom(),
-  planId: uuid("plan_id").references(() => paymentGatewayPlans.id),
+  planId: varchar("plan_id").notNull().references(() => paymentGatewayPlans.planId),
   totalCount: integer("total_count"),
   remainingCount: integer("remaining_count"),
   quantity: integer("quantity"),
