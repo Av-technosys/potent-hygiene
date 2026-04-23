@@ -101,6 +101,8 @@ export async function CategoryGrid({
   const allCategories = await getCategories();
   const categories = allCategories.slice(0, limit);
 
+  console.log("categories", categories);
+
   return (
     <section className="py-10 md:bg-[#F8F6F1]">
       <div className="container mx-auto md:px-16 px-4">

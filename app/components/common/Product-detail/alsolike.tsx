@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 
 export default function RelatedProducts({ products, themeColor }: any) {
  
-  return (
+if(products.length > 0){
+    return (
     <section className="w-full mx-auto pb-16">
       <div className=" py-4 mb-8">
         <h2 className="text-2xl font-semibold text-gray-900 mb-8">
@@ -120,4 +121,5 @@ export default function RelatedProducts({ products, themeColor }: any) {
       </div>
     </section>
   );
+}
 }
