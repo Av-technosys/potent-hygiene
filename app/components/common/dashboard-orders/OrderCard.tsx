@@ -44,7 +44,7 @@ export const OrderCard = ({ order_details, setorderReview,setSingleOrderData }: 
             Total Amount
           </p>
           <p className="text-[18px] font-bold text-[#2D3748]">
-            ₹{order.totalAmountPaid}
+            ₹{order.totalAmount}
           </p>
         </div>
       </div>

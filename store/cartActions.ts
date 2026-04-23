@@ -21,6 +21,8 @@ type CartItem = {
   title: string;
   image: string;
   price: number;
+  selectedPlan?:any;
+  isSubscribed?:any;
   originalPrice?: number;
   cartSizes?: any[];
   isQuantityChangable?: boolean;
@@ -52,6 +54,8 @@ export const addToCart = async (item: CartItem) => {
     title: item.title,
     image: item.image,
     price: item.price,
+    selectedPlan: item.selectedPlan,
+    isSubscribed: item.isSubscribed,
     originalPrice: item.originalPrice,
     cartSizes: item.cartSizes,
     isQuantityChangable: item.isQuantityChangable,
@@ -65,13 +69,13 @@ export const addToCart = async (item: CartItem) => {
   if(item.isQuantityChangable){
   // ✅ DB sync
   toast.success("Item added to cart");
-  addToCartDB(item.productId, item.quantity).catch((error) => {
+  addToCartDB(item.productId, item.quantity, item.selectedPlan, item.isSubscribed).catch((error) => {
     console.error("Failed to sync with DB:", error);
   });
   }else{
      // ✅ DB sync
   toast.success("Item added to cart");
-  addToCartDB(item.productId, item.quantity, item.cartSizes).catch((error) => {
+  addToCartDB(item.productId, item.quantity, item.selectedPlan, item.isSubscribed, item.cartSizes,item.uuid).catch((error) => {
     console.error("Failed to sync with DB:", error);
   });
   }
@@ -90,7 +94,7 @@ export const removeFromCart = async (productId: string, sku?: string,uuid?:strin
   });
   toast.success("Item removed from cart");
   }else{
-    removeFromCartDB(productId, sku,cartSizes).catch((error) => {
+    removeFromCartDB(productId, uuid,cartSizes).catch((error) => {
       console.error("Failed to remove from DB:", error);
     });
     toast.success("Item removed from cart");
