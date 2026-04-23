@@ -24,6 +24,8 @@ export async function getCart() {
       .select({
         productId: cartItem.productId,
         productVarientBox: cartItem.productVarientBox,
+        isTypeSubscription: cartItem.isTypeSubscription,
+        frequencyInMonths: cartItem.frequencyInMonths,
         quantity: cartItem.quantity,
         title: product.name,
         image: product.bannerImage,
@@ -45,7 +47,10 @@ export async function getCart() {
 export async function addToCart(
   productId: string,
   quantity: any,
+  selectedPlan: any,
+  isSubscribed: any,
   cartSizes?: any,
+  uuid?:any
 ) {
   try {
    
@@ -115,6 +120,8 @@ export async function addToCart(
             cartId: existingCart.id,
             productId,
             quantity,
+            isTypeSubscription: isSubscribed,
+            frequencyInMonths:selectedPlan !== null && selectedPlan?.period,
           });
 
           return {
@@ -131,6 +138,9 @@ export async function addToCart(
             productId,
             quantity: size.qty,
             productVarientBox: size.id,
+            isTypeSubscription: isSubscribed,
+            frequencyInMonths:selectedPlan !== null && selectedPlan?.period,
+            clientCartItemId:uuid
           })),
         );
 
@@ -186,6 +196,7 @@ export async function removeFromCart(
           and(
             eq(cartItem.cartId, userCart.id),
             eq(cartItem.productId, productId),
+            eq(cartItem.clientCartItemId,uuid),
             inArray(
               cartItem.productVarientBox,
               cartSizes.map((item: any) => item.id),

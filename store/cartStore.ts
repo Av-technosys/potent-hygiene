@@ -58,14 +58,30 @@ export const useCartStore = create<CartState>()(
           };
         }),
 
-      removeItem: (productId, sku,uuid) =>
-        set((state) => ({
-          items: state.items.filter(
-            (i) =>
-              getItemKey(i) !==
-              getItemKey({ productId, sku , uuid })
-          ),
-        })),
+      // removeItem: (productId, sku,uuid) =>
+      //   set((state) => ({
+      //     items: state.items.filter(
+      //       (i) =>
+      //         getItemKey(i) !==
+      //         getItemKey({ productId, sku , uuid })
+      //     ),
+      //   })),
+
+      removeItem: (productId, sku, uuid) =>
+  set((state) => ({
+    items: state.items.filter((i) => {
+      // ✅ Case 1: uuid exists → strict match
+      if (uuid) {
+        return !(i.uuid === uuid);
+      }
+
+      // ✅ Case 2: fallback → productId + sku match
+      return !(
+        i.productId === productId &&
+        (sku ? i.sku === sku : true)
+      );
+    }),
+  })),
 
       updateQuantity: (productId, quantity, sku) =>
         set((state) => ({

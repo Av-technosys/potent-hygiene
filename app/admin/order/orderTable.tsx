@@ -88,7 +88,7 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
                     </div>
                   </TableCell>
 
-                  <TableCell>{order.totalAmountPaid}</TableCell>
+                  <TableCell>{order.totalAmount}</TableCell>
                   <TableCell>{order.addressLine1}</TableCell>
                   <TableCell>{order.addressLine2}</TableCell>
 

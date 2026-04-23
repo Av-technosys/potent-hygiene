@@ -189,7 +189,7 @@ export const OrderReview = ({
                       Total Amount
                     </p>
                     <p className="text-lg font-bold text-[#1D4E4E]">
-                      ₹{orderDetails.totalAmountPaid.toLocaleString("en-IN")}
+                      ₹{orderDetails.totalAmount.toLocaleString("en-IN")}
                     </p>
                   </div>
                 </div>

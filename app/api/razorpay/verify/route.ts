@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { createOrder } from "@/helper";
+import { createOrder, createSubscription } from "@/helper";
 import { RAZORPAY_KEY_SECRET } from "@/env";
 import { getCurrentUser } from "@/helper/user/action";
 
@@ -27,6 +27,7 @@ export async function POST(req: Request) {
   if (generated_signature !== razorpay_signature) {
     return NextResponse.json({ success: false }, { status: 400 });
   }
+
 
   const result = await createOrder({
     userId,

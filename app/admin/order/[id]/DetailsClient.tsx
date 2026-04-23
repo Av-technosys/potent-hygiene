@@ -153,7 +153,7 @@ export default function Details({ id }: { id: string }) {
               </div>
               <div className="border-t border-slate-100 pt-3 flex justify-between items-center">
                 <span className="font-bold">Total</span>
-                <span className="font-bold text-lg text-[#D4AF37]">₹ {orderInfo?.order?.totalAmountPaid}</span>
+                <span className="font-bold text-lg text-[#D4AF37]">₹ {orderInfo?.order?.totalAmount}</span>
               </div>
             </CardContent>
           </Card>

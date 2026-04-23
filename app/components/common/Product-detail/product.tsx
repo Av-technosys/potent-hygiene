@@ -27,13 +27,11 @@ export default function ProductDetailPage({
   const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
   const [selectedFlow, setSelectedFlow] = useState("Regular Flow");
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState("1");
+  const [selectedPlan, setSelectedPlan] = useState<any>({});
   const [activeVariant, setActiveVariant] = useState(productInfo);
   const [bannerImage, setBannerImage] = useState<any>(
     activeVariant.bannerImage,
   );
-
-  
 
   const [cartSizes, setCartSizes] = useState<any>([]);
 
@@ -83,17 +81,21 @@ export default function ProductDetailPage({
       productId: activeVariant?.id || productId,
       sku: `${selectedSize}-${selectedFlow}`,
       slug: productInfo?.slug || "",
-      title: isSubscribed
-        ? `${activeVariant?.name || "Sanitary Pads"} - ${selectedPlan === "1" ? "Monthly" : selectedPlan === "2" ? "Every 2 Months" : "Every 3 Months"}`
-        : activeVariant?.name || "Sanitary Pads",
+      // title: isSubscribed
+      //   ? `${activeVariant?.name || "Sanitary Pads"} - ${selectedPlan === "1" ? "Monthly" : selectedPlan === "2" ? "Every 2 Months" : "Every 3 Months"}`
+      //   : activeVariant?.name || "Sanitary Pads",
+      title: activeVariant?.name,
+      price: activeVariant?.basePrice || 0,
+      selectedPlan: selectedPlan,
+      isSubscribed: isSubscribed,
       image: activeVariant?.bannerImage || "/product.png",
-      price: isSubscribed
-        ? selectedPlan === "1"
-          ? 239
-          : selectedPlan === "2"
-            ? 229
-            : 219
-        : activeVariant?.basePrice || 0,
+      // price: isSubscribed
+      //   ? selectedPlan === "1"
+      //     ? 239
+      //     : selectedPlan === "2"
+      //       ? 229
+      //       : 219
+      //   : activeVariant?.basePrice || 0,
       originalPrice: activeVariant?.strikethroughPrice,
       cartSizes: isQuantityChangable ? [] : cartSizes,
       isQuantityChangable: isQuantityChangable,
@@ -102,9 +104,9 @@ export default function ProductDetailPage({
     });
   };
 
-  const subscribeToCart = (e: React.MouseEvent) => {
-    e.preventDefault();
-    setIsSubscribed(true);
+  const subscribeToCart = (plan: any) => {
+    setSelectedPlan(plan);
+    setIsSubscribed(plan !== null ? true : false);
     // Do not redirect to /cart. Wait for user to click Add to Cart.
   };
 
@@ -343,14 +345,14 @@ export default function ProductDetailPage({
             </p>
 
             {[
-              { id: "1", label: "Monthly Subscription", price: "₹239" },
-              { id: "2", label: "Every 2 Months", price: "₹229" },
-              { id: "3", label: "Every 3 Months", price: "₹219" },
+              { id: "1", label: "Monthly Subscription", price: "₹239", period:1 },
+              { id: "2", label: "Every 2 Months", price: "₹229", period:2 },
+              { id: "3", label: "Every 3 Months", price: "₹219", period:3 },
             ].map((plan) => (
               <div
                 key={plan.id}
-                onClick={() => setSelectedPlan(plan.id)}
-                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan === plan.id
+                onClick={() => subscribeToCart(selectedPlan ? null : plan)}
+                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan?.id === plan.id
                   ? "border-teal-600 bg-teal-50"
                   : "border-gray-200"
                   }`}
@@ -370,9 +372,9 @@ export default function ProductDetailPage({
             ))}
 
             <div className="flex justify-between items-center pt-4">
-              <span className="text-xl font-bold">₹239</span>
+              {/* <span className="text-xl font-bold">₹239</span> */}
 
-              <button
+              {/* <button
                 onClick={subscribeToCart}
                 disabled={isSubscribed}
                 className={`text-white px-6 py-3 rounded-xl transition duration-200 ${isSubscribed ? "bg-gray-400 cursor-not-allowed" : ""
@@ -383,7 +385,7 @@ export default function ProductDetailPage({
                 }}
               >
                 {isSubscribed ? "Subscribed!" : "Subscribe"}
-              </button>
+              </button> */}
             </div>
           </div>
         </div>
