@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/carousel";
 import SizeSelectorBox from "./sizeSelectorBox";
 import { toast } from "sonner";
+import { subscriptionPlans } from "@/const/globalconst";
 
 export default function ProductDetailPage({
   // categoryName,
@@ -344,16 +345,7 @@ export default function ProductDetailPage({
 
             <p className="text-sm text-gray-500">Delivered & Billed every</p>
 
-            {[
-              {
-                id: "1",
-                label: "Monthly Subscription",
-                price: "₹239",
-                period: 1,
-              },
-              { id: "2", label: "Every 2 Months", price: "₹229", period: 2 },
-              { id: "3", label: "Every 3 Months", price: "₹219", period: 3 },
-            ].map((plan) => (
+            {subscriptionPlans.map((plan) => (
               <div
                 key={plan.id}
                 onClick={() =>
