@@ -332,22 +332,22 @@ type ProductSection = {
 type StatsSection = {
   type: "stats";
   props:
-  | {
-    variant?: "stats";
-    stats: { value: string; label: string }[];
-    bullets: string[];
-    image: string;
-    gradientFrom: string;
-    gradientTo: string;
-  }
-  | {
-    variant: "banner";
-    title: string;
-    highlight: string;
-    subtitle: string;
-    image: string;
-    bgColor: string;
-  };
+    | {
+        variant?: "stats";
+        stats: { value: string; label: string }[];
+        bullets: string[];
+        image: string;
+        gradientFrom: string;
+        gradientTo: string;
+      }
+    | {
+        variant: "banner";
+        title: string;
+        highlight: string;
+        subtitle: string;
+        image: string;
+        bgColor: string;
+      };
 };
 
 type BrandWhySection = {
@@ -415,8 +415,18 @@ type BlogSection = {
   type: "blog";
 };
 
-type Section = CategorySection | StorySection | ProductSection | OurStorySection | StatsSection | BrandWhySection | InstagramSection | TestimonialsSection | NewsletterSection | ProductCategoriesSection | BlogSection;
-
+type Section =
+  | CategorySection
+  | StorySection
+  | ProductSection
+  | OurStorySection
+  | StatsSection
+  | BrandWhySection
+  | InstagramSection
+  | TestimonialsSection
+  | NewsletterSection
+  | ProductCategoriesSection
+  | BlogSection;
 
 export const brandDataMap: Record<
   string,
@@ -427,11 +437,12 @@ export const brandDataMap: Record<
   }
 > = {
   ovy: {
-    "bg-color": '#FFF4F9',
+    "bg-color": "#FFF4F9",
     hero: {
       logo: "/ovy-main.png",
       title: "Gentle Care, Beautiful You",
-      subtitle: "Premium, dermatologically-tested products with soothing lavender essence for sensitive skin",
+      subtitle:
+        "Premium, dermatologically-tested products with soothing lavender essence for sensitive skin",
       description: "Soothing lavender essence",
       bgImage: "/ovy-bg.png",
       primaryColor: "#AF71A7",
@@ -464,7 +475,7 @@ export const brandDataMap: Record<
 
 Our goal is to make hygiene conversations normal and accessible by providing products and information that support everyday well-being. Whether it’s daily freshness, intimate care, or overall hygiene, we focus on solutions that respect your body and your lifestyle.
 
-We encourage awareness, informed choices, and self-care without hesitation or stigma. Because when hygiene becomes effortless, confidence follows naturally.`
+We encourage awareness, informed choices, and self-care without hesitation or stigma. Because when hygiene becomes effortless, confidence follows naturally.`,
           ],
         },
       },
@@ -474,7 +485,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           title: "Best Selling Products",
           bgColor: "#AF71A7",
           buttonColor: "#AF71A7",
-        }
+        },
       },
       {
         type: "ourStory",
@@ -493,7 +504,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
             `Ovy was created for women who seek gentle, premium care. Infused with natural lavender essence and crafted with the softest materials, every product is designed to pamper and protect.`,
             `Our mission is to deliver dermatologically-tested, premium hygiene products that combine gentle care with elegant comfort for sensitive skin.`,
           ],
-        }
+        },
       },
       {
         type: "products",
@@ -501,17 +512,32 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           title: "New Arriving Products",
           bgColor: "#AF71A7",
           buttonColor: "#AF71A7",
-        }
+        },
       },
       {
         type: "stats",
         props: {
           variant: "stats",
           stats: [
-            { value: "98%", label: "of users expressed a preference for OVY our pads & liners" },
-            { value: "96%", label: "of users observed a ehnace osnhances comfort and discietien" },
-            { value: "3.9/5", label: "was the average rating received by OVY product portfolio" },
-            { value: "91%", label: "of user noted enhanced hydration and suppleness of skin after using our products" },
+            {
+              value: "98%",
+              label:
+                "of users expressed a preference for OVY our pads & liners",
+            },
+            {
+              value: "96%",
+              label:
+                "of users observed a ehnace osnhances comfort and discietien",
+            },
+            {
+              value: "3.9/5",
+              label: "was the average rating received by OVY product portfolio",
+            },
+            {
+              value: "91%",
+              label:
+                "of user noted enhanced hydration and suppleness of skin after using our products",
+            },
           ],
           bullets: [
             "Dermatologist Approved",
@@ -530,7 +556,8 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           title: "Why Choose Ovy?",
           primaryColor: "#AF71A7",
         },
-      }, {
+      },
+      {
         type: "instagram",
         props: {
           title: "Join Our Community",
@@ -539,13 +566,14 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           gradientTo: "#A78BFA",
           textColor: "#FFFFFF",
           buttonColor: "#AF71A7",
-        }
-      }, {
+        },
+      },
+      {
         type: "testimonials",
         props: {
           primaryColor: "#AF71A7",
           bgColor: "#FCE7F3",
-        }
+        },
       },
       { type: "productCategories" },
       {
@@ -553,12 +581,11 @@ We encourage awareness, informed choices, and self-care without hesitation or st
         props: {
           buttonColor: "#AF71A7",
           overlayColor: "rgba(0,0,0,0.5)",
-        }
-      }, {
+        },
+      },
+      {
         type: "blog",
-      }
-
-
+      },
     ],
   },
 
@@ -567,7 +594,8 @@ We encourage awareness, informed choices, and self-care without hesitation or st
     hero: {
       logo: "/loway-main.png",
       title: "Bright Comfort, Every Day",
-      subtitle: "Vibrant, eco-friendly hygiene solutions designed for active lifestyles and everyday comfort",
+      subtitle:
+        "Vibrant, eco-friendly hygiene solutions designed for active lifestyles and everyday comfort",
       description: "Designed for active lifestyles",
       bgImage: "/loway-bg.png",
       primaryColor: "#016271",
@@ -579,7 +607,8 @@ We encourage awareness, informed choices, and self-care without hesitation or st
         type: "categories",
         props: {
           title: "Shop Loway Categories",
-          description: "Discover our range of premium feminine hygiene products, thoughtfully crafted for your comfort and wellness.",
+          description:
+            "Discover our range of premium feminine hygiene products, thoughtfully crafted for your comfort and wellness.",
           limit: 4,
         },
       },
@@ -599,7 +628,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
 
 Our goal is to make hygiene conversations normal and accessible by providing products and information that support everyday well-being. Whether it’s daily freshness, intimate care, or overall hygiene, we focus on solutions that respect your body and your lifestyle.
 
-We encourage awareness, informed choices, and self-care without hesitation or stigma. Because when hygiene becomes effortless, confidence follows naturally.`
+We encourage awareness, informed choices, and self-care without hesitation or stigma. Because when hygiene becomes effortless, confidence follows naturally.`,
           ],
         },
       },
@@ -609,7 +638,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           title: "Best Selling Products",
           bgColor: "",
           buttonColor: "",
-        }
+        },
       },
       {
         type: "ourStory",
@@ -628,15 +657,17 @@ We encourage awareness, informed choices, and self-care without hesitation or st
             `Looway was created for women who seek gentle, premium care. Infused with natural lavender essence and crafted with the softest materials, every product is designed to pamper and protect.`,
             `Our mission is to deliver dermatologically-tested, premium hygiene products that combine gentle care with elegant comfort for sensitive skin.`,
           ],
-        }
-      }, {
+        },
+      },
+      {
         type: "products",
         props: {
           title: "New Arriving Products",
           bgColor: "#AF71A7",
           buttonColor: "#AF71A7",
-        }
-      }, {
+        },
+      },
+      {
         type: "stats",
         props: {
           variant: "banner",
@@ -653,7 +684,8 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           title: "Why Choose Loway?",
           primaryColor: "#3B82F6",
         },
-      }, {
+      },
+      {
         type: "instagram",
         props: {
           title: "Join Our Community",
@@ -662,33 +694,44 @@ We encourage awareness, informed choices, and self-care without hesitation or st
           gradientTo: "#FFF7CB",
           textColor: "#1F2937",
           buttonColor: "#1F2937",
-        }
-      }, {
+        },
+      },
+      {
         type: "testimonials",
         props: {
           primaryColor: "#3B82F6",
           bgColor: "#EFF6FF",
-        }
+        },
       },
       {
         type: "productCategories",
-      }, {
+      },
+      {
         type: "newsletter",
         props: {
           buttonColor: "#016271",
           overlayColor: "rgba(0,0,0,0.3)",
-        }
-      }, {
+        },
+      },
+      {
         type: "blog",
       },
-
     ],
   },
 };
 
-
-
 export const BrandProductColors = {
   ovy: "#AF71A7",
-  loway: "#F6DC52"
-}
+  loway: "#F6DC52",
+};
+
+export const subscriptionPlans = [
+  {
+    id: "1",
+    label: "Monthly Subscription",
+    price: "₹239",
+    period: 1,
+  },
+  { id: "2", label: "Every 2 Months", price: "₹229", period: 2 },
+  { id: "3", label: "Every 3 Months", price: "₹219", period: 3 },
+];

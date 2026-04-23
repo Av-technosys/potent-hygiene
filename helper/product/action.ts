@@ -183,16 +183,10 @@ export async function createProduct(formData: FormData): Promise<void> {
       ...new Set(formData.getAll("category[]").filter(Boolean)),
     ] as string[];
 
-    
-
     const variantsData = str(formData, "variants");
     if (!variantsData) throw new Error("No variants provided");
 
-    
-
     const variants: any = JSON.parse(variantsData);
-
-    
 
     await db.transaction(async (tx) => {
       const slug = await generateUniqueSlug(tx, variants.name, product.slug);
@@ -224,7 +218,7 @@ export async function createProduct(formData: FormData): Promise<void> {
           categoryIds.map((catId) => ({
             productId,
             categoryId: catId,
-          }))
+          })),
         );
       }
 
@@ -235,7 +229,7 @@ export async function createProduct(formData: FormData): Promise<void> {
             productId,
             mediaType: "image",
             mediaURL: url.preview,
-          }))
+          })),
         );
       }
 
@@ -246,7 +240,7 @@ export async function createProduct(formData: FormData): Promise<void> {
             productId,
             attribute: attr.attribute,
             value: attr.value,
-          }))
+          })),
         );
       }
 
@@ -256,7 +250,7 @@ export async function createProduct(formData: FormData): Promise<void> {
           variants.filters.map((fltr: any) => ({
             productId,
             filter: fltr.slug,
-          }))
+          })),
         );
       }
 
@@ -268,7 +262,7 @@ export async function createProduct(formData: FormData): Promise<void> {
             name: varient.name,
             description: varient.description,
             image: varient.image,
-          }))
+          })),
         );
       }
     });
@@ -289,16 +283,10 @@ export async function updateProduct(formData: FormData): Promise<void> {
       ...new Set(formData.getAll("category[]").filter(Boolean)),
     ] as string[];
 
-
-
     const variantsData = str(formData, "variants");
     if (!variantsData) throw new Error("No variants provided");
 
-   
-
     const variants: any = JSON.parse(variantsData);
-
-    
 
     await db.transaction(async (tx) => {
       // 1. Update categories for the parent product
@@ -375,14 +363,16 @@ export async function updateProduct(formData: FormData): Promise<void> {
         );
       }
 
-       await tx.delete(productVarientBox).where(eq(productVarientBox.productId, vId!));
+      await tx
+        .delete(productVarientBox)
+        .where(eq(productVarientBox.productId, vId!));
       if (variants.VarientBoxes?.length) {
         await tx.insert(productVarientBox).values(
           variants.VarientBoxes.map((varient: any) => ({
             productId: vId!,
             name: varient.name,
             description: varient.description,
-            image: varient.image
+            image: varient.image,
           })),
         );
       }
@@ -410,7 +400,6 @@ export async function updateProduct(formData: FormData): Promise<void> {
 
 export async function getFullProductDetails(identifier: string) {
   try {
-   
     if (!identifier) throw new Error("Missing product identifier");
 
     // const isThroughId = isUUID(identifier);
@@ -428,7 +417,7 @@ export async function getFullProductDetails(identifier: string) {
       categoryRes,
       productAttributeRes,
       productMediaRes,
-      filters
+      filters,
     ] = await Promise.all([
       db
         .select()
@@ -451,7 +440,7 @@ export async function getFullProductDetails(identifier: string) {
       db
         .select()
         .from(productFilter)
-        .where(eq(productFilter.productId,  productDeails.id)),
+        .where(eq(productFilter.productId, productDeails.id)),
     ]);
 
     return {
@@ -460,7 +449,7 @@ export async function getFullProductDetails(identifier: string) {
       categoryRes,
       productAttributeRes,
       productMediaRes,
-      filters
+      filters,
     };
   } catch (error) {
     console.error("getFullProduct failed:", error);
@@ -470,7 +459,6 @@ export async function getFullProductDetails(identifier: string) {
 
 export async function getFullProduct(identifier: string) {
   try {
-   
     if (!identifier) throw new Error("Missing product identifier");
 
     const isThroughId = isUUID(identifier);
@@ -488,7 +476,7 @@ export async function getFullProduct(identifier: string) {
       categoryRes,
       productAttributeRes,
       productMediaRes,
-      filters
+      filters,
     ] = await Promise.all([
       db
         .select()
@@ -520,7 +508,7 @@ export async function getFullProduct(identifier: string) {
       categoryRes,
       productAttributeRes,
       productMediaRes,
-      filters
+      filters,
     };
   } catch (error) {
     console.error("getFullProduct failed:", error);
@@ -630,8 +618,18 @@ export async function getProducts({
       .select({ id: category.id })
       .from(category)
       .where(eq(category.slug, categorySlug));
-    categoryId?.id &&
-      filters.push(eq(productCategory.categoryId, categoryId.id));
+    // categoryId?.id &&
+    //   filters.push(eq(productCategory.categoryId, categoryId.id));
+
+    if (categoryId?.id) {
+  filters.push(
+    sql`exists (
+      select 1 from ${productCategory}
+      where ${productCategory.productId} = ${product.id}
+      and ${productCategory.categoryId} = ${categoryId.id}
+    )`
+  );
+}
   }
   const whereClause = filters.length ? and(...filters) : undefined;
 
@@ -641,7 +639,7 @@ export async function getProducts({
         id: product.id,
         name: product.name,
         slug: product.slug,
-        hasVarientBox:product.hasVarientBox,
+        hasVarientBox: product.hasVarientBox,
         basePrice: product.basePrice,
         strikethroughPrice: product.strikethroughPrice,
         bannerImage: product.bannerImage,

@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/carousel";
 import SizeSelectorBox from "./sizeSelectorBox";
 import { toast } from "sonner";
+import { subscriptionPlans } from "@/const/globalconst";
 
 export default function ProductDetailPage({
   // categoryName,
@@ -51,18 +52,16 @@ export default function ProductDetailPage({
     (a: any) => a.attribute === "flow",
   );
 
-
   const flows = flowAttr?.value?.split(",").map((s: string) => s.trim()) || [];
-  
 
   // Discount percentage calculate karne ke liye
   const discount =
     activeVariant?.strikethroughPrice && activeVariant?.basePrice
       ? Math.round(
-        ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
-          activeVariant.strikethroughPrice) *
-        100,
-      )
+          ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
+            activeVariant.strikethroughPrice) *
+            100,
+        )
       : 0;
 
   const router = useRouter();
@@ -153,10 +152,11 @@ export default function ProductDetailPage({
                     <img
                       src={item?.mediaURL}
                       className={`w-full h-auto object-cover rounded-lg
-                   ${item.mediaURL === bannerImage
-                          ? "border-2 border-[#1A8D91]"
-                          : "border border-gray-200 "
-                        }`}
+                   ${
+                     item.mediaURL === bannerImage
+                       ? "border-2 border-[#1A8D91]"
+                       : "border border-gray-200 "
+                   }`}
                     />
                   </div>
                 </CarouselItem>
@@ -201,8 +201,9 @@ export default function ProductDetailPage({
               activeVariant.highlights.map((feature: string, index: number) => (
                 <span
                   key={index}
-                  className={`text-xs px-3 py-1 rounded-full ${themeColor ? "text-white" : "bg-[#F0FDFA] text-[#168BA0]"
-                    }`}
+                  className={`text-xs px-3 py-1 rounded-full ${
+                    themeColor ? "text-white" : "bg-[#F0FDFA] text-[#168BA0]"
+                  }`}
                   style={themeColor ? { backgroundColor: themeColor } : {}}
                 >
                   {feature}
@@ -252,8 +253,9 @@ export default function ProductDetailPage({
                       key={s}
                       type="button"
                       onClick={() => setSelectedSize(s)}
-                      className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === s ? "text-white" : "bg-white"
-                        }`}
+                      className={`px-4 py-2 text-sm rounded-full border transition ${
+                        selectedSize === s ? "text-white" : "bg-white"
+                      }`}
                       style={{
                         backgroundColor:
                           selectedSize === s ? primaryColor : "white",
@@ -275,8 +277,9 @@ export default function ProductDetailPage({
                       key={flow}
                       type="button"
                       onClick={() => setSelectedFlow(flow)}
-                      className={`px-4 py-2 text-sm rounded-full border transition ${selectedFlow === flow ? "text-white" : "bg-white"
-                        }`}
+                      className={`px-4 py-2 text-sm rounded-full border transition ${
+                        selectedFlow === flow ? "text-white" : "bg-white"
+                      }`}
                       style={{
                         backgroundColor:
                           selectedFlow === flow ? primaryColor : "white",
@@ -340,22 +343,19 @@ export default function ProductDetailPage({
           <div className="bg-white p-6 rounded-2xl shadow-sm space-y-4">
             <h2 className="font-semibold text-lg">Choose your Frequency</h2>
 
-            <p className="text-sm text-gray-500">
-              Delivered & Billed every
-            </p>
+            <p className="text-sm text-gray-500">Delivered & Billed every</p>
 
-            {[
-              { id: "1", label: "Monthly Subscription", price: "₹239", period:1 },
-              { id: "2", label: "Every 2 Months", price: "₹229", period:2 },
-              { id: "3", label: "Every 3 Months", price: "₹219", period:3 },
-            ].map((plan) => (
+            {subscriptionPlans.map((plan) => (
               <div
                 key={plan.id}
-                onClick={() => subscribeToCart(selectedPlan ? null : plan)}
-                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan?.id === plan.id
-                  ? "border-teal-600 bg-teal-50"
-                  : "border-gray-200"
-                  }`}
+                onClick={() =>
+                  subscribeToCart(selectedPlan?.id === plan.id ? null : plan)
+                }
+                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
+                  selectedPlan?.id === plan.id
+                    ? "border-teal-600 bg-teal-50"
+                    : "border-gray-200"
+                }`}
               >
                 <div className="flex items-center gap-3">
                   <input
