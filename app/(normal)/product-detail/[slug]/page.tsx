@@ -12,6 +12,7 @@ import {
   getProductSimilarProducts,
 } from "@/helper";
 import { getFullProductDetails } from "@/helper/product/action";
+import { lowayProductDetailsPage, ovyProductDetailsPage } from "@/const/globalconst";
 
 export default async function Page({ params }: any) {
   const { slug } = await params;
@@ -20,6 +21,8 @@ export default async function Page({ params }: any) {
   const similarProducts = (await getProductSimilarProducts(slug)) || [];
   const reviewWithMedia = await getProductReviews(slug);
   // const catetoryName = similarProducts[0]?.category;
+
+  const themeColor =  product.brand == "loway" ? lowayProductDetailsPage : ovyProductDetailsPage; 
 
 
   if (!product) {
@@ -32,10 +35,11 @@ export default async function Page({ params }: any) {
           // categoryName={catetoryName}
           // variants={product}
           productInfo={product}
+          themeColor={themeColor}
         />
-        <TrustBadges />
-        <AboutProduct variant={product} />
-        <ProductReviews reviews={reviewWithMedia} product={product} />
+        <TrustBadges themeColor={themeColor}/>
+        <AboutProduct variant={product} themeColor={themeColor} />
+        <ProductReviews reviews={reviewWithMedia} product={product} themeColor={themeColor} />
         <div className="  ">
           <Image
             src="/review.png"
@@ -46,9 +50,9 @@ export default async function Page({ params }: any) {
             unoptimized
           />
         </div>
-        <AboutHero />
-        <JournalsSection />
-        <RelatedProducts products={similarProducts} />
+        <AboutHero themeColor={themeColor} />
+        <JournalsSection themeColor={themeColor} />
+        <RelatedProducts products={similarProducts} themeColor={themeColor} />
       </div>
     </div>
   );

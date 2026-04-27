@@ -8,7 +8,7 @@ export default function AboutProduct({
   themeColor,
 }: {
   variant?: any;
-  themeColor?: string;
+  themeColor?: any;
 }) {
   const [selectedTab, setSelectedTab] = useState("Description");
 
@@ -34,8 +34,8 @@ export default function AboutProduct({
                 themeColor
                   ? {
                       backgroundColor:
-                        selectedTab === tab ? themeColor : "white",
-                      borderColor: themeColor,
+                        selectedTab === tab ? themeColor.darkColor : "white",
+                      borderColor: themeColor.darkColor,
                     }
                   : selectedTab === tab
                     ? {
@@ -56,7 +56,7 @@ export default function AboutProduct({
         {/* Heading */}
         <h2
           className="text-lg font-semibold mb-4"
-          style={{ color: themeColor }}
+          style={{ color: themeColor.darkColor }}
         >
           {selectedTab === "Description"
             ? "Product Description"

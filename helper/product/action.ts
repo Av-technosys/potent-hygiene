@@ -4,7 +4,7 @@
 import { db } from "@/lib/db";
 
 import { revalidatePath } from "next/cache";
-import { and, desc, eq, ilike, inArray, ne, sql } from "drizzle-orm";
+import { and, desc, eq, gte, ilike, inArray, lte, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 
 import {
@@ -23,6 +23,14 @@ interface GetProductsOptions {
   pageSize?: number;
   search?: string;
   category?: string;
+  type?: string;
+  material?: string;
+  size?: string;
+  flow?: string;
+  min?: any;
+  max?: any;
+  stock?: any;
+  brand?: any;
 }
 
 function str(fd: FormData, key: string) {
@@ -603,6 +611,14 @@ export async function getProducts({
   pageSize = 10,
   search = "",
   category: categorySlug,
+  type = "",
+  material = "",
+  size = "",
+  flow = "",
+  min = "",
+  max = "",
+  stock = "",
+  brand="",
 }: GetProductsOptions) {
   const filters = [];
 
@@ -611,6 +627,44 @@ export async function getProducts({
   }
 
   const offset = (page - 1) * pageSize;
+
+  const filterValues = [type, material, size, flow].filter(Boolean);
+
+  if (filterValues.length > 0) {
+    filters.push(
+      sql`exists (
+      select 1 from ${productFilter}
+      where ${productFilter.productId} = ${product.id}
+      and ${productFilter.filter} in (${sql.join(
+        filterValues.map((f) => sql`${f}`),
+        sql`,`,
+      )})
+      group by ${productFilter.productId}
+      having count(distinct ${productFilter.filter}) = ${filterValues.length}
+    )`,
+    );
+  }
+
+  if (min && max) {
+    filters.push(
+      and(
+        gte(product.basePrice, Number(min)),
+        lte(product.basePrice, Number(max)),
+      ),
+    );
+  } else if (min) {
+    filters.push(gte(product.basePrice, Number(min)));
+  } else if (max) {
+    filters.push(lte(product.basePrice, Number(max)));
+  }
+
+  if (stock) {
+    filters.push(eq(product.isInStock, true));
+  }
+
+  if(brand){
+    filters.push(eq(product.brand, brand))
+  }
 
   let categoryId;
   if (categorySlug) {
@@ -622,14 +676,14 @@ export async function getProducts({
     //   filters.push(eq(productCategory.categoryId, categoryId.id));
 
     if (categoryId?.id) {
-  filters.push(
-    sql`exists (
+      filters.push(
+        sql`exists (
       select 1 from ${productCategory}
       where ${productCategory.productId} = ${product.id}
       and ${productCategory.categoryId} = ${categoryId.id}
-    )`
-  );
-}
+    )`,
+      );
+    }
   }
   const whereClause = filters.length ? and(...filters) : undefined;
 
@@ -799,6 +853,42 @@ export async function getBestSellingProducts() {
     }
 
     return products;
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getBrandBestSellingProducts(slug:any){
+  try {
+    const brandProducts = await db.select({
+      id: product.id,
+      name: product.name,
+      price: product.basePrice,
+      image: product.bannerImage,
+      slug: product.slug,
+      brand: product.brand,
+      oldPrice: product.strikethroughPrice
+    }).from(product).where(eq(product.brand, slug)).limit(4);
+    return brandProducts
+  } catch (error) {
+    console.error(error);
+    return [];
+  }
+}
+
+export async function getBrandNewArrivalProducts(slug:any){
+  try {
+    const brandProducts = await db.select({
+      id: product.id,
+      name: product.name,
+      price: product.basePrice,
+      image: product.bannerImage,
+      slug: product.slug,
+      brand: product.brand,
+      oldPrice: product.strikethroughPrice
+    }).from(product).where(eq(product.brand, slug)).orderBy(desc(product.createdAt)).limit(4);
+    return brandProducts
   } catch (error) {
     console.error(error);
     return [];

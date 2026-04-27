@@ -8,7 +8,7 @@ import { getBlogs } from "@/helper/blog/action";
 export default function JournalsSection({
   themeColor,
 }: {
-  themeColor?: string;
+  themeColor?: any;
 }) {
   const [articles, setArticles] = useState<any>([]);
 
@@ -53,7 +53,7 @@ export default function JournalsSection({
                 {/* Category Badge */}
                 <span
                   className="absolute top-4 left-4 text-white text-xs px-3 py-1 rounded-full"
-                  style={{ backgroundColor: themeColor || "#a855f7" }}
+                  style={{ backgroundColor: themeColor.darkColor || "#a855f7" }}
                 >
                   Wellness
                 </span>
@@ -63,7 +63,7 @@ export default function JournalsSection({
               <div className="flex items-center gap-2 mt-4 text-sm text-gray-500">
                 <Calendar
                   className="w-4 h-4"
-                  style={{ color: themeColor || "#0d9488" }}
+                  style={{ color: themeColor.darkColor || "#0d9488" }}
                 />
                 <span>{item?.date}</span>
               </div>
@@ -84,18 +84,18 @@ export default function JournalsSection({
         {/* Button */}
         <div className="flex justify-center mt-16">
           <button
-            className="px-8 py-3 border-2 rounded-full transition duration-300 shadow-sm"
+            className="px-8 py-3 border-2  rounded-full transition duration-300 "
             style={{
-              borderColor: themeColor || "#0d9488",
-              color: themeColor || "#0d9488",
+              borderColor: themeColor.darkColor || "#0d9488",
+              color: themeColor.darkColor || "#0d9488",
             }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = themeColor || "#0d9488";
-              e.currentTarget.style.color = "#fff";
+              e.currentTarget.style.backgroundColor = themeColor.lightColor || "#0d9488";
+              e.currentTarget.style.color = themeColor.darkColor || "#0d9488";
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = "transparent";
-              e.currentTarget.style.color = themeColor || "#0d9488";
+              e.currentTarget.style.color = themeColor.darkColor || "#0d9488";
             }}
           >
             View All Articles

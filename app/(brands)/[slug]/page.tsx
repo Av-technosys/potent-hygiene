@@ -13,6 +13,8 @@ import { Testimonials } from "@/app/components/common/homepage/Reviews";
 import { ProductCategories } from "@/app/components/common/homepage/ProductCategories";
 import { Newsletter } from "@/app/components/common/homepage/NewsLetter";
 import { BlogSection } from "@/app/components/common/homepage/Blogs";
+import BrandBestSelling from "@/app/components/common/homepage/brands/brandBestSelling";
+import BrandNewArrival from "@/app/components/common/homepage/brands/brandNewArrival";
 
 export default async function BrandPage({
   params,
@@ -32,17 +34,18 @@ export default async function BrandPage({
       {data.sections.map((section, i) => {
         switch (section.type) {
           case "categories":
-            return <CategoryGrid key={i} {...section.props} />;
+            return <CategoryGrid key={i} {...section.props} slug={slug} />;
 
           case "story":
             return <StoryTruth key={i} {...section.props} />;
 
           case "products":
-            return <BestsellingProducts key={i} {...section.props} brand={true} />;
+            // return <BestsellingProducts key={i} {...section.props} brand={true} />;
+            return <BrandBestSelling key={i} slug={slug} brand={true} buttonColor={"#168BA0"} />;
           case "ourStory":
             return <OurStory key={i} {...section.props} />;
-          case "products":
-            return <BestsellingProducts key={i} {...section.props} brand={true} />;
+          case "newArrivals":
+            return <BrandNewArrival key={i} slug={slug} brand={true} buttonColor={"#168BA0"} />;
           case "stats":
             return (
               <BrandStats

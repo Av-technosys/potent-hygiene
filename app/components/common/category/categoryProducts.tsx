@@ -28,7 +28,8 @@ export default function CategoryProducts({ products }: any) {
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full gap-6 flex-1">
-      {products?.map((value: any) => (
+      {
+        products.length > 0 ? products?.map((value: any) => (
         <div
           key={value.id}
           className="flex relative flex-col rounded-md p-3 shadow-md bg-white"
@@ -97,7 +98,12 @@ export default function CategoryProducts({ products }: any) {
             )}
           </div>
         </div>
-      ))}
+      ))
+      :
+      <div className="text-center py-20 text-gray-500">
+        No products found
+      </div>
+      }
     </div>
   );
 }

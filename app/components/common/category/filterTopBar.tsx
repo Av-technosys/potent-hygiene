@@ -19,7 +19,7 @@ const products = [
 
 ]
 
-export default function FilterBar(){
+export default function FilterBar({total}:any){
 
   const router = useRouter()
   const params = useSearchParams()
@@ -62,7 +62,7 @@ export default function FilterBar(){
         <div className="text-sm text-gray-700">
 
           <span className="font-medium">
-            Showing {filteredProducts.length} Products
+            Showing {total} Products
           </span>
 
           {" "}for Result{" "}
