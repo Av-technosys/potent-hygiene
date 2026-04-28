@@ -350,6 +350,16 @@ export async function createOrder({
   }
 }
 
+export async function checkUserFirstOrder(userId: string) {
+  try {
+    const existingOrder = await db.select().from(order).where(eq(order.userId, userId)).limit(1);
+    return existingOrder;
+  } catch (error) {
+    console.error("Error checking user's first order:", error);
+    return [];
+  }
+}
+
 export async function getOrdersByUserId() {
   try {
     const { userId } = await requireUserWithRefresh();

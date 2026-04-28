@@ -2,7 +2,7 @@
 import nodemailer from "nodemailer";
 
 
-export async function sendOrderConfirmationEmail(email: string,firstName:string, orderId:string, orderDate:string, productNames:string, amount:string) {
+export async function sendOrderConfirmationEmail(email: string,firstName:string, orderId:string, orderDate:string, amount:any) {
     try {
     const transporter = nodemailer.createTransport({
       host: "email-smtp.ap-south-1.amazonaws.com", // SES endpoint
@@ -88,7 +88,6 @@ export async function sendOrderConfirmationEmail(email: string,firstName:string,
           <p style="font-size: 14px; color: #555; line-height: 1.6">
             Order ID: ${orderId}<br />
             Order Date: ${orderDate}<br />
-            Items: ${productNames}<br />
             Total Amount: ${amount}
           </p>
 
@@ -1053,7 +1052,7 @@ export async function sendUserExperienceEmail(email: string, firstName: string, 
   }
 }
 
-export async function sendShippingConfirmationEmail(email: string, orderId: any,firstName: any, trackingUrl: any, trackingNumber: any,courierName:any) {
+export async function sendShippingConfirmationEmail(email: string, orderId: any,firstName: any, trackingUrl: any,courierName:any) {
      try {
     const transporter = nodemailer.createTransport({
       host: "email-smtp.ap-south-1.amazonaws.com", // SES endpoint
@@ -1130,7 +1129,6 @@ export async function sendShippingConfirmationEmail(email: string, orderId: any,
             <p style="font-size: 14px; color: #555; line-height: 1.6">
               Order ID: ${orderId}<br />
               Courier Partner: ${courierName}<br />
-              Tracking ID: ${trackingNumber}<br />
               Track Your Order:
               <a
                 href="${trackingUrl}"
@@ -1622,15 +1620,6 @@ export async function sendDeliveryConfirmationEmail(email: string,firstName:stri
               Delivered On: ${deliveryDate}
             </p>
 
-            <!-- Estimated -->
-            <h3 style="font-size: 15px; color: #333; margin-top: 25px;">
-              Estimated Delivery
-            </h3>
-
-            <p style="font-size: 14px; color: #555">
-              Your order is expected to arrive within 3–5 business days.
-            </p>
-
             <!-- Features -->
             <h3 style="font-size: 15px; color: #333; margin-top: 25px;">
               Ready to Experience Better Hygiene?
@@ -1771,7 +1760,7 @@ export async function sendDeliveryConfirmationEmail(email: string,firstName:stri
   }
 }
 
-export async function sendCartAbandonmentEmail(email: string,firstName:string,productNames:string,checkoutLink:string,reviewLink:string) {
+export async function sendCartAbandonmentEmail(email: string,firstName:string,productNames:any,checkoutLink:string,reviewLink:string) {
     try {
     const transporter = nodemailer.createTransport({
       host: "email-smtp.ap-south-1.amazonaws.com", // SES endpoint
@@ -1993,6 +1982,149 @@ export async function sendCartAbandonmentEmail(email: string,firstName:string,pr
             © 2024 Potent Hygiene. All rights reserved.
           </p>
           </div>
+    </center>
+  </body>
+      `,
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+
+    return { success: true, result };
+  } catch (error) {
+    console.error("SES Email Error:", error);
+    return { success: false, error };
+  }
+}
+
+export async function sendWelcomeEmail(email: string, name:string) {
+  try {
+    const transporter = nodemailer.createTransport({
+      host: "email-smtp.ap-south-1.amazonaws.com", // SES endpoint
+      port: 587, // or 2587 or 25
+      secure: false, // TLS starts automatically
+      auth: {
+        user: process.env.SES_USER,
+        pass: process.env.SES_PASS,
+      },
+    });
+
+    const mailOptions = {
+      from: '"AV Technosys" <info@avtechnosys.com>',
+      to: [`${email}`],
+      subject: "Welcome To Potent Hygiene - Your Account is Ready!",
+      html: `
+ <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #ffffff;
+      font-family: &quot;Segoe UI&quot;, Roboto, Helvetica, Arial, sans-serif;
+    "
+  >
+    <center>
+      <!-- Header -->
+      <div
+        style="
+          background-color: #f8f9fa;
+          border-bottom: 1px solid #eeeeee;
+          padding: 15px 0;
+          text-align: center;
+          width: 100%;
+        "
+      >
+        <span
+          style="
+            font-size: 18px;
+            color: #0b1320;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+          "
+        >
+          Success
+        </span>
+      </div>
+
+      <!-- Container -->
+      <div
+        class="container"
+        style="
+          max-width: 500px;
+          background-color: #ffffff;
+          text-align: center;
+          margin: auto;
+        "
+      >
+        <div style="padding: 40px 20px">
+          <!-- Icon -->
+
+          <h1
+            style="
+              font-size: 32px;
+              color: #0b1320;
+              margin: 0 0 20px 0;
+              font-weight: 700;
+            "
+          >
+            Welcome To Potent Hygiene
+          </h1>
+
+          <p
+            style="
+              font-size: 16px;
+              color: #5a6a85;
+              line-height: 1.6;
+              margin: 0 0 40px 0;
+            "
+          >
+            Hi <span style="color: #1b7f85; font-weight: bold">${name}</span>, your
+            account has been successfully created. Your journey starts here!
+          </p>
+
+          <!-- Start Shopping Button -->
+          <div style="margin-bottom: 15px">
+            <a
+              href="https://www.potenthygiene.com/shop"
+              style="
+                display: block;
+                background-color: #1b7f85;
+                color: #ffffff;
+                padding: 18px;
+                text-decoration: none;
+                border-radius: 40px;
+                font-weight: bold;
+                font-size: 18px;
+              "
+            >
+              <img
+                src="https://ik.imagekit.io/avtechnosys/yunanved/welcome2.png"
+                width="20"
+                style="vertical-align: middle; margin-right: 10px"
+              />
+
+              Start Shopping
+            </a>
+          </div>
+
+          <p
+            style="
+              font-size: 13px;
+              color: #7f8c8d;
+              line-height: 1.5;
+              margin: 0;
+              padding: 0 20px;
+            "
+          >
+            If you have any questions, feel free to reach us at<br />
+
+            <a
+              href="mailto:support@potenthygiene.com"
+              style="color: #1b7f85; text-decoration: none; font-weight: bold"
+            >
+              support@potenthygiene.com
+            </a>
+          </p>
+        </div>
+      </div>
     </center>
   </body>
       `,

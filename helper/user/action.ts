@@ -125,6 +125,7 @@ export async function getProfile() {
   const user = result[0];
 
   return {
+    userId: user.id,
     fullName: user.name,
     email: user.email,
     phone: user.phone,

@@ -103,7 +103,7 @@ const Page = () => {
         password: formData.password,
         phone: formData.phone,
         name: formData.fullName,
-        ref: formData.ref
+        ref: formData?.ref || "",
       });
 
       toast.success(res.message || "OTP sent!", {

@@ -17,6 +17,7 @@ export {
   changeOrderStatus,
   updateOrderStatus,
   createOrder,
+  checkUserFirstOrder
 } from "./order/action";
 
 export {
@@ -88,7 +89,8 @@ export {
   sendShippingConfirmationEmail,
   sendrefillReminderEmail,
   sendDeliveryConfirmationEmail,
-  sendCartAbandonmentEmail
+  sendCartAbandonmentEmail,
+  sendWelcomeEmail
 } from "./emailTemplates/action";
 
 

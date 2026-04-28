@@ -270,7 +270,7 @@ export default function ProductDetailPage({
                           selectedSize === s ? themeColor.darkColor : "white",
                         borderColor: themeColor.darkColor,
                         color:
-                          selectedSize === s ? themeColor.textColor : undefined,
+                          selectedSize === s ? "white" : themeColor.textColor,
                       }}
                     >
                       {s}
@@ -278,6 +278,8 @@ export default function ProductDetailPage({
                   ))}
                 </div>
               </div>
+
+              
 
               {/* Flow Type - NOW DYNAMIC */}
               <div>
@@ -297,6 +299,8 @@ export default function ProductDetailPage({
                             ? themeColor.darkColor
                             : "white",
                         borderColor: themeColor.darkColor,
+                         color:
+                          selectedFlow === flow ? "white" : themeColor.textColor,
                       }}
                     >
                       {flow}
