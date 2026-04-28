@@ -1,5 +1,5 @@
 "use client";
-import { sendCartAbandonmentEmail, sendDeliveryConfirmationEmail, sendFirstPurchaseEmail, sendNewsletterEmail, sendOrderConfirmationEmail, sendrefillReminderEmail, sendShippingConfirmationEmail, sendUserExperienceEmail } from '@/helper';
+import { sendCartAbandonmentEmail, sendDeliveryConfirmationEmail, sendFirstPurchaseEmail, sendNewsletterEmail, sendOrderConfirmationEmail, sendrefillReminderEmail, sendShippingConfirmationEmail, sendUserExperienceEmail, sendWelcomeEmail } from '@/helper';
 import React from 'react';
 import { toast } from 'sonner';
 
@@ -26,7 +26,10 @@ const Page = () => {
         // await sendDeliveryConfirmationEmail("ravindrasinghrss2004@gmail.com","Ravindra Singh","123456","2024-06-20","https://www.potenthygiene.com/review");
         // toast.success("Email sent successfully")
 
-        await sendCartAbandonmentEmail("ravindrasinghrss2004@gmail.com","Ravindra Singh","Product A, Product B","https://www.potenthygiene.com/dashboard/orders","https://www.potenthygiene.com/review");
+        // await sendCartAbandonmentEmail("ravindrasinghrss2004@gmail.com","Ravindra Singh","Product A, Product B","https://www.potenthygiene.com/dashboard/orders","https://www.potenthygiene.com/review");
+        // toast.success("Email sent successfully")
+
+        await sendWelcomeEmail("ravindrasinghrss2004@gmail.com","Ravindra Singh");
         toast.success("Email sent successfully")
     }
     return (

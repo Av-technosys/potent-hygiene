@@ -14,7 +14,8 @@ import { Eye } from "lucide-react";
 import { usePathname, useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { Select } from "@/components/select";
-import { updateOrderStatus } from "@/helper/index";
+import { sendDeliveryConfirmationEmail, sendShippingConfirmationEmail, sendUserExperienceEmail, updateOrderStatus } from "@/helper/index";
+import { getProfile, requireUserWithRefresh } from "@/helper/user/action";
 
 interface OrderTableProps {
   page: number;
@@ -38,6 +39,20 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
 
   const router = useRouter();
   const pathname = usePathname();
+
+    const orderStatusEmailSender = async (order:any,value:any)=>{
+    //  const userDetails:any = await getUserEmailByUserId(order.userId);
+       const {email,fullName}: any = await getProfile();
+
+        const currentDate = new Date().toLocaleDateString();
+
+     if(value == 'delivered'){
+      await sendDeliveryConfirmationEmail(email,fullName,order.id,currentDate,"https://www.potenthygiene.com/dashboard/orders");
+      await sendUserExperienceEmail(email,fullName,"https://www.potenthygiene.com/dashboard/reviews")
+     }else if (value == 'shipped') {
+     await sendShippingConfirmationEmail(email,order.id,fullName,"https://www.potenthygiene.com/dashboard/orders","FedEx")
+     }
+  }
 
   return (
     <div className="mt-8">
@@ -82,6 +97,7 @@ const OrderTable = ({ page, orders, pageSize }: OrderTableProps) => {
                         onValueChange={(value) => {
                           startTransition(() => {
                             updateOrderStatus(order.id, value);
+                             orderStatusEmailSender(order,value);
                           });
                         }}
                       />

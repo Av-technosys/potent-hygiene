@@ -82,17 +82,21 @@ export async function POST(req: Request) {
               email,
               phone: safePhone,
               password: dummyPassword,
-              referralCoins: 200,
+              referralCoins: ref ? 200 : 0,
             })
             .returning();
 
-          await db.insert(referralCoinHistory).values({
-            userId: refUser[0].id,
-            coins: 200,
-            newUserName: name,
-            newUserId: userRes.id,
-            type: "referral",
-          });
+          const referredUser = refUser?.[0];
+
+          if (referredUser) {
+            await db.insert(referralCoinHistory).values({
+              userId: referredUser.id,
+              coins: 200,
+              newUserName: name,
+              newUserId: userRes.id,
+              type: "referral",
+            });
+          }
         } else {
           userRes = existingDbUser;
         }

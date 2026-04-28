@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import {getBrandNewArrivalProducts } from "@/helper";
 
 export default async function BrandNewArrival({ slug,brand , buttonColor }: any){
-  console.log("sluggg", slug);
     const products = await getBrandNewArrivalProducts(slug);
 
-    console.log("productsssssff", products);
   return (
     <section
       className="py-10 overflow-hidden"
