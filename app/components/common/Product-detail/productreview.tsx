@@ -3,7 +3,7 @@
 import { Star, ThumbsUp, User } from "lucide-react";
 import Link from "next/link";
 
-export default function ProductReviews({ reviews, product }: any) {
+export default function ProductReviews({ reviews, product, themeColor }: any) {
   const ratings = [
     { stars: 5, count: product.rateing5Star || 0 },
     { stars: 4, count: product.rateing4Star || 0 },
@@ -54,7 +54,7 @@ export default function ProductReviews({ reviews, product }: any) {
             </div>
           </div>
 
-          <button className="mt-6 px-5 py-2 text-sm border border-teal-600 text-teal-600 rounded-full hover:bg-teal-50 transition">
+          <button style={{borderColor:themeColor.darkColor, color:themeColor.darkColor}} className="mt-6 px-5 py-2 text-sm border rounded-full hover:bg-teal-50 transition">
            <Link href={`/dashboard/reviews`}>
             Write a Review
            </Link>
@@ -70,8 +70,8 @@ export default function ProductReviews({ reviews, product }: any) {
 
               <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-teal-600"
-                  style={{ width: `${item.percent}%` }}
+                  className="h-full "
+                  style={{ width: `${item.percent}%`, backgroundColor: themeColor.darkColor }}
                 />
               </div>
 
@@ -89,15 +89,15 @@ export default function ProductReviews({ reviews, product }: any) {
           <div key={index} className="border-b border-gray-200 pb-8">
             <div className="flex items-start gap-4">
               {/* Avatar */}
-              <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
-                <User className="w-5 h-5 text-teal-600" />
+              <div style={{backgroundColor:themeColor.lightColor}} className="w-10 h-10 rounded-full  flex items-center justify-center">
+                <User style={{color:themeColor.textColor}} className="w-5 h-5" />
               </div>
 
               <div className="flex-1">
                 {/* Name + Badge */}
                 <div className="flex items-center gap-3">
                   <p className="font-medium">{review.name}</p>
-                  <span className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded-full">
+                  <span style={{backgroundColor:themeColor.lightColor, color:themeColor.textColor }} className="text-xs  px-2 py-1 rounded-full">
                     Verified Purchase
                   </span>
                 </div>

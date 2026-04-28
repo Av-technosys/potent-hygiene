@@ -27,6 +27,7 @@ if(products.length > 0){
               {/* Wishlist */}
               <button className="absolute top-2 left-2 bg-white rounded-full p-1 shadow">
                 <Heart
+                style={{color:themeColor.darkColor}}
                   className="w-4 h-4 text-gray-500"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = themeColor;
@@ -40,7 +41,7 @@ if(products.length > 0){
               {/* Discount Badge */}
               <span
                 className="absolute top-2 right-2 text-white text-xs px-3 py-1 rounded-full"
-                style={{ backgroundColor: themeColor || "#168BA0" }}
+                style={{ backgroundColor: themeColor.darkColor || "#168BA0" }}
               >
                 25% OFF
               </span>
@@ -96,14 +97,14 @@ if(products.length > 0){
 
               {product.hasVarientBox ? (
               <Link href={`/product-detail/${product.slug}`}>
-                <Button className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]">
+                <Button style={{backgroundColor:themeColor.darkColor}} className="w-full rounded-md  py-5 text-sm font-semibold text-white hover:bg-[#146e71]">
                   Add to Cart
                 </Button>
               </Link>
             ) : (
                <button
                 className="w-full mt-4 text-white text-sm py-2.5 rounded-lg transition"
-                style={{ backgroundColor: themeColor || "#168BA0" }}
+                style={{ backgroundColor: themeColor.darkColor || "#168BA0" }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.filter = "brightness(0.9)";
                 }}

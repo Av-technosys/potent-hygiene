@@ -119,7 +119,7 @@ export default function ProductDetailPage({
     <div className="min-h-screen py-10">
       <div className=" grid grid-cols-1 md:grid-cols-5 md:gap-12 gap-y-6">
         {/* LEFT SIDE */}
-        <div className=" sticky top-4 h-fit col-span-2">
+        <div className=" md:sticky md:top-4  h-fit col-span-2">
           <div className="w-full h-auto relative ">
             <Image
               src={bannerImage}
@@ -154,7 +154,7 @@ export default function ProductDetailPage({
                       className={`w-full h-auto object-cover rounded-lg
                    ${
                      item.mediaURL === bannerImage
-                       ? "border-2 border-[#1A8D91]"
+                       ? `border-2  border-${themeColor.darkColor} `
                        : "border border-gray-200 "
                    }`}
                     />
@@ -173,7 +173,7 @@ export default function ProductDetailPage({
         <div className="space-y-6 col-span-3">
           {/* Tags */}
           <div className="flex gap-2">
-            <span className="bg-green-100 text-green-600 text-xs px-3 py-1 rounded-full">
+            <span style={{backgroundColor:themeColor.darkColor , color:productInfo.brand == "loway" ? themeColor.textColor : "white"}} className=" text-xs px-3 py-1 rounded-full">
               {productInfo.brand == "loway" ? "Looway" : "Ovy"}
             </span>
           </div>
@@ -201,10 +201,10 @@ export default function ProductDetailPage({
               activeVariant.highlights.map((feature: string, index: number) => (
                 <span
                   key={index}
-                  className={`text-xs px-3 py-1 rounded-full ${
-                    themeColor ? "text-white" : "bg-[#F0FDFA] text-[#168BA0]"
-                  }`}
-                  style={themeColor ? { backgroundColor: themeColor } : {}}
+                  className={`text-xs px-3 py-1 rounded-full ${themeColor.textColor} `}
+                  style={
+                    themeColor ? { backgroundColor: themeColor.lightColor } : {}
+                  }
                 >
                   {feature}
                 </span>
@@ -253,13 +253,24 @@ export default function ProductDetailPage({
                       key={s}
                       type="button"
                       onClick={() => setSelectedSize(s)}
+                      // className={`px-4 py-2 text-sm rounded-full border transition ${
+                      //   selectedSize === s ? "text-white" : "bg-white"
+                      // }`}
+                      // style={{
+                      //   backgroundColor:
+                      //     selectedSize === s ? primaryColor : "white",
+                      //   borderColor: primaryColor,
+                      // }}
+
                       className={`px-4 py-2 text-sm rounded-full border transition ${
                         selectedSize === s ? "text-white" : "bg-white"
                       }`}
                       style={{
                         backgroundColor:
-                          selectedSize === s ? primaryColor : "white",
-                        borderColor: primaryColor,
+                          selectedSize === s ? themeColor.darkColor : "white",
+                        borderColor: themeColor.darkColor,
+                        color:
+                          selectedSize === s ? themeColor.textColor : undefined,
                       }}
                     >
                       {s}
@@ -277,13 +288,15 @@ export default function ProductDetailPage({
                       key={flow}
                       type="button"
                       onClick={() => setSelectedFlow(flow)}
-                      className={`px-4 py-2 text-sm rounded-full border transition ${
-                        selectedFlow === flow ? "text-white" : "bg-white"
+                      className={`px-4 py-2 text-sm rounded-full border bg-${themeColor.darkColor} transition ${
+                        selectedFlow === flow ? "text-black" : "bg-white"
                       }`}
                       style={{
                         backgroundColor:
-                          selectedFlow === flow ? primaryColor : "white",
-                        borderColor: primaryColor,
+                          selectedFlow === flow
+                            ? themeColor.darkColor
+                            : "white",
+                        borderColor: themeColor.darkColor,
                       }}
                     >
                       {flow}
@@ -322,6 +335,7 @@ export default function ProductDetailPage({
               setCartSizes={setCartSizes}
               total={total}
               setTotal={setTotal}
+              themeColor={themeColor}
             />
           )}
 
@@ -329,10 +343,11 @@ export default function ProductDetailPage({
           <div className="flex gap-4">
             <button
               onClick={addToCart}
-              className="flex-1 text-white py-3 rounded-xl transition"
-              style={{
-                backgroundColor: themeColor || "#168BA0",
-              }}
+              style={{backgroundColor:themeColor.darkColor , color:productInfo.brand == "loway" ? themeColor.textColor : "white"}}
+              className="flex-1 text-black py-3 rounded-xl transition"
+              // style={{
+              //   backgroundColor: themeColor.darkColor || "#168BA0",
+              // }}
             >
               Add to Cart
             </button>
@@ -351,11 +366,25 @@ export default function ProductDetailPage({
                 onClick={() =>
                   subscribeToCart(selectedPlan?.id === plan.id ? null : plan)
                 }
+                // className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
+                //   selectedPlan?.id === plan.id
+                //     ? "border-teal-600 bg-teal-50"
+                //     : "border-gray-200"
+                // }`}
+
                 className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
-                  selectedPlan?.id === plan.id
-                    ? "border-teal-600 bg-teal-50"
-                    : "border-gray-200"
+                  selectedPlan?.id === plan.id ? "bg-opacity-50" : ""
                 }`}
+                style={{
+                  borderColor:
+                    selectedPlan?.id === plan.id
+                      ? themeColor.darkColor
+                      : "#e5e7eb", // gray-200 fallback
+                  backgroundColor:
+                    selectedPlan?.id === plan.id
+                      ? themeColor.lightColor
+                      : "transparent",
+                }}
               >
                 <div className="flex items-center gap-3">
                   <input

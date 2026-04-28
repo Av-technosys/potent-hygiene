@@ -325,7 +325,7 @@ type Props = {
 };
 
 type ProductSection = {
-  type: "products";
+  type: "products" | "newArrivals";
   props: Props;
 };
 
@@ -507,7 +507,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
         },
       },
       {
-        type: "products",
+        type: "newArrivals",
         props: {
           title: "New Arriving Products",
           bgColor: "#AF71A7",
@@ -660,7 +660,7 @@ We encourage awareness, informed choices, and self-care without hesitation or st
         },
       },
       {
-        type: "products",
+        type: "newArrivals",
         props: {
           title: "New Arriving Products",
           bgColor: "#AF71A7",
@@ -735,3 +735,21 @@ export const subscriptionPlans = [
   { id: "2", label: "Every 2 Months", price: "₹229", period: 2 },
   { id: "3", label: "Every 3 Months", price: "₹219", period: 3 },
 ];
+
+export const ovyProductDetailsPage = {
+  lightColor: "#FBF1FB",
+  darkColor: "#B076A8",
+  productDescription: "#EFEDE0",
+  textColor: "#374151",
+  // rating:"#EFEDE0",
+  // imageBg:"#DDC0DC"
+};
+
+export const lowayProductDetailsPage = {
+  lightColor: "#FBF1A6",
+  darkColor: "#F6DC52",
+  productDescription: "#EFEDE0",
+  textColor: "#374151",
+  // rating:"#EFEDE0",
+  // imageBg:"#F6DC52"
+};

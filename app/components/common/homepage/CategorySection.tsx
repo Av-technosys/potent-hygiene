@@ -91,12 +91,14 @@ type Props = {
   limit?: number;
   title?: string;
   description?: string;
+  slug?:string
 };
 
 export async function CategoryGrid({
   limit = 4,
   title = "Shop by Category",
   description = "Discover our range of premium feminine hygiene products, thoughtfully crafted for your comfort and wellness.",
+  slug=""
 }: Props) {
   const allCategories = await getCategories();
   const categories = allCategories.slice(0, limit);
@@ -121,7 +123,7 @@ export async function CategoryGrid({
           {categories.map((category) => (
             <Link
               key={category.id}
-              href={`/shop?category=${category.slug}`}
+              href={`/shop?category=${category.slug}&brand=${slug}`}
               className="group block bg-white rounded-md p-3 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1"
             >
               <div className="relative h-auto w-full overflow-hidden rounded-md mb-4 flex items-center justify-center">
