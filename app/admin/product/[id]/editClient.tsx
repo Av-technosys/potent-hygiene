@@ -79,10 +79,11 @@ export default function EditProduct({ productDetails }: any) {
   const bannerRef = useRef<HTMLInputElement>(null);
 
   const [productType, setProductType] = useState<any[]>([]);
-  const [sustainability, setSustainability] = useState<any[]>([]);
+  const [size, setSize] = useState<any[]>([]);
   const [flowType, setFlowType] = useState<any[]>([]);
-  const [purpose, setPurpose] = useState<any[]>([]);
-  const [features, setFeatures] = useState<any[]>([]);
+  const [material, setMaterial] = useState<any[]>([]);
+  const [cramps, setCramps] = useState<any[]>([]);
+  const [sensitive, setSensitive]=useState<any[]>([]);
 
   const[brand,setBrand] = useState<any>(productDetails.brand);
 
@@ -118,13 +119,15 @@ export default function EditProduct({ productDetails }: any) {
 
     setProductType(mapSlugsToObjects(slugs, PRODUCT_FILTER.product_type));
 
-    setSustainability(mapSlugsToObjects(slugs, PRODUCT_FILTER.sustainability));
+    setSize(mapSlugsToObjects(slugs, PRODUCT_FILTER.size));
 
     setFlowType(mapSlugsToObjects(slugs, PRODUCT_FILTER.flow_or_usage_type));
 
-    setPurpose(mapSlugsToObjects(slugs, PRODUCT_FILTER.purpose));
+    setMaterial(mapSlugsToObjects(slugs, PRODUCT_FILTER.material));
 
-    setFeatures(mapSlugsToObjects(slugs, PRODUCT_FILTER.features));
+    setCramps(mapSlugsToObjects(slugs, PRODUCT_FILTER.cramps_or_discomfort));
+
+    setSensitive(mapSlugsToObjects(slugs, PRODUCT_FILTER.allergies_or_sensitivities));
   }, [productDetails]);
 
   const {
@@ -339,10 +342,11 @@ export default function EditProduct({ productDetails }: any) {
         .filter((a: any) => a.value.trim().length > 0),
       filters: [
         ...(productType || []),
-        ...(sustainability || []),
+        ...(size || []),
         ...(flowType || []),
-        ...(purpose || []),
-        ...(features || []),
+        ...(material || []),
+        ...(cramps || []),
+        ...(sensitive || []),
       ],
       VarientBoxes: varientBox ? variantBoxes : [],
       hasVarientBox:varientBox
@@ -648,14 +652,16 @@ export default function EditProduct({ productDetails }: any) {
             <ProductFilters
               productType={productType}
               setProductType={setProductType}
-              sustainability={sustainability}
-              setSustainability={setSustainability}
+              size={size}
+              setSize={setSize}
               flowType={flowType}
               setFlowType={setFlowType}
-              purpose={purpose}
-              setPurpose={setPurpose}
-              features={features}
-              setFeatures={setFeatures}
+              material={material}
+              setMaterial={setMaterial}
+              cramps={cramps}
+              setCramps={setCramps}
+              sensitive={sensitive}
+              setSensitive={setSensitive}
             />
 
             <Card>

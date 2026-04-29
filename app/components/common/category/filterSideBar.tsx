@@ -3,36 +3,37 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { PRODUCT_FILTER } from "@/const/filters";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function FiltersSidebar({categories}:any) {
   const router = useRouter();
   const params = useSearchParams();
 
-  const productType=[
-    {name:"Organic Sanitary Pads",slug:"organic_sanitary_pads"},
-    {name:"Menstrual Cup",slug:"menstrual_cup"},
-    {name:"Organic Panty liners",slug:"organic_panty_liners"},
-    {name:"Combo",slug:"combo"},
-  ]
+  // const productType=[
+  //   {name:"Organic Sanitary Pads",slug:"organic_sanitary_pads"},
+  //   {name:"Menstrual Cup",slug:"menstrual_cup"},
+  //   {name:"Organic Panty liners",slug:"organic_panty_liners"},
+  //   {name:"Combo",slug:"combo"},
+  // ]
 
-  const productSize=[
-    {name:"Small",slug:"small"},
-    {name:"Medium",slug:"medium"},
-    {name:"Large",slug:"large"},
-  ]
+  // const productSize=[
+  //   {name:"Small",slug:"small"},
+  //   {name:"Medium",slug:"medium"},
+  //   {name:"Large",slug:"large"},
+  // ]
 
-  const productFlow=[
-    {name:"Light",slug:"light_flow"},
-    {name:"Medium",slug:"medium_flow"},
-    {name:"Heavy",slug:"heavy_flow"},
-  ]
+  // const productFlow=[
+  //   {name:"Light",slug:"light_flow"},
+  //   {name:"Medium",slug:"medium_flow"},
+  //   {name:"Heavy",slug:"heavy_flow"},
+  // ]
 
-  const productMaterial=[
-    {name:"Organic Cotton",slug:"organic_cotton"},
-    {name:"Synthetic Blend",slug:"synthetic_blend"},
-    {name:"Medical Grade Silicon",slug:"medical_grade_silicon"},
-  ]
+  // const productMaterial=[
+  //   {name:"Organic Cotton",slug:"organic_cotton"},
+  //   {name:"Synthetic Blend",slug:"synthetic_blend"},
+  //   {name:"Medical Grade Silicon",slug:"medical_grade_silicon"},
+  // ]
 
 
 
@@ -81,7 +82,7 @@ export default function FiltersSidebar({categories}:any) {
         <div>
           <h3 className="font-medium mb-3">Product Type</h3>
 
-          {productType.map(
+          {PRODUCT_FILTER.product_type.map(
             (item) => (
               <div key={item.name} className="flex items-center gap-2 mb-2">
                 <Checkbox
@@ -97,7 +98,7 @@ export default function FiltersSidebar({categories}:any) {
         <div>
           <h3 className="font-medium mb-3">Flow Type</h3>
 
-          {productFlow.map((item) => (
+          {PRODUCT_FILTER.flow_or_usage_type.map((item) => (
             <div key={item.name} className="flex items-center gap-2 mb-2">
               <Checkbox
                 checked={params.get("flow") === item.slug}
@@ -111,7 +112,7 @@ export default function FiltersSidebar({categories}:any) {
         <div>
           <h3 className="font-medium mb-3">Size</h3>
 
-          {productSize.map((item) => (
+          {PRODUCT_FILTER.size.map((item) => (
             <div key={item.name} className="flex items-center gap-2 mb-2">
               <Checkbox
                 checked={params.get("size") === item.slug}
@@ -125,12 +126,44 @@ export default function FiltersSidebar({categories}:any) {
         <div>
           <h3 className="font-medium mb-3">Material</h3>
 
-          {productMaterial.map(
+          {PRODUCT_FILTER.material.map(
             (item) => (
               <div key={item.name} className="flex items-center gap-2 mb-2">
                 <Checkbox
                   checked={params.get("material") === item.slug}
                   onCheckedChange={() => updateParam("material", item.slug)}
+                />
+
+                <label>{item.name}</label>
+              </div>
+            ),
+          )}
+        </div>
+         <div>
+          <h3 className="font-medium mb-3">Cramps & Discomfort</h3>
+
+          {PRODUCT_FILTER.cramps_or_discomfort.map(
+            (item) => (
+              <div key={item.name} className="flex items-center gap-2 mb-2">
+                <Checkbox
+                  checked={params.get("cramps") === item.slug}
+                  onCheckedChange={() => updateParam("cramps", item.slug)}
+                />
+
+                <label>{item.name}</label>
+              </div>
+            ),
+          )}
+        </div>
+         <div>
+          <h3 className="font-medium mb-3">Allergies & Sensitivities</h3>
+
+          {PRODUCT_FILTER.allergies_or_sensitivities.map(
+            (item) => (
+              <div key={item.name} className="flex items-center gap-2 mb-2">
+                <Checkbox
+                  checked={params.get("allergies") === item.slug}
+                  onCheckedChange={() => updateParam("allergies", item.slug)}
                 />
 
                 <label>{item.name}</label>

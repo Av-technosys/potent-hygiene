@@ -69,7 +69,8 @@ export {
   getFullProduct,
   getBestSellingProducts,
   getBrandBestSellingProducts,
-  getBrandNewArrivalProducts
+  getBrandNewArrivalProducts,
+  getQuizSuggestedProducts
 } from "./product/action";
 
 export {

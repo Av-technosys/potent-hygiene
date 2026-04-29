@@ -27,6 +27,8 @@ interface GetProductsOptions {
   material?: string;
   size?: string;
   flow?: string;
+  cramps?:string;
+  allergies?:string;
   min?: any;
   max?: any;
   stock?: any;
@@ -615,6 +617,8 @@ export async function getProducts({
   material = "",
   size = "",
   flow = "",
+  cramps = "",
+  allergies = "",
   min = "",
   max = "",
   stock = "",
@@ -628,7 +632,7 @@ export async function getProducts({
 
   const offset = (page - 1) * pageSize;
 
-  const filterValues = [type, material, size, flow].filter(Boolean);
+  const filterValues = [type, material, size, flow, cramps, allergies].filter(Boolean);
 
   if (filterValues.length > 0) {
     filters.push(
@@ -893,4 +897,36 @@ export async function getBrandNewArrivalProducts(slug:any){
     console.error(error);
     return [];
   }
+}
+
+
+
+export async function getQuizSuggestedProducts(userAnswers:any){
+ try {
+  const filters:string[] = userAnswers.map((a: any) => a.answer);
+
+  // Step 1: find matching filters
+  const matchedFilters = await db
+    .select({ productId: productFilter.productId })
+    .from(productFilter)
+    .where(inArray(productFilter.filter, filters));
+
+  // Step 2: unique productIds
+  const productIds:any = [
+    ...new Set(matchedFilters.map((f) => f.productId)),
+  ];
+
+  if (productIds.length === 0) return [];
+
+  // Step 3: fetch products
+  const products = await db
+    .select()
+    .from(product)
+    .where(inArray(product.id, productIds));
+
+  return products;
+} catch (error) {
+  console.log(error);
+  return [];
+}
 }
