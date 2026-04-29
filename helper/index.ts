@@ -68,6 +68,7 @@ export {
   getProductSimilarProducts,
   getFullProduct,
   getBestSellingProducts,
+  getCategoryName,
   getBrandBestSellingProducts,
   getBrandNewArrivalProducts,
   getQuizSuggestedProducts

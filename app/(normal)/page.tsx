@@ -40,7 +40,6 @@ export default function Home() {
       <Newsletter />
       <BlogSection />
       <WhatsAppWidget />
-
     </main>
   );
 }

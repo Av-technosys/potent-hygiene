@@ -56,7 +56,9 @@ function VideoCard({ category }: { category: any }) {
       </div>
 
       <div className="p-5 text-center">
-        <h3 className="text-lg font-bold text-gray-800">{category.title}</h3>
+        <Link href={`/shop?category=${category.slug}`}>
+          <h3 className="text-lg font-bold text-gray-800">{category.title}</h3>
+        </Link>
         <Link href={`/shop?category=${category.slug}`}>
           <button className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-gray-500 hover:text-[#1A8D91]">
             Shop Now <ArrowRight className="h-3 w-3" />

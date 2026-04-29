@@ -68,20 +68,15 @@ const Page = () => {
               Question {quizData?.id} of {quizQuestions.length}
             </span>
             <span>
-              {/* {Math.round((quizData?.id / quizQuestions.length) * 100)}% */}
               {Math.round((answers[quizQuestions.length] >= 0 ? 100 : (quizData.id - 1) * (100 / quizQuestions.length)))}%
             </span>
           </FieldLabel>
-          {/* <Progress
-            value={(quizData?.id / quizQuestions.length) * 100}
-            className="bg-[#168BA0]/50 [&>div]:bg-[#168BA0]"
-            id="progress-upload"
-          /> */}
-           <Progress
+          <Progress
             value={(answers[quizQuestions.length] >= 0 ? 100 : (quizData.id - 1) * (100 / quizQuestions.length))}
             className="bg-[#168BA0]/50 [&>div]:bg-[#168BA0]"
             id="progress-upload"
-          />
+          /> 
+           
         </Field>
 
         {/* Question */}
@@ -101,11 +96,10 @@ const Page = () => {
                 onClick={() => handleOptionClick(quizData?.id, index)}
                 key={index}
                 className={`flex items-center gap-4 justify-start p-4 h-auto rounded-xl
-                transition-all ${
-                  answers[quizData?.id] === index
+                transition-all ${answers[quizData?.id] === index
                     ? "bg-[#168BA0] text-white"
                     : " bg-[#9DD8E2] hover:bg-[#168BA0] text-white"
-                }`}
+                  }`}
               >
                 <div className="p-2 bg-white rounded-lg text-[#168BA0]">
                   <Icon size={20} />
@@ -116,9 +110,7 @@ const Page = () => {
           })}
         </div>
 
-        <div
-          className={`w-full flex items-center justify-between ${quizData?.id == 1 && "justify-end"}`}
-        >
+        <div className={`w-full flex items-center justify-between ${quizData?.id == 1 && "justify-end"}`}>
           {quizData?.id > 1 && (
             <Button onClick={() => BackHandler()} variant={"ghost"}>
               <ArrowLeft /> Back

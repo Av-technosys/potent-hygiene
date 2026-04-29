@@ -32,7 +32,7 @@ export default function BestsellingCard({ product, buttonColor, brand }: any) {
 
   const handleRedirect = () => {
     if (brand) {
-      router.push(`${pathname}/product-detail/${product.slug}`);
+      router.push(`/product-detail/${product.slug}`);
     } else {
       router.push(`/product-detail/${product.slug}`);
     }
@@ -40,7 +40,7 @@ export default function BestsellingCard({ product, buttonColor, brand }: any) {
   return (
     <div
       onClick={handleRedirect}
-      className="group relative flex flex-col rounded-[24px] bg-white p-3 shadow-sm"
+      className="group relative flex flex-col rounded-lg bg-white p-3 shadow-sm"
     >
       {/* ✅ Wishlist */}
       <AddToWishlist

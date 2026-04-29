@@ -29,7 +29,7 @@ export default async function Page({ params }: any) {
     return <div className="text-center py-20">Product not found</div>;
   }
   return (
-    <div className=" container">
+    <div className="container">
       <div className="">
         <Product
           // categoryName={catetoryName}

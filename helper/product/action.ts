@@ -526,6 +526,20 @@ export async function getFullProduct(identifier: string) {
   }
 }
 
+export async function getCategoryName(categoryId: any) {
+  try {
+    const categoryName = await db
+      .select({ name: category.name })
+      .from(category)
+      .where(eq(category.id, categoryId))
+      .limit(1);
+    return categoryName[0].name;
+  } catch (error) {
+    console.error("getCategoryName failed:", error);
+    throw new Error("Unable to fetch category name");
+  }
+}
+
 export async function getProductSimilarProducts(slug: string | any) {
   try {
     const [v] = await db
@@ -930,3 +944,71 @@ export async function getQuizSuggestedProducts(userAnswers:any){
   return [];
 }
 }
+
+// export async function getBrandBestSellingProducts(slug:any){
+//   try {
+//     const brandProducts = await db.select({
+//       id: product.id,
+//       name: product.name,
+//       price: product.basePrice,
+//       image: product.bannerImage,
+//       slug: product.slug,
+//       brand: product.brand,
+//       oldPrice: product.strikethroughPrice
+//     }).from(product).where(eq(product.brand, slug)).limit(4);
+//     return brandProducts
+//   } catch (error) {
+//     console.error(error);
+//     return [];
+//   }
+// }
+
+// export async function getBrandNewArrivalProducts(slug:any){
+//   try {
+//     const brandProducts = await db.select({
+//       id: product.id,
+//       name: product.name,
+//       price: product.basePrice,
+//       image: product.bannerImage,
+//       slug: product.slug,
+//       brand: product.brand,
+//       oldPrice: product.strikethroughPrice
+//     }).from(product).where(eq(product.brand, slug)).orderBy(desc(product.createdAt)).limit(4);
+//     return brandProducts
+//   } catch (error) {
+//     console.error(error);
+//     return [];
+//   }
+// }
+
+
+
+// export async function getQuizSuggestedProducts(userAnswers:any){
+//  try {
+//   const filters:string[] = userAnswers.map((a: any) => a.answer);
+
+//   // Step 1: find matching filters
+//   const matchedFilters = await db
+//     .select({ productId: productFilter.productId })
+//     .from(productFilter)
+//     .where(inArray(productFilter.filter, filters));
+
+//   // Step 2: unique productIds
+//   const productIds:any = [
+//     ...new Set(matchedFilters.map((f) => f.productId)),
+//   ];
+
+//   if (productIds.length === 0) return [];
+
+//   // Step 3: fetch products
+//   const products = await db
+//     .select()
+//     .from(product)
+//     .where(inArray(product.id, productIds));
+
+//   return products;
+// } catch (error) {
+//   console.log(error);
+//   return [];
+// }
+// }
