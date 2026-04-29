@@ -5,36 +5,36 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1773986585311,
-      "tag": "0000_small_black_panther",
+      "when": 1776233766066,
+      "tag": "0000_mixed_triton",
       "breakpoints": true
     },
     {
       "idx": 1,
       "version": "7",
-      "when": 1774246647497,
-      "tag": "0001_high_the_initiative",
+      "when": 1776320371517,
+      "tag": "0001_reward_and_referral",
       "breakpoints": true
     },
     {
       "idx": 2,
       "version": "7",
-      "when": 1774246960062,
-      "tag": "0002_odd_onslaught",
+      "when": 1776344144647,
+      "tag": "0002_black_mentor",
       "breakpoints": true
     },
     {
       "idx": 3,
       "version": "7",
-      "when": 1774595743849,
-      "tag": "0003_cold_jocasta",
+      "when": 1776402512429,
+      "tag": "0003_add_product_sub_brand",
       "breakpoints": true
     },
     {
       "idx": 4,
       "version": "7",
-      "when": 1774596895681,
-      "tag": "0004_clammy_captain_america",
+      "when": 1776836573956,
+      "tag": "0004_tense_korg",
       "breakpoints": true
     }
   ]

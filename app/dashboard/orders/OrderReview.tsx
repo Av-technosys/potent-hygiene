@@ -189,7 +189,7 @@ export const OrderReview = ({
                       Total Amount
                     </p>
                     <p className="text-lg font-bold text-[#1D4E4E]">
-                      ₹{orderDetails.totalAmountPaid.toLocaleString("en-IN")}
+                      ₹{orderDetails.totalAmount.toLocaleString("en-IN")}
                     </p>
                   </div>
                 </div>
@@ -207,7 +207,7 @@ export const OrderReview = ({
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 {orderDetails?.order_items?.map((item: any, index: number) => {
                   const variantId =
-                    item.productVariantId ||
+                    item.productId ||
                     item.productId ||
                     item.productVariant?.id;
 

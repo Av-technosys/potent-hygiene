@@ -21,6 +21,7 @@ export function CheckoutSummary({ selected, address, userId }: any) {
   useEffect(() => {
     const fetchCart = async () => {
       const res = await getCart();
+      
 
       if (!res.success) return;
 
@@ -65,8 +66,9 @@ export function CheckoutSummary({ selected, address, userId }: any) {
 
       clearCart()
       router.push(`/order-confirmation/${res?.orderId}`);
-    } catch (err) {
-      toast.error("Payment Failed ❌");
+    } catch (err:any) {
+   
+      toast.error("Payment Failed ❌", err);
     } finally {
       setLoading(false);
     }

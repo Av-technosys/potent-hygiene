@@ -1,13 +1,22 @@
 "use client";
-import {useEffect } from "react";
+import { useEffect } from "react";
 
-export default function SizeSelectorBox({ items,cartSizes,setCartSizes,total,setTotal }: any) {
+export default function SizeSelectorBox({
+  items,
+  cartSizes,
+  setCartSizes,
+  total,
+  setTotal,
+  themeColor,
+}: any) {
   const MAX = 12;
 
   useEffect(() => {
     const formatted = items.map((item: any, index: number) => ({
-      name: item,
-      id: index + 1,
+      name: item.name,
+      description: item.description,
+      image: item.image,
+      id: item.id,
       qty: 0,
     }));
 
@@ -28,29 +37,44 @@ export default function SizeSelectorBox({ items,cartSizes,setCartSizes,total,set
     });
 
     setCartSizes(newSizes);
-    setTotal(newSizes.reduce((acc:any, item:any) => acc + item.qty, 0));
+    setTotal(newSizes.reduce((acc: any, item: any) => acc + item.qty, 0));
   };
 
-
   return (
-    <div className="space-y-2  bg-white rounded-xl shadow p-4 sm:p-6">
+    <div style={{borderColor: themeColor.darkColor}} className="space-y-2 border bg-white rounded-xl shadow p-4 sm:p-6">
       <h2 className="text-center text-lg font-semibold mb-4">
         Customize your box
       </h2>
 
       <div className="space-y-4">
         {cartSizes?.map((item: any, index: any) => (
-         
           <div key={item.id || index}>
             <div className="flex items-center justify-between">
               {/* LEFT */}
-              <p className="text-sm sm:text-base font-medium">{item.name}</p>
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <div
+                    className={`w-10 h-10 rounded-full overflow-hidden border`}
+                    style={{ borderColor: themeColor.darkColor }}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="object-cover "
+                    />
+                  </div>
+                  <span className="text-sm sm:text-base font-medium">
+                    {item.name}
+                  </span>
+                </div>
+                <p>{item.description}</p>
+              </div>
 
               {/* RIGHT */}
               <div className="flex items-center gap-3">
                 <button
-                disabled={total <= 0}
-                    onClick={() => updateQty(item.id, "dec")}
+                  disabled={total <= 0}
+                  onClick={() => updateQty(item.id, "dec")}
                   className="text-lg px-2 text-gray-500"
                 >
                   −
@@ -59,8 +83,8 @@ export default function SizeSelectorBox({ items,cartSizes,setCartSizes,total,set
                 <span className="font-semibold">{item.qty}</span>
 
                 <button
-                disabled={total >= 12}
-                    onClick={() => updateQty(item.id, "inc")}
+                  disabled={total >= 12}
+                  onClick={() => updateQty(item.id, "inc")}
                   className={`text-lg px-2 ${
                     total >= MAX ? "text-gray-300" : "text-teal-600"
                   }`}
@@ -76,7 +100,13 @@ export default function SizeSelectorBox({ items,cartSizes,setCartSizes,total,set
       </div>
 
       {/* Footer */}
-      <div className="mt-5 bg-teal-100 text-teal-800 flex justify-between px-4 py-3 rounded-lg text-sm">
+      <div
+        className="mt-5 flex justify-between px-4 py-3 rounded-lg text-sm"
+        style={{
+          backgroundColor: themeColor.lightColor,
+          color: themeColor.textColor,
+        }}
+      >
         <span>Your box contains</span>
         <span className="font-semibold">
           {total} / {MAX} Pads

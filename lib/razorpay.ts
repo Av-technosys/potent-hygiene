@@ -1,11 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+import {
+  createPaymentGatewayPlan,
+  CreatePaymentGatewaySubscription,
+  createSubscription,
+} from "@/helper";
+import { getCurrentUser } from "@/helper/user/action";
+
 declare global {
   interface Window {
     Razorpay: any;
   }
 }
-
 
 export const loadRazorpayScript = (): Promise<boolean> => {
   return new Promise((resolve) => {
@@ -25,7 +31,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
 
 /**
  * Opens Razorpay Checkout
- */export const initiateRazorpayPayment = async ({
+ */ export const initiateRazorpayPayment = async ({
   amount,
   name,
   description,
@@ -39,12 +45,57 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   items: any[];
   // userId: string;
   address: any;
-
 }) => {
   const scriptLoaded = await loadRazorpayScript();
 
   if (!scriptLoaded) {
     throw new Error("Razorpay SDK failed to load");
+  }
+
+  const subscriptionItems = items.filter(
+    (item: any) => item.isTypeSubscription === true,
+  );
+
+  if (subscriptionItems.length > 0) {
+    const { userId }: any = await getCurrentUser()
+    const plan = await fetch("/api/razorpay/plans", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount, items }),
+    });
+
+    const planData = await plan.json();
+
+    if (!Array.isArray(planData) || planData.length === 0) {
+      throw new Error("Plan creation failed");
+    }
+
+    await createPaymentGatewayPlan(planData);
+
+    const subscriptions = await Promise.all(
+      planData.map(async (p: any) => {
+        const res = await fetch("/api/razorpay/subscriptions", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ planId: p.id }),
+        });
+
+        const data = await res.json();
+
+        if (!data?.id) {
+          throw new Error("Subscription creation failed");
+        }
+
+        return {
+          ...data,
+          productId: p.productId,
+        };
+      }),
+    );
+
+    await CreatePaymentGatewaySubscription(subscriptions);
+    await createSubscription({userId,items});
+
   }
 
   // 1️⃣ Create Razorpay Order (ONLY amount here)
@@ -84,12 +135,11 @@ export const loadRazorpayScript = (): Promise<boolean> => {
               amount,
             }),
           });
- 
+
           const verifyData = await verifyRes.json();
 
           if (verifyData.success) {
             resolve(verifyData);
-            
           } else {
             reject("Payment verification failed");
           }
@@ -103,7 +153,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
       },
     };
 
-  const razor = new window.Razorpay(options);
+    const razor = new window.Razorpay(options);
 
     razor.on("payment.failed", function (response: any) {
       reject(response.error);

@@ -8,27 +8,31 @@ import { Heart } from "lucide-react";
 import { useWishlistStore } from "@/store/WishlistStore";
 import { removeFromWishlist } from "@/store/WishlistActions";
 import { addToCart } from "@/store/cartActions";
+import Link from "next/link";
 
 export default function WishlistProducts() {
   const products = useWishlistStore((state) => state.items);
+ 
 
-  const removeWishlist = async (productVariantId: string) => {
-    await removeFromWishlist(productVariantId);
+  const removeWishlist = async (productId: string) => {
+    await removeFromWishlist(productId);
   };
 
   const addToCartHandler = async (product: any) => {
     await addToCart({
-      productVariantId: product.productVariantId,
+      productId: product.productId,
       sku: "default",
       slug: product.slug || "",
       title: product.name,
       image: product.image || "/product.png",
       price: product.price || 0,
+      quantity: 1,
+      isQuantityChangable: true,
       originalPrice: product.strikethroughPrice,
     });
 
     // optional: remove after adding
-    await removeFromWishlist(product.productVariantId);
+    await removeFromWishlist(product.productId);
   };
 
   if (!products || products.length === 0) {
@@ -42,11 +46,11 @@ export default function WishlistProducts() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
       {products.map((product: any) => (
-        <Card key={product.productVariantId} className="rounded-3xl shadow-sm">
+        <Card key={product.productId} className="rounded-3xl shadow-sm">
           <CardContent className="p-4">
             <div className="relative aspect-square bg-[#EADCF3] rounded-xl flex items-center justify-center">
               <button
-                onClick={() => removeWishlist(product.productVariantId)}
+                onClick={() => removeWishlist(product.productId)}
                 className="absolute top-2 left-2 bg-white rounded-full p-1 shadow"
               >
                 <Heart className="w-4 h-4 fill-red-500 text-red-500" />
@@ -74,12 +78,20 @@ export default function WishlistProducts() {
                 </div>
               )}
 
-              <Button
-                onClick={() => addToCartHandler(product)}
-                className="w-full rounded-xl bg-[#1A8D91] text-white"
-              >
-                Add to Cart
-              </Button>
+              {product.hasVarientBox ? (
+                <Link href={`/product-detail/${product.slug}`}>
+                  <Button className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]">
+                    Add to Cart
+                  </Button>
+                </Link>
+              ) : (
+                <Button
+                  onClick={() => addToCartHandler(product)}
+                  className="w-full rounded-xl bg-[#1A8D91] text-white"
+                >
+                  Add to Cart
+                </Button>
+              )}
             </div>
           </CardContent>
         </Card>

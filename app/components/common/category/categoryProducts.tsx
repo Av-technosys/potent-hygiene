@@ -9,25 +9,27 @@ import AddToWishlist from "./addToWishlist";
 import Link from "next/link";
 
 export default function CategoryProducts({ products }: any) {
-
-
+  
 
   // ✅ FIXED ADD TO CART
   const addToCart = async (product: any) => {
     await addToCartAction({
-      productVariantId: product.id,
+      productId: product.id,
       sku: "default",
       slug: product.slug || "",
       title: product.name,
       image: product.bannerImage || "/product.png",
       price: product.basePrice || 0,
       originalPrice: product.strikethroughPrice,
+      quantity: 1,
+      isQuantityChangable:true
     });
   };
 
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 h-full gap-6 flex-1">
-      {products?.map((value: any) => (
+      {
+        products.length > 0 ? products?.map((value: any) => (
         <div
           key={value.id}
           className="flex relative flex-col rounded-md p-3 shadow-md bg-white"
@@ -80,15 +82,28 @@ export default function CategoryProducts({ products }: any) {
               )}
             </div>
 
-            <Button
-              className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]"
-              onClick={() => addToCart(value)}
-            >
-              Add to Cart
-            </Button>
+            {value.hasVarientBox ? (
+              <Link href={`/product-detail/${value.slug}`}>
+                <Button className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]">
+                  Add to Cart
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                className="w-full rounded-md bg-[#168BA0] py-5 text-sm font-semibold text-white hover:bg-[#146e71]"
+                onClick={() => addToCart(value)}
+              >
+                Add to Cart
+              </Button>
+            )}
           </div>
         </div>
-      ))}
+      ))
+      :
+      <div className="text-center py-20 text-gray-500">
+        No products found
+      </div>
+      }
     </div>
   );
 }

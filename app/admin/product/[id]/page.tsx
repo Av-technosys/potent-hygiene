@@ -11,6 +11,7 @@ const Page = async ({ params }: PageProps) => {
 
   const product = await getFullProduct(id);
 
+
   if (!product) {
     return <div className="p-10 text-center">Product not found</div>;
   }
@@ -19,10 +20,7 @@ const Page = async ({ params }: PageProps) => {
 
   return (
     <EditProduct
-      productId={product.id}
-      initialVariants={product.variants}
-      initialCategoryIds={product.categoryIds}
-      targetVariantId={product.targetVariant?.id}
+      productDetails={product}
     />
   );
 };

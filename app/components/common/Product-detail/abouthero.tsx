@@ -2,12 +2,12 @@
 
 import Image from "next/image";
 
-export default function AboutHero({ themeColor }: { themeColor?: string }) {
+export default function AboutHero({ themeColor }: { themeColor?: any }) {
   return (
     <section
       className="w-full py-20"
       style={{
-        backgroundColor: themeColor ? `${themeColor}50` : "#ffffff",
+        backgroundColor: themeColor ? `${themeColor.darkColor}20` : "#ffffff",
       }}
     >
       <div className="container mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 items-center gap-12">

@@ -5,11 +5,13 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { IconEye, IconEyeOff } from "@tabler/icons-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signUp } from "@/helper";
 import { toast } from "sonner";
 
 const Page = () => {
+  const params = useSearchParams();
+  const ref = params.get("ref");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const router = useRouter();
@@ -22,6 +24,7 @@ const Page = () => {
     phone: "",
     password: "",
     confirmPassword: "",
+    ref: ref || ""
   });
 
   const [errors, setErrors] = useState({
@@ -100,6 +103,7 @@ const Page = () => {
         password: formData.password,
         phone: formData.phone,
         name: formData.fullName,
+        ref: formData?.ref || "",
       });
 
       toast.success(res.message || "OTP sent!", {
@@ -258,6 +262,15 @@ const Page = () => {
                 </p>
               )}
             </div>
+
+            <input
+              type="text"
+              name="ref"
+              placeholder="Referal Code"
+              value={formData.ref}
+              onChange={handleChange}
+              className="w-full border-b border-gray-400 bg-transparent px-1 py-2 text-sm outline-none focus:border-gray-600"
+            />
 
             <button
               type="submit"

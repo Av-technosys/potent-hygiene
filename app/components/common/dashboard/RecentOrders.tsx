@@ -18,7 +18,7 @@ export const RecentOrders = ({ orders }: { orders: any[] }) => {
             status: order.status || "Pending",
             items: order.itemsCount || 1, // fallback if not joined
             date: new Date(order.createdAt).toLocaleDateString(),
-            amount: `₹${order.totalAmountPaid || 0}`,
+            amount: `₹${order.totalAmount || 0}`,
           };
 
           return (

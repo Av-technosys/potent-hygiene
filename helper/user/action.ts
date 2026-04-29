@@ -36,7 +36,7 @@ async function refreshUserTokens() {
   if (!refreshToken || !idToken) return null;
   try {
 
-    const res = await fetch(`${process.env.BASE_API_URL}/auth/refersh-token`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BASE_AUTH_API_URL}/refersh-token`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -125,6 +125,7 @@ export async function getProfile() {
   const user = result[0];
 
   return {
+    userId: user.id,
     fullName: user.name,
     email: user.email,
     phone: user.phone,
@@ -287,10 +288,9 @@ export async function createUserAddress(data: NewAddressInput) {
 }
 
 export async function subscribeEmail(email: string) {
-  console.log("email",email)
 
   if (!email) {
-   return { success: false, message: "Email is required" };
+    return { success: false, message: "Email is required" };
   }
 
   if (!emailRegex.test(email.trim())) {

@@ -21,6 +21,7 @@ const Page = async ({ searchParams }: PageProps) => {
     category: params.category,
   });
 
+
   return (
     <ProductClient
       products={result.items}

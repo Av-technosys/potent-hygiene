@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { review, reviewMedia, users, productVariant } from "@/db/schema";
+import { review, reviewMedia, users, product } from "@/db/schema";
 import { and, eq, is, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireUserWithRefresh } from "../user/action";
@@ -11,7 +11,7 @@ export async function createReview(reviewData: any) {
 
 
     if (!productVarientId) {
-      throw new Error("Product Variant ID is required for review submission");
+      throw new Error("Product  ID is required for review submission");
     }
     await db.transaction(async (tx) => {
       const userInfo = await tx.query.users.findFirst({
@@ -26,7 +26,7 @@ export async function createReview(reviewData: any) {
         .insert(review)
         .values({
           userId,
-          productVariantId: productVarientId,
+          productId: productVarientId,
           name: userInfo?.name || "Guest User",
           email: userInfo?.email || "",
           rating: Number(rating),
@@ -54,10 +54,10 @@ export async function createReview(reviewData: any) {
 
 export async function getProductReviews(slug: string | any) {
   try {
-    const v = await db.query.productVariant.findFirst({
-      where: eq(productVariant.slug, slug),
+    const v = await db.query.product.findFirst({
+      where: eq(product.slug, slug),
     });
-    if (!v || !v.productId) return [];
+    if (!v || !v.id) return [];
     const reviews = await db
       .select({
         id: review.id,
@@ -66,14 +66,14 @@ export async function getProductReviews(slug: string | any) {
         name: review.name,
         email: review.email,
         message: review.message,
-        productVariantId: review.productVariantId,
+        productId: review.productId,
         createdAt: review.createdAt,
       })
       .from(review)
       .innerJoin(users, eq(review.userId, users.id))
       .where(
         and(
-          eq(review.productVariantId, v.id),
+          eq(review.productId, v.id),
           eq(review.isAdminApproved, true),
         ),
       );
@@ -158,7 +158,7 @@ export async function getUserAllReviews() {
         name: review.name,
         email: review.email,
         message: review.message,
-        productVariantId: review.productVariantId,
+        productId: review.productId,
         isAdminApproved: review.isAdminApproved,
         createdAt: review.createdAt,
       })

@@ -1,15 +1,33 @@
 "use client";
 
 import { Star, ThumbsUp, User } from "lucide-react";
+import Link from "next/link";
 
-export default function ProductReviews({ reviews }: any) {
-  const ratingBreakdown = [
-    { stars: 5, percent: 78 },
-    { stars: 4, percent: 15 },
-    { stars: 3, percent: 5 },
-    { stars: 2, percent: 1 },
-    { stars: 1, percent: 1 },
+export default function ProductReviews({ reviews, product, themeColor }: any) {
+  const ratings = [
+    { stars: 5, count: product.rateing5Star || 0 },
+    { stars: 4, count: product.rateing4Star || 0 },
+    { stars: 3, count: product.rateing3Star || 0 },
+    { stars: 2, count: product.rateing2Star || 0 },
+    { stars: 1, count: product.rateing1Star || 0 },
   ];
+
+  const totalReviews = ratings.reduce((sum, r) => sum + r.count, 0);
+
+  // Avoid divide by 0
+  const averageRating =
+    totalReviews === 0
+      ? 0
+      : (
+          ratings.reduce((sum, r) => sum + r.stars * r.count, 0) / totalReviews
+        ).toFixed(1);
+
+  // Convert to percentage
+  const ratingBreakdown = ratings.map((r) => ({
+    stars: r.stars,
+    percent:
+      totalReviews === 0 ? 0 : Math.round((r.count / totalReviews) * 100),
+  }));
 
   return (
     <div className="py-10">
@@ -20,7 +38,7 @@ export default function ProductReviews({ reviews }: any) {
           <h2 className="text-lg font-semibold mb-4">Customer Reviews</h2>
 
           <div className="flex items-center gap-4">
-            <span className="text-4xl font-bold">4.8</span>
+            <span className="text-4xl font-bold">{averageRating}</span>
 
             <div>
               <div className="flex text-yellow-400">
@@ -30,12 +48,16 @@ export default function ProductReviews({ reviews }: any) {
                     <Star key={i} className="w-5 h-5 fill-yellow-400" />
                   ))}
               </div>
-              <p className="text-xs text-gray-500 mt-1">234 Reviews</p>
+              <p className="text-xs text-gray-500 mt-1">
+                {totalReviews} Reviews
+              </p>
             </div>
           </div>
 
-          <button className="mt-6 px-5 py-2 text-sm border border-teal-600 text-teal-600 rounded-full hover:bg-teal-50 transition">
+          <button style={{borderColor:themeColor.darkColor, color:themeColor.darkColor}} className="mt-6 px-5 py-2 text-sm border rounded-full hover:bg-teal-50 transition">
+           <Link href={`/dashboard/reviews`}>
             Write a Review
+           </Link>
           </button>
         </div>
 
@@ -48,8 +70,8 @@ export default function ProductReviews({ reviews }: any) {
 
               <div className="flex-1 h-2 bg-gray-300 rounded-full overflow-hidden">
                 <div
-                  className="h-full bg-teal-600"
-                  style={{ width: `${item.percent}%` }}
+                  className="h-full "
+                  style={{ width: `${item.percent}%`, backgroundColor: themeColor.darkColor }}
                 />
               </div>
 
@@ -67,15 +89,15 @@ export default function ProductReviews({ reviews }: any) {
           <div key={index} className="border-b border-gray-200 pb-8">
             <div className="flex items-start gap-4">
               {/* Avatar */}
-              <div className="w-10 h-10 rounded-full bg-teal-100 flex items-center justify-center">
-                <User className="w-5 h-5 text-teal-600" />
+              <div style={{backgroundColor:themeColor.lightColor}} className="w-10 h-10 rounded-full  flex items-center justify-center">
+                <User style={{color:themeColor.textColor}} className="w-5 h-5" />
               </div>
 
               <div className="flex-1">
                 {/* Name + Badge */}
                 <div className="flex items-center gap-3">
                   <p className="font-medium">{review.name}</p>
-                  <span className="text-xs bg-teal-100 text-teal-700 px-2 py-1 rounded-full">
+                  <span style={{backgroundColor:themeColor.lightColor, color:themeColor.textColor }} className="text-xs  px-2 py-1 rounded-full">
                     Verified Purchase
                   </span>
                 </div>
@@ -106,7 +128,12 @@ export default function ProductReviews({ reviews }: any) {
 
                 <div className="w-full mt-3 flex items-center gap-2">
                   {review?.media?.map((media: any, index: number) => (
-                    <img className="w-20 h-20 rounded-md" key={index} src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${media.mediaURL}`} alt="reviewImage" />
+                    <img
+                      className="w-20 h-20 rounded-md"
+                      key={index}
+                      src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${media.mediaURL}`}
+                      alt="reviewImage"
+                    />
                   ))}
                 </div>
 

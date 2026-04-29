@@ -19,7 +19,7 @@ export function CartInitializer({ initialItems }: CartInitializerProps) {
 
     if (items.length === 0 && initialItems.length > 0) {
       const formattedItems = initialItems.map((item: any) => ({
-        productVariantId: item.productVariantId,
+        productId: item.productId,
         sku: item.sku || '',
         slug: item.slug || '',
         title: item.title || 'Product',

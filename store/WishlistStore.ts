@@ -3,7 +3,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 type WishlistItem = {
-  productVariantId: string;
+  productId: string;
   name?: string;
   price?: number;
   image?: string;
@@ -14,7 +14,7 @@ type WishlistState = {
 
   setWishlist: (items: WishlistItem[]) => void;
   addItem: (item: WishlistItem) => void;
-  removeItem: (productVariantId: string) => void;
+  removeItem: (productId: string) => void;
 
   totalItems: () => number;
 };
@@ -29,7 +29,7 @@ export const useWishlistStore = create<WishlistState>()(
       addItem: (item) =>
         set((state) => {
           const exists = state.items.find(
-            (i) => i.productVariantId === item.productVariantId
+            (i) => i.productId === item.productId
           );
 
           if (exists) return state;
@@ -37,10 +37,10 @@ export const useWishlistStore = create<WishlistState>()(
           return { items: [...state.items, item] };
         }),
 
-      removeItem: (productVariantId) =>
+      removeItem: (productId) =>
         set((state) => ({
           items: state.items.filter(
-            (i) => i.productVariantId !== productVariantId
+            (i) => i.productId !== productId
           ),
         })),
 

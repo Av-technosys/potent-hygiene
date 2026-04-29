@@ -20,7 +20,6 @@ export const MultiCategorySelect = ({
     async function load() {
       setLoading(true);
       const data = await getCategories();
-
       setCategories(
         data.map((category: any) => ({
           label: category.name,
@@ -38,6 +37,7 @@ export const MultiCategorySelect = ({
     selectedCategories.includes(cat.value)
   );
 
+
   return (
     <div className="space-y-2 pl-1">
       <Label>Category</Label>
@@ -46,6 +46,7 @@ export const MultiCategorySelect = ({
         <Loader2 size={20} className="animate-spin" />
       ) : (
         <MultipleSelector
+        key={categories.length}
           value={selectedObjects}
           defaultOptions={categories}
           onChange={(values: any[]) => {

@@ -8,19 +8,22 @@ import AboutHero from "../../../components/common/Product-detail/abouthero";
 import JournalsSection from "../../../components/common/Product-detail/journal";
 import RelatedProducts from "../../../components/common/Product-detail/alsolike";
 import {
-  getCategoryName,
-  getFullProduct,
   getProductReviews,
   getProductSimilarProducts,
 } from "@/helper";
+import { getFullProductDetails } from "@/helper/product/action";
+import { lowayProductDetailsPage, ovyProductDetailsPage } from "@/const/globalconst";
 
 export default async function Page({ params }: any) {
   const { slug } = await params;
 
-  const product = await getFullProduct(slug);
+  const product = await getFullProductDetails(slug);
   const similarProducts = (await getProductSimilarProducts(slug)) || [];
   const reviewWithMedia = await getProductReviews(slug);
-  const catetoryName = await getCategoryName(product?.categoryIds[0]);
+  // const catetoryName = similarProducts[0]?.category;
+
+  const themeColor =  product.brand == "loway" ? lowayProductDetailsPage : ovyProductDetailsPage; 
+
 
   if (!product) {
     return <div className="text-center py-20">Product not found</div>;
@@ -29,13 +32,14 @@ export default async function Page({ params }: any) {
     <div className="container">
       <div className="">
         <Product
-          categoryName={catetoryName}
-          variants={product.variants}
-          productInfo={product.targetVariant}
+          // categoryName={catetoryName}
+          // variants={product}
+          productInfo={product}
+          themeColor={themeColor}
         />
-        <TrustBadges />
-        <AboutProduct variant={product.targetVariant} />
-        <ProductReviews reviews={reviewWithMedia} />
+        <TrustBadges themeColor={themeColor}/>
+        <AboutProduct variant={product} themeColor={themeColor} />
+        <ProductReviews reviews={reviewWithMedia} product={product} themeColor={themeColor} />
         <div className="  ">
           <Image
             src="/review.png"
@@ -46,9 +50,9 @@ export default async function Page({ params }: any) {
             unoptimized
           />
         </div>
-        <AboutHero />
-        <JournalsSection />
-        <RelatedProducts products={similarProducts} />
+        <AboutHero themeColor={themeColor} />
+        <JournalsSection themeColor={themeColor} />
+        <RelatedProducts products={similarProducts} themeColor={themeColor} />
       </div>
     </div>
   );

@@ -8,14 +8,14 @@ export default function AboutProduct({
   themeColor,
 }: {
   variant?: any;
-  themeColor?: string;
+  themeColor?: any;
 }) {
   const [selectedTab, setSelectedTab] = useState("Description");
 
   const tabs = ["Description", "Usage", "Benefits", "Ingredients", "Safety"];
 
-  const selectedAttribute = variant?.attributes?.find(
-    (a: any) => a.attribute === selectedTab
+  const selectedAttribute = variant?.productAttributeRes?.find(
+    (a: any) => a.attribute === selectedTab,
   );
 
   return (
@@ -24,49 +24,47 @@ export default function AboutProduct({
       <div className="py-6 flex justify-center">
         <div className="flex flex-wrap gap-2">
           {tabs.map((tab) => (
-          <button
-  key={tab}
-  onClick={() => setSelectedTab(tab)}
-  className={`px-4 py-2 text-sm rounded-full border transition ${
-    selectedTab === tab
-      ? "text-white"
-      : "bg-white border-gray-300"
-  }`}
-  style={
-    themeColor
-      ? {
-          backgroundColor: selectedTab === tab ? themeColor : "white",
-          borderColor: themeColor,
-        }
-      : selectedTab === tab
-      ? {
-          backgroundColor: "#168BA0",
-          borderColor: "#168BA0",
-        }
-      : {}
-  }
->
-  {tab}
-</button>
+            <button
+              key={tab}
+              onClick={() => setSelectedTab(tab)}
+              className={`px-4 py-2 text-sm rounded-full border transition ${
+                selectedTab === tab ? "text-white" : "bg-white border-gray-300"
+              }`}
+              style={
+                themeColor
+                  ? {
+                      backgroundColor:
+                        selectedTab === tab ? themeColor.darkColor : "white",
+                      borderColor: themeColor.darkColor,
+                    }
+                  : selectedTab === tab
+                    ? {
+                        backgroundColor: "#168BA0",
+                        borderColor: "#168BA0",
+                      }
+                    : {}
+              }
+            >
+              {tab}
+            </button>
           ))}
         </div>
       </div>
 
       {/* Content */}
       <div className="mb-6 bg-gray-100 rounded-xl border border-gray-200 p-6 md:p-8 min-h-[200px]">
-        
         {/* Heading */}
         <h2
           className="text-lg font-semibold mb-4"
-          style={{ color: themeColor }}
+          style={{ color: themeColor.darkColor }}
         >
           {selectedTab === "Description"
             ? "Product Description"
             : selectedTab === "Usage"
-            ? "How to Use"
-            : selectedTab === "Safety"
-            ? "Safety Information"
-            : selectedTab}
+              ? "How to Use"
+              : selectedTab === "Safety"
+                ? "Safety Information"
+                : selectedTab}
         </h2>
 
         {/* Content */}
@@ -85,8 +83,8 @@ export default function AboutProduct({
           />
         ) : (
           <p className="text-sm text-gray-500 italic">
-            No {selectedTab.toLowerCase()} information available for this product
-            variant.
+            No {selectedTab.toLowerCase()} information available for this
+            product variant.
           </p>
         )}
       </div>

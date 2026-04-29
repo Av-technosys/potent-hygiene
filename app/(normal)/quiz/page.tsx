@@ -4,18 +4,30 @@ import { Field, FieldLabel } from "@/components/ui/field";
 import { Progress } from "@/components/ui/progress";
 import { quizQuestions } from "@/const/globalconst";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import React from "react";
+import React, { useState } from "react";
 import { toast } from "sonner";
+import SuggestedProducts from "./suggestedProducts";
 
 const Page = () => {
   const [quizData, setQuizData] = React.useState(quizQuestions[0]);
   const [answers, setAnswers] = React.useState<{ [key: number]: number }>({});
+
+  const [suggestedProductPopup,setSuggestedProductPopup]=useState(false);
+
+  const filteredAnswers = quizQuestions
+    .filter((question) => answers[question.id] !== undefined)
+    .map((question) => ({
+      id: question.id,
+      question: question.question,
+      answer: question.options[answers[question.id]].slug,
+    }));
 
   const changeQuiz = (quizId: any) => {
     if (quizQuestions.length > quizId) {
       setQuizData(quizQuestions[quizId]);
     } else {
       toast.success("Quiz Completed!");
+      setSuggestedProductPopup(true)
     }
   };
 
@@ -40,6 +52,12 @@ const Page = () => {
     }
   };
 
+
+  if(suggestedProductPopup){
+    return <SuggestedProducts userAnswers={filteredAnswers}/>
+  }
+
+
   return (
     <div className="min-h-screen  bg-gray-100 flex items-center justify-center px-4">
       <div className="w-full max-w-4xl my-5 md:my-0 bg-white rounded-2xl shadow-lg p-6 md:p-10 flex flex-col gap-8">
@@ -54,6 +72,11 @@ const Page = () => {
             </span>
           </FieldLabel>
           <Progress
+            value={(answers[quizQuestions.length] >= 0 ? 100 : (quizData.id - 1) * (100 / quizQuestions.length))}
+            className="bg-[#168BA0]/50 [&>div]:bg-[#168BA0]"
+            id="progress-upload"
+          /> */}
+           <Progress
             value={(answers[quizQuestions.length] >= 0 ? 100 : (quizData.id - 1) * (100 / quizQuestions.length))}
             className="bg-[#168BA0]/50 [&>div]:bg-[#168BA0]"
             id="progress-upload"

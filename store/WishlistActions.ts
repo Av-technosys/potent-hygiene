@@ -24,23 +24,27 @@ export const addToWishlist = async (item: any) => {
     useWishlistStore.getState().addItem(item);
 
     try {
-        await addToWishlistDB(item.productVariantId);
+        await addToWishlistDB(item.productId);
+
+        toast.success("Item Added to wishlist");
     } catch (error) {
         console.error("DB failed:", error);
 
         useWishlistStore
             .getState()
-            .removeItem(item.productVariantId);
+            .removeItem(item.productId);
 
         toast.error("Failed to add wishlist");
     }
 };
 
-export const removeFromWishlist = async (productVariantId: string) => {
-    useWishlistStore.getState().removeItem(productVariantId);
+export const removeFromWishlist = async (productId: string) => {
+    useWishlistStore.getState().removeItem(productId);
 
     try {
-        await removeFromWishlistDB(productVariantId);
+        await removeFromWishlistDB(productId);
+
+        toast.success("Item removed from wishlist");
     } catch (error) {
         console.error(error);
         toast.error("Failed to remove wishlist");
@@ -51,7 +55,7 @@ export const syncWishlistFromDB = async () => {
     const data = await getWishlistDB();
 
     const formatted = data.map((item: any) => ({
-        productVariantId: item.productVariantId,
+        productId: item.productId,
         name: item.name,
         price: item.price,
         image: item.image,

@@ -7,9 +7,9 @@ export async function POST(req: Request) {
 
     const body = await req.json()
 
-    const { userId, productVariantId, subscriptionPlanId, quantity } = body
+    const { userId, productId, subscriptionPlanId, quantity } = body
 
-    if (!userId || !productVariantId) {
+    if (!userId || !productId) {
       return Response.json(
         { success: false, message: "Missing data" },
         { status: 400 }
@@ -34,8 +34,8 @@ export async function POST(req: Request) {
     // 3️⃣ insert item in cart_item
     await db.insert(cartItem).values({
       cartId: userCart.id,
-      productVariantId,
-      subscriptionPlanId,
+      productId,
+      // subscriptionPlanId,
       quantity
     })
 

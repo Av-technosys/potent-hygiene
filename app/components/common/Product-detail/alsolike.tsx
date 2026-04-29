@@ -4,9 +4,12 @@
 import Image from "next/image";
 import { Heart, Star } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/button";
 
 export default function RelatedProducts({ products, themeColor }: any) {
-  return (
+ 
+if(products.length > 0){
+    return (
     <section className="w-full mx-auto pb-16">
       <div className=" py-4 mb-8">
         <h2 className="text-2xl font-semibold text-gray-900 mb-8">
@@ -24,6 +27,7 @@ export default function RelatedProducts({ products, themeColor }: any) {
               {/* Wishlist */}
               <button className="absolute top-2 left-2 bg-white rounded-full p-1 shadow">
                 <Heart
+                style={{color:themeColor.darkColor}}
                   className="w-4 h-4 text-gray-500"
                   onMouseEnter={(e) => {
                     e.currentTarget.style.color = themeColor;
@@ -37,7 +41,7 @@ export default function RelatedProducts({ products, themeColor }: any) {
               {/* Discount Badge */}
               <span
                 className="absolute top-2 right-2 text-white text-xs px-3 py-1 rounded-full"
-                style={{ backgroundColor: themeColor || "#168BA0" }}
+                style={{ backgroundColor: themeColor.darkColor || "#168BA0" }}
               >
                 25% OFF
               </span>
@@ -88,9 +92,19 @@ export default function RelatedProducts({ products, themeColor }: any) {
               </div>
 
               {/* Button */}
-              <button
+             
+
+
+              {product.hasVarientBox ? (
+              <Link href={`/product-detail/${product.slug}`}>
+                <Button style={{backgroundColor:themeColor.darkColor}} className="w-full rounded-md  py-5 text-sm font-semibold text-white hover:bg-[#146e71]">
+                  Add to Cart
+                </Button>
+              </Link>
+            ) : (
+               <button
                 className="w-full mt-4 text-white text-sm py-2.5 rounded-lg transition"
-                style={{ backgroundColor: themeColor || "#168BA0" }}
+                style={{ backgroundColor: themeColor.darkColor || "#168BA0" }}
                 onMouseEnter={(e) => {
                   e.currentTarget.style.filter = "brightness(0.9)";
                 }}
@@ -100,10 +114,13 @@ export default function RelatedProducts({ products, themeColor }: any) {
               >
                 Add to Cart
               </button>
+            )}
+
             </div>
           ))}
         </div>
       </div>
     </section>
   );
+}
 }

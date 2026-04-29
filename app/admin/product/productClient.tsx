@@ -34,6 +34,7 @@ const ProductClient = ({ products, total, currentPage }: Props) => {
   const router = useRouter();
   const updateQuery = useUpdateQuery();
 
+
   const [isPending, startTransition] = useTransition();
 
 

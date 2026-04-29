@@ -1,5 +1,5 @@
 import { db } from "@/db"
-import { order,  subscriptionPlans } from "@/db/schema"
+import { order } from "@/db/schema"
 import { subscriptions } from "@/db/schema"
 import { eq } from "drizzle-orm"
 
@@ -7,11 +7,11 @@ export async function POST(req: Request) {
 
   const { userId, planId } = await req.json()
 
-  const plan = await db.query.subscriptionPlans.findFirst({
-    where: eq(subscriptionPlans.id, planId)
+  const plan = await db.query.subscriptions.findFirst({
+    where: eq(subscriptions.id, planId)
   })
 
-  if (!plan || !plan.intervalMonths) {
+  if (!plan || !plan.frequencyInMonths) {
     return Response.json({ error: "Plan not found or invalid" })
   }
 
@@ -19,16 +19,16 @@ export async function POST(req: Request) {
 
   const nextBillingDate = new Date()
   nextBillingDate.setMonth(
-    nextBillingDate.getMonth() + plan.intervalMonths
+    nextBillingDate.getMonth() + plan.frequencyInMonths
   )
 
   const newSubscription = await db
     .insert(subscriptions)
     .values({
       userId,
-      planId,
+      // planId,
       startDate,
-      nextBillingDate,
+      nextOrderDate: nextBillingDate,
       status: "active"
     })
     .returning()
@@ -36,7 +36,7 @@ export async function POST(req: Request) {
   await db.insert(order).values({
     userId,
     subscriptionId: newSubscription[0].id,
-    totalAmountPaid: plan.price,
+    // totalAmountPaid: plan.price,
     status: "paid",
     createdAt: new Date()
   })
