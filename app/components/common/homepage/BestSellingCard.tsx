@@ -32,7 +32,7 @@ export default function BestsellingCard({ product, buttonColor, brand }: any) {
 
   const handleRedirect = () => {
     if (brand) {
-      router.push(`${pathname}/product-detail/${product.slug}`);
+      router.push(`/product-detail/${product.slug}`);
     } else {
       router.push(`/product-detail/${product.slug}`);
     }

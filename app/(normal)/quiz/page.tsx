@@ -75,12 +75,8 @@ const Page = () => {
             value={(answers[quizQuestions.length] >= 0 ? 100 : (quizData.id - 1) * (100 / quizQuestions.length))}
             className="bg-[#168BA0]/50 [&>div]:bg-[#168BA0]"
             id="progress-upload"
-          /> */}
-           <Progress
-            value={(answers[quizQuestions.length] >= 0 ? 100 : (quizData.id - 1) * (100 / quizQuestions.length))}
-            className="bg-[#168BA0]/50 [&>div]:bg-[#168BA0]"
-            id="progress-upload"
-          />
+          /> 
+           
         </Field>
 
         {/* Question */}

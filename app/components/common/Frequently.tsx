@@ -668,7 +668,7 @@ const Frequently = () => {
         {searchText == "" && (
           <>
             {/* PRODUCT TABS */}
-            <div className="mt-10 flex gap-3 justify-center flex-wrap">
+            <div className="mt-5 flex gap-3 justify-center flex-wrap">
               {products.map((product) => (
                 <button
                   key={product}
@@ -692,7 +692,7 @@ const Frequently = () => {
                 <button
                   key={cat}
                   onClick={() => setActiveCategory(cat)}
-                  className={`rounded-full px-4 py-2 text-sm border transition ${activeCategory === cat
+                  className={`rounded-full px-4 py-2 mt-7 text-sm border transition ${activeCategory === cat
                       ? "bg-[#168BA0] text-white border-[#168BA0]"
                       : "bg-white text-gray-700 border-gray-300"
                     }`}
@@ -704,7 +704,7 @@ const Frequently = () => {
           </>
         )}
 
-        <div className="mt-8 rounded-xl border border-gray-200 p-4">
+        <div className="mt-5 rounded-xl border border-gray-200 p-4">
           {searchText ? (
             filteredFAQs.length === 0 ? (
               <p className="text-center text-gray-500 py-6">

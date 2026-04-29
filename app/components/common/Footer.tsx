@@ -27,7 +27,7 @@ const Footer = () => {
                 alt="Potent Logo"
                 width={140}
                 height={80}
-                className="object-contain"
+                className="object-contain mb-5"
               />
             </Link>
 
