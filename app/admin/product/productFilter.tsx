@@ -1,32 +1,28 @@
 "use client";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Card,
-  CardHeader,
-  CardTitle,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { PRODUCT_FILTER } from "@/const/filters";
 
 export default function ProductFilters({
   productType,
   setProductType,
-  sustainability,
-  setSustainability,
+  size,
+  setSize,
   flowType,
   setFlowType,
-  purpose,
-  setPurpose,
-  features,
-  setFeatures,
+  material,
+  setMaterial,
+  cramps,
+  setCramps,
+  sensitive,
+  setSensitive,
 }: any) {
-  
   const handleChange = (
     item: any,
     checked: boolean,
     state: any[] = [],
-    setState: Function
+    setState: Function,
   ) => {
     if (!Array.isArray(state)) state = [];
 
@@ -39,7 +35,6 @@ export default function ProductFilters({
 
   const isChecked = (item: any, state: any[]) =>
     Array.isArray(state) && state.some((i) => i.slug === item.slug);
-
 
   const FilterCard = ({ title, data, state, setState }: any) => (
     <Card className="shadow-sm rounded-2xl">
@@ -68,7 +63,6 @@ export default function ProductFilters({
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-
       <FilterCard
         title="Product Type"
         data={PRODUCT_FILTER.product_type}
@@ -77,10 +71,10 @@ export default function ProductFilters({
       />
 
       <FilterCard
-        title="Sustainability"
-        data={PRODUCT_FILTER.sustainability}
-        state={sustainability}
-        setState={setSustainability}
+        title="Size"
+        data={PRODUCT_FILTER.size}
+        state={size}
+        setState={setSize}
       />
 
       <FilterCard
@@ -91,19 +85,25 @@ export default function ProductFilters({
       />
 
       <FilterCard
-        title="Purpose"
-        data={PRODUCT_FILTER.purpose}
-        state={purpose}
-        setState={setPurpose}
+        title="Material"
+        data={PRODUCT_FILTER.material}
+        state={material}
+        setState={setMaterial}
       />
 
       <FilterCard
-        title="Features"
-        data={PRODUCT_FILTER.features}
-        state={features}
-        setState={setFeatures}
+        title="Cramps & Discomfort"
+        data={PRODUCT_FILTER.cramps_or_discomfort}
+        state={cramps}
+        setState={setCramps}
       />
 
+      <FilterCard
+        title="Allergies & Sensitivities"
+        data={PRODUCT_FILTER.allergies_or_sensitivities}
+        state={sensitive}
+        setState={setSensitive}
+      />
     </div>
   );
 }

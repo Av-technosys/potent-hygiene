@@ -65,11 +65,12 @@ export default function AddProductForm() {
   const { upload, uploading } = useFileUpload();
   const bannerRef = useRef<HTMLInputElement>(null);
 
-  const [productType, setProductType] = useState<any[]>([]);
-  const [sustainability, setSustainability] = useState<any[]>([]);
-  const [flowType, setFlowType] = useState<any[]>([]);
-  const [purpose, setPurpose] = useState<any[]>([]);
-  const [features, setFeatures] = useState<any[]>([]);
+   const [productType, setProductType] = useState<any[]>([]);
+   const [size, setSize] = useState<any[]>([]);
+   const [flowType, setFlowType] = useState<any[]>([]);
+   const [material, setMaterial] = useState<any[]>([]);
+   const [cramps, setCramps] = useState<any[]>([]);
+   const [sensitive, setSensitive]=useState<any[]>([]);
 
   const [varientBox, setVarientBox] = useState(false);
 
@@ -284,12 +285,13 @@ export default function AddProductForm() {
           value: val.value,
         }))
         .filter((a: any) => a.value.trim().length > 0),
-      filters: [
+       filters: [
         ...(productType || []),
-        ...(sustainability || []),
+        ...(size || []),
         ...(flowType || []),
-        ...(purpose || []),
-        ...(features || []),
+        ...(material || []),
+        ...(cramps || []),
+        ...(sensitive || []),
       ],
       VarientBoxes: varientBox ? variantBoxes : [],
       hasVarientBox: varientBox,
@@ -589,17 +591,20 @@ export default function AddProductForm() {
 
             {/* filter section */}
             <ProductFilters
-              productType={productType}
-              setProductType={setProductType}
-              sustainability={sustainability}
-              setSustainability={setSustainability}
-              flowType={flowType}
-              setFlowType={setFlowType}
-              purpose={purpose}
-              setPurpose={setPurpose}
-              features={features}
-              setFeatures={setFeatures}
-            />
+                         productType={productType}
+                         setProductType={setProductType}
+                         size={size}
+                         setSize={setSize}
+                         flowType={flowType}
+                         setFlowType={setFlowType}
+                         material={material}
+                         setMaterial={setMaterial}
+                         cramps={cramps}
+                         setCramps={setCramps}
+                         sensitive={sensitive}
+                         setSensitive={setSensitive}
+                       />
+           
 
             {/* Varient size boxes */}
 

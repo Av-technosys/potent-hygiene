@@ -243,30 +243,30 @@ export const quizQuestions = [
     id: 1,
     question: "What describe your flow ?",
     options: [
-      { icon: User2, label: "light flow" },
-      { icon: User2, label: "medium flow" },
-      { icon: User2, label: "heavy flow" },
-      { icon: User2, label: "irregular flow" },
+      { icon: User2, label: "light flow", slug:"ligth_flow" },
+      { icon: User2, label: "medium flow",slug:"medium_flow" },
+      { icon: User2, label: "heavy flow", slug:"heavy_flow" },
+      { icon: User2, label: "Unsure", slug:"unsure" },
     ],
   },
   {
     id: 2,
     question: "Do you experience cramps or discomfort?",
     options: [
-      { icon: User2, label: "No Discomfort" },
-      { icon: User2, label: "Mild Discomfort" },
-      { icon: User2, label: "Severe Cramps" },
-      { icon: User2, label: "Varies" },
+      { icon: User2, label: "No Discomfort", slug:"no_discomfort" },
+      { icon: User2, label: "Mild Discomfort", slug:"mild_discomfort" },
+      { icon: User2, label: "Severe Cramps", slug:"severe_cramps" },
+      { icon: User2, label: "Varies", slug:"varies" },
     ],
   },
   {
     id: 3,
     question: "What is your preferred material for period products?",
     options: [
-      { icon: User2, label: "Cotton" },
-      { icon: User2, label: "Bamboo" },
-      { icon: User2, label: "Silk" },
-      { icon: User2, label: "Unsure" },
+      { icon: User2, label: "Cotton", slug:"organic_cotton" },
+      { icon: User2, label: "Synthetic Blend", slug:"synthetic_blend" },
+      { icon: User2, label: "Medical Grade Silicon", slug:"medical_grade_silicon" },
+      { icon: User2, label: "Unsure" , slug:"unsure"},
     ],
   },
   {
@@ -274,10 +274,10 @@ export const quizQuestions = [
     question:
       "Do you have any allergies or sensitivities to certain materials?",
     options: [
-      { icon: User2, label: "No Allergies" },
-      { icon: User2, label: "Sensitive Skin" },
-      { icon: User2, label: "Allergic Reactions" },
-      { icon: User2, label: "Not Sure" },
+      { icon: User2, label: "No Allergies", slug:"no_allergies" },
+      { icon: User2, label: "Sensitive Skin", slug:"sensitive_skin" },
+      { icon: User2, label: "Allergic Reactions", slug:"allergic_reactions" },
+      { icon: User2, label: "Not Sure", slug:"not_sure" },
     ],
   },
 ];

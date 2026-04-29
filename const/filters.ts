@@ -1,41 +1,37 @@
 export const PRODUCT_FILTER = {
-    "product_type": [
-        { "slug": "menstrual_cups", "name": "Menstrual Cups" },
-        { "slug": "organic_panty_liners", "name": "Organic Panty Liners" },
-        { "slug": "organic_sanitary_pads", "name": "Organic Sanitary Pads" },
-        { "slug": "pee_puke_bags", "name": "Pee & Puke Bags" },
-        { "slug": "stand_to_pee_funnels", "name": "Stand-to-Pee Funnels" },
-        { "slug": "toilet_seat_guards", "name": "Toilet Seat Guards" }
-    ],
-    "sustainability": [
-        { "slug": "biodegradable", "name": "Biodegradable" },
-        { "slug": "disposable", "name": "Disposable" },
-        { "slug": "recyclable", "name": "Recyclable" },
-        { "slug": "reusable", "name": "Reusable" }
-    ],
-    "flow_or_usage_type": [
-        { "slug": "daily_usage", "name": "Daily Usage" },
-        { "slug": "heavy_flow", "name": "Heavy Flow" },
-        { "slug": "light_flow", "name": "Light Flow" },
-        { "slug": "medium_flow", "name": "Medium Flow" }
-    ],
-    "purpose": [
-        { "slug": "bedridden_care", "name": "Bedridden Care" },
-        { "slug": "discharge_or_spotting", "name": "Discharge Or Spotting" },
-        { "slug": "hospice_care", "name": "Hospice Care" },
-        { "slug": "incontinence", "name": "Incontinence" },
-        { "slug": "maternity", "name": "Maternity" },
-        { "slug": "period_essentials", "name": "Period Essentials" },
-        { "slug": "pregnancy", "name": "Pregnancy" },
-        { "slug": "sports_trekking_hygiene", "name": "Sports & Trekking Hygiene" },
-        { "slug": "travel_essentials", "name": "Travel Essentials" }
-    ],
-    "features": [
-        { "slug": "compact_portable", "name": "Compact & Portable" },
-        { "slug": "leak_proof", "name": "Leak-Proof" },
-        { "slug": "medical_grade_silicone", "name": "Medical-Grade Silicone" },
-        { "slug": "odor_control", "name": "Odor Control" },
-        { "slug": "plant_based", "name": "Plant-Based" },
-        { "slug": "rash_free", "name": "Rash-Free" }
-    ]
-}
+  product_type: [
+    { slug: "menstrual_cups", name: "Menstrual Cups" },
+    { slug: "organic_panty_liners", name: "Organic Panty Liners" },
+    { slug: "organic_sanitary_pads", name: "Organic Sanitary Pads" },
+    { slug: "combo", name: "Combo" },
+  ],
+  size: [
+    { slug: "small", name: "Small" },
+    { slug: "medium", name: "Medium" },
+    { slug: "large", name: "Large" },
+  ],
+  flow_or_usage_type: [
+    { slug: "heavy_flow", name: "Heavy Flow" },
+    { slug: "light_flow", name: "Light Flow" },
+    { slug: "medium_flow", name: "Medium Flow" },
+    { slug: "unsure", name: "Unsure" },
+  ],
+  material: [
+    { slug: "organic_cotton", name: "Organic Cotton" },
+    { slug: "synthetic_blend", name: "Synthetic Blend" },
+    { slug: "medical_grade_silicon", name: "Medical Grade Silicon" },
+    { slug: "unsure", name: "Unsure" },
+  ],
+  cramps_or_discomfort: [
+    { slug: "no_discomfort", name: "No Discomfort" },
+    { slug: "mild_discomfort", name: "Mild Discomfort" },
+    { slug: "severe_cramps", name: "Severe Cramps" },
+    { slug: "varies", name: "Varies" },
+  ],
+   allergies_or_sensitivities: [
+    { slug: "no_allergies", name: "No Allergies" },
+    { slug: "sensitive_skin", name: "Sensitive Skin" },
+    { slug: "allergic_reactions", name: "Allergic Reactions" },
+    { slug: "not_sure", name: "Not Sure" },
+  ],
+};

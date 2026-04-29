@@ -16,6 +16,8 @@ interface PageProps {
     material?: string;
     size?: string;
     flow?: string;
+    cramps?:string;
+    allergies?:string;
     min?: any;
     max?: any;
     stock?: any;
@@ -38,6 +40,8 @@ const Page = async ({ searchParams }: PageProps) => {
     material:params.material,
     size:params.size,
     flow:params.flow,
+    cramps:params.cramps,
+    allergies:params.allergies,
     min:params.min,
     max:params.max,
     stock:params.stock,
