@@ -6,13 +6,16 @@ import { quizQuestions } from "@/const/globalconst";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 import React, { useState } from "react";
 import { toast } from "sonner";
-import SuggestedProducts from "./suggestedProducts";
+
+import { useRouter } from "next/navigation";
 
 const Page = () => {
   const [quizData, setQuizData] = React.useState(quizQuestions[0]);
   const [answers, setAnswers] = React.useState<{ [key: number]: number }>({});
 
-  const [suggestedProductPopup,setSuggestedProductPopup]=useState(false);
+  const router = useRouter();
+
+  // const [suggestedProductPopup,setSuggestedProductPopup]=useState(false);
 
   const filteredAnswers = quizQuestions
     .filter((question) => answers[question.id] !== undefined)
@@ -22,23 +25,58 @@ const Page = () => {
       answer: question.options[answers[question.id]].slug,
     }));
 
+
   const changeQuiz = (quizId: any) => {
     if (quizQuestions.length > quizId) {
       setQuizData(quizQuestions[quizId]);
+
     } else {
       toast.success("Quiz Completed!");
-      setSuggestedProductPopup(true)
+      localStorage.setItem("quizAnswers", JSON.stringify(filteredAnswers));
+      router.push("/suggested-products");
+      // setSuggestedProductPopup(true)
     }
   };
 
+  // const handleOptionClick = (questionId: number, optionIndex: number) => {
+  //   setAnswers((prev) => ({
+  //     ...prev,
+  //     [questionId]: optionIndex,
+  //   }));
+
+  //   changeQuiz(questionId);
+  // };
+
+
   const handleOptionClick = (questionId: number, optionIndex: number) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: optionIndex,
+  const updatedAnswers = {
+    ...answers,
+    [questionId]: optionIndex,
+  };
+
+  setAnswers(updatedAnswers);
+
+  const updatedFilteredAnswers = quizQuestions
+    .filter((q) => updatedAnswers[q.id] !== undefined)
+    .map((q) => ({
+      id: q.id,
+      question: q.question,
+      answer: q.options[updatedAnswers[q.id]].slug,
     }));
 
-    changeQuiz(questionId);
-  };
+  if (updatedFilteredAnswers.length === quizQuestions.length) {
+    localStorage.setItem(
+      "quizAnswers",
+      JSON.stringify(updatedFilteredAnswers)
+    );
+
+    toast.success("Quiz Completed!");
+    router.replace("/suggested-products");
+    return;
+  }
+  
+  changeQuiz(questionId);
+};
 
   const BackHandler = () => {
     if (quizData?.id > 1) {
@@ -53,9 +91,9 @@ const Page = () => {
   };
 
 
-  if(suggestedProductPopup){
-    return <SuggestedProducts userAnswers={filteredAnswers}/>
-  }
+  // if(suggestedProductPopup){
+  //   return <SuggestedProducts userAnswers={filteredAnswers}/>
+  // }
 
 
   return (
