@@ -1,3 +1,4 @@
+"use client";
 import AddToWishlist from "@/app/components/common/category/addToWishlist";
 import { Button } from "@/components/ui/button";
 import { getQuizSuggestedProducts } from "@/helper";
@@ -5,25 +6,32 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { addToCart as addToCartAction } from "@/store/cartActions";
+import { ArrowLeft } from "lucide-react";
+import { useRouter } from "next/navigation";
 
-const SuggestedProducts = ({ userAnswers }: any) => {
+const SuggestedProducts = () => {
   const [products, setProducts] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
 
+  const router = useRouter();
+
   useEffect(() => {
     async function fetchProducts() {
-    try {
-      setLoading(true);
-      const data: any = await getQuizSuggestedProducts(userAnswers);
-      setProducts(data);
-    } catch (err) {
-      console.log(err);
-    } finally {
-      setLoading(false);
+      try {
+        setLoading(true);
+        const userAnswers = JSON.parse(
+          localStorage.getItem("quizAnswers") || "[]",
+        );
+        const data: any = await getQuizSuggestedProducts(userAnswers);
+        setProducts(data);
+      } catch (err) {
+        console.log(err);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
     fetchProducts();
-  }, [userAnswers]);
+  }, []);
 
   const addToCart = async (product: any) => {
     await addToCartAction({
@@ -41,6 +49,20 @@ const SuggestedProducts = ({ userAnswers }: any) => {
 
   return (
     <div className="max-w-6xl mx-auto mb-5">
+      <button
+        type="button"
+        className="my-2 flex items-center gap-1 border border-gray-300 rounded-md px-3 py-2 cursor-pointer  text-gray-700 hover:bg-gray-100"
+        onClick={() => {
+          localStorage.removeItem("quizAnswers");
+          setProducts([]);
+          setLoading(true);
+
+          router.push("/quiz");
+        }}
+      >
+        <ArrowLeft />
+        Retake Quiz
+      </button>
       <div className="text-xl text-gray-600 font-semibold my-5">
         Showing {products.length} Products for Result “All Products”
       </div>

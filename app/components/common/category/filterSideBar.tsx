@@ -5,52 +5,56 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { PRODUCT_FILTER } from "@/const/filters";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect } from "react";
 
-export default function FiltersSidebar({categories}:any) {
+export default function FiltersSidebar({ categories }: any) {
   const router = useRouter();
   const params = useSearchParams();
 
-  // const productType=[
-  //   {name:"Organic Sanitary Pads",slug:"organic_sanitary_pads"},
-  //   {name:"Menstrual Cup",slug:"menstrual_cup"},
-  //   {name:"Organic Panty liners",slug:"organic_panty_liners"},
-  //   {name:"Combo",slug:"combo"},
-  // ]
+  // ✅ local state (instant UI)
+  const [filters, setFilters] = useState<any>({
+    category: params.get("category") || "",
+    type: params.get("type") || "",
+    flow: params.get("flow") || "",
+    size: params.get("size") || "",
+    material: params.get("material") || "",
+    cramps: params.get("cramps") || "",
+    allergies: params.get("allergies") || "",
+    stock: params.get("stock") || "",
+    min: params.get("min") || "",
+    max: params.get("max") || "",
+  });
 
-  // const productSize=[
-  //   {name:"Small",slug:"small"},
-  //   {name:"Medium",slug:"medium"},
-  //   {name:"Large",slug:"large"},
-  // ]
+  useEffect(() => {
+    const newParams = new URLSearchParams();
 
-  // const productFlow=[
-  //   {name:"Light",slug:"light_flow"},
-  //   {name:"Medium",slug:"medium_flow"},
-  //   {name:"Heavy",slug:"heavy_flow"},
-  // ]
+    Object.entries(filters).forEach(([key, value]) => {
+      if (value) newParams.set(key, String(value));
+    });
 
-  // const productMaterial=[
-  //   {name:"Organic Cotton",slug:"organic_cotton"},
-  //   {name:"Synthetic Blend",slug:"synthetic_blend"},
-  //   {name:"Medical Grade Silicon",slug:"medical_grade_silicon"},
-  // ]
+    router.replace(`?${newParams.toString().toLowerCase()}`);
+  }, [filters, router]);
 
-
-
-  const updateParam = (key: string, value: any) => {
-    const newParams = new URLSearchParams(params.toString());
-
-    if (newParams.get(key) === value) {
-      newParams.delete(key);
-    } else {
-      newParams.set(key, value);
-    }
-
-    router.push(`?${newParams.toString().toLowerCase()}`);
+  const toggleFilter = (key: string, value: string) => {
+    setFilters((prev: any) => ({
+      ...prev,
+      [key]: prev[key] === value ? "" : value,
+    }));
   };
 
   const clearAll = () => {
-    router.push("?");
+    setFilters({
+      category: "",
+      type: "",
+      flow: "",
+      size: "",
+      material: "",
+      cramps: "",
+      allergies: "",
+      stock: "",
+      min: "",
+      max: "",
+    });
   };
 
   return (
@@ -58,136 +62,125 @@ export default function FiltersSidebar({categories}:any) {
       <CardContent className="p-5 space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="font-semibold text-lg">Filters</h2>
-
           <button onClick={clearAll} className="text-sm text-[#1A8D91]">
             Clear All
           </button>
         </div>
-         <div>
+
+        {/* Categories */}
+        <div>
           <h3 className="font-medium mb-3">Categories</h3>
-
-          {categories?.map(
-            (item:any) => (
-              <div key={item.name} className="flex items-center gap-2 mb-2">
-                <Checkbox
-                  checked={params.get("category") === item.slug}
-                  onCheckedChange={() => updateParam("category", item.slug)}
-                />
-
-                <label>{item.name}</label>
-              </div>
-            ),
-          )}
+          {categories?.map((item: any) => (
+            <div key={item.name} className="flex items-center gap-2 mb-2">
+              <Checkbox
+                checked={filters.category === item.slug}
+                onCheckedChange={() =>
+                  toggleFilter("category", item.slug)
+                }
+              />
+              <label>{item.name}</label>
+            </div>
+          ))}
         </div>
+
+        {/* Product Type */}
         <div>
           <h3 className="font-medium mb-3">Product Type</h3>
-
-          {PRODUCT_FILTER.product_type.map(
-            (item) => (
-              <div key={item.name} className="flex items-center gap-2 mb-2">
-                <Checkbox
-                  checked={params.get("type") === item.slug}
-                  onCheckedChange={() => updateParam("type", item.slug)}
-                />
-
-                <label>{item.name}</label>
-              </div>
-            ),
-          )}
+          {PRODUCT_FILTER.product_type.map((item) => (
+            <div key={item.name} className="flex items-center gap-2 mb-2">
+              <Checkbox
+                checked={filters.type === item.slug}
+                onCheckedChange={() =>
+                  toggleFilter("type", item.slug)
+                }
+              />
+              <label>{item.name}</label>
+            </div>
+          ))}
         </div>
+
+        {/* Flow */}
         <div>
           <h3 className="font-medium mb-3">Flow Type</h3>
-
           {PRODUCT_FILTER.flow_or_usage_type.map((item) => (
             <div key={item.name} className="flex items-center gap-2 mb-2">
               <Checkbox
-                checked={params.get("flow") === item.slug}
-                onCheckedChange={() => updateParam("flow", item.slug)}
+                checked={filters.flow === item.slug}
+                onCheckedChange={() =>
+                  toggleFilter("flow", item.slug)
+                }
               />
-
               <label>{item.name}</label>
             </div>
           ))}
         </div>
+
+        {/* Size */}
         <div>
           <h3 className="font-medium mb-3">Size</h3>
-
           {PRODUCT_FILTER.size.map((item) => (
             <div key={item.name} className="flex items-center gap-2 mb-2">
               <Checkbox
-                checked={params.get("size") === item.slug}
-                onCheckedChange={() => updateParam("size", item.slug)}
+                checked={filters.size === item.slug}
+                onCheckedChange={() =>
+                  toggleFilter("size", item.slug)
+                }
               />
-
               <label>{item.name}</label>
             </div>
           ))}
         </div>
+
+        {/* Material */}
         <div>
           <h3 className="font-medium mb-3">Material</h3>
-
-          {PRODUCT_FILTER.material.map(
-            (item) => (
-              <div key={item.name} className="flex items-center gap-2 mb-2">
-                <Checkbox
-                  checked={params.get("material") === item.slug}
-                  onCheckedChange={() => updateParam("material", item.slug)}
-                />
-
-                <label>{item.name}</label>
-              </div>
-            ),
-          )}
+          {PRODUCT_FILTER.material.map((item) => (
+            <div key={item.name} className="flex items-center gap-2 mb-2">
+              <Checkbox
+                checked={filters.material === item.slug}
+                onCheckedChange={() =>
+                  toggleFilter("material", item.slug)
+                }
+              />
+              <label>{item.name}</label>
+            </div>
+          ))}
         </div>
-         <div>
-          <h3 className="font-medium mb-3">Cramps & Discomfort</h3>
 
-          {PRODUCT_FILTER.cramps_or_discomfort.map(
-            (item) => (
-              <div key={item.name} className="flex items-center gap-2 mb-2">
-                <Checkbox
-                  checked={params.get("cramps") === item.slug}
-                  onCheckedChange={() => updateParam("cramps", item.slug)}
-                />
-
-                <label>{item.name}</label>
-              </div>
-            ),
-          )}
-        </div>
-         <div>
-          <h3 className="font-medium mb-3">Allergies & Sensitivities</h3>
-
-          {PRODUCT_FILTER.allergies_or_sensitivities.map(
-            (item) => (
-              <div key={item.name} className="flex items-center gap-2 mb-2">
-                <Checkbox
-                  checked={params.get("allergies") === item.slug}
-                  onCheckedChange={() => updateParam("allergies", item.slug)}
-                />
-
-                <label>{item.name}</label>
-              </div>
-            ),
-          )}
-        </div>
+        {/* Price */}
         <div>
           <h3 className="font-medium mb-3">Price Range</h3>
           <div className="flex gap-2">
             <Input
               placeholder="₹0"
-              onChange={(e) => updateParam("min", e.target.value)}
+              value={filters.min}
+              onChange={(e) =>
+                setFilters((prev: any) => ({
+                  ...prev,
+                  min: e.target.value,
+                }))
+              }
             />
             <Input
               placeholder="₹1000"
-              onChange={(e) => updateParam("max", e.target.value)}
+              value={filters.max}
+              onChange={(e) =>
+                setFilters((prev: any) => ({
+                  ...prev,
+                  max: e.target.value,
+                }))
+              }
             />
           </div>
         </div>
+
+        {/* Stock */}
         <div className="flex items-center gap-2">
           <Checkbox
-            checked={params.get("stock") === "true"}
-            onCheckedChange={() => updateParam("stock", "true")}
+            checked={filters.stock === "true"}
+            onCheckedChange={() =>
+              toggleFilter("stock", "true")
+            }
           />
           <label>In Stock Only</label>
         </div>

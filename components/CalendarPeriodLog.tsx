@@ -142,7 +142,6 @@ export function CalendarPeriodLog({
   cycle,
   periodTime,
 }: any) {
-  console.log(startDate, cycle, periodTime)
   const { periodDates, fertileDates } = calculateData(
     startDate,
     cycle,
@@ -154,8 +153,7 @@ export function CalendarPeriodLog({
     startDate.getMonth(),
     1
   );
-  console.log(periodDates);
-  console.log(fertileDates);
+
   return (
     <div className="grid md:grid-cols-3 gap-6">
       {[0, 1, 2].map((i) => (
