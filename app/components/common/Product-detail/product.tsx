@@ -17,6 +17,7 @@ import {
 import SizeSelectorBox from "./sizeSelectorBox";
 import { toast } from "sonner";
 import { subscriptionPlans } from "@/const/globalconst";
+import { NEXT_PUBLIC_S3_URL } from "@/env";
 
 export default function ProductDetailPage({
   // categoryName,
@@ -58,10 +59,10 @@ export default function ProductDetailPage({
   const discount =
     activeVariant?.strikethroughPrice && activeVariant?.basePrice
       ? Math.round(
-          ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
-            activeVariant.strikethroughPrice) *
-            100,
-        )
+        ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
+          activeVariant.strikethroughPrice) *
+        100,
+      )
       : 0;
 
   const router = useRouter();
@@ -122,7 +123,7 @@ export default function ProductDetailPage({
         <div className=" md:sticky md:top-4  h-fit col-span-2">
           <div className="w-full h-auto relative ">
             <Image
-              src={bannerImage}
+              src={`${NEXT_PUBLIC_S3_URL}/${bannerImage}`}
               alt="Product"
               height={200}
               width={200}
@@ -152,12 +153,13 @@ export default function ProductDetailPage({
                     <img
                       src={item?.mediaURL}
                       className={`w-full h-auto object-cover rounded-lg
-                   ${
-                     item.mediaURL === bannerImage
-                       ? `border-2  border-${themeColor.darkColor} `
-                       : "border border-gray-200 "
-                   }`}
+                   ${item.mediaURL === bannerImage
+                          ? `border-2  border-${themeColor.darkColor} `
+                          : "border border-gray-200 "
+                        }`}
                     />
+
+                    <Image src={`${NEXT_PUBLIC_S3_URL}/${item?.mediaURL}`} height={300} width={300} alt={item?.mediaURL} />
                   </div>
                 </CarouselItem>
               ))}
@@ -173,7 +175,7 @@ export default function ProductDetailPage({
         <div className="space-y-6 col-span-3">
           {/* Tags */}
           <div className="flex gap-2">
-            <span style={{backgroundColor:themeColor.darkColor , color:productInfo.brand == "loway" ? themeColor.textColor : "white"}} className=" text-xs px-3 py-1 rounded-full">
+            <span style={{ backgroundColor: themeColor.darkColor, color: productInfo.brand == "loway" ? themeColor.textColor : "white" }} className=" text-xs px-3 py-1 rounded-full">
               {productInfo.brand == "loway" ? "Looway" : "Ovy"}
             </span>
           </div>
@@ -262,9 +264,8 @@ export default function ProductDetailPage({
                       //   borderColor: primaryColor,
                       // }}
 
-                      className={`px-4 py-2 text-sm rounded-full border transition ${
-                        selectedSize === s ? "text-white" : "bg-white"
-                      }`}
+                      className={`px-4 py-2 text-sm rounded-full border transition ${selectedSize === s ? "text-white" : "bg-white"
+                        }`}
                       style={{
                         backgroundColor:
                           selectedSize === s ? themeColor.darkColor : "white",
@@ -279,7 +280,7 @@ export default function ProductDetailPage({
                 </div>
               </div>
 
-              
+
 
               {/* Flow Type - NOW DYNAMIC */}
               <div>
@@ -290,16 +291,15 @@ export default function ProductDetailPage({
                       key={flow}
                       type="button"
                       onClick={() => setSelectedFlow(flow)}
-                      className={`px-4 py-2 text-sm rounded-full border bg-${themeColor.darkColor} transition ${
-                        selectedFlow === flow ? "text-black" : "bg-white"
-                      }`}
+                      className={`px-4 py-2 text-sm rounded-full border bg-${themeColor.darkColor} transition ${selectedFlow === flow ? "text-black" : "bg-white"
+                        }`}
                       style={{
                         backgroundColor:
                           selectedFlow === flow
                             ? themeColor.darkColor
                             : "white",
                         borderColor: themeColor.darkColor,
-                         color:
+                        color:
                           selectedFlow === flow ? "white" : themeColor.textColor,
                       }}
                     >
@@ -347,11 +347,11 @@ export default function ProductDetailPage({
           <div className="flex gap-4">
             <button
               onClick={addToCart}
-              style={{backgroundColor:themeColor.darkColor , color:productInfo.brand == "loway" ? themeColor.textColor : "white"}}
+              style={{ backgroundColor: themeColor.darkColor, color: productInfo.brand == "loway" ? themeColor.textColor : "white" }}
               className="flex-1 text-black py-3 rounded-xl transition"
-              // style={{
-              //   backgroundColor: themeColor.darkColor || "#168BA0",
-              // }}
+            // style={{
+            //   backgroundColor: themeColor.darkColor || "#168BA0",
+            // }}
             >
               Add to Cart
             </button>
@@ -376,9 +376,8 @@ export default function ProductDetailPage({
                 //     : "border-gray-200"
                 // }`}
 
-                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${
-                  selectedPlan?.id === plan.id ? "bg-opacity-50" : ""
-                }`}
+                className={`flex justify-between items-center border p-4 rounded-xl cursor-pointer ${selectedPlan?.id === plan.id ? "bg-opacity-50" : ""
+                  }`}
                 style={{
                   borderColor:
                     selectedPlan?.id === plan.id

@@ -22,8 +22,7 @@ export default async function Page({ params }: any) {
   const reviewWithMedia = await getProductReviews(slug);
   // const catetoryName = similarProducts[0]?.category;
 
-  const themeColor =  product.brand == "loway" ? lowayProductDetailsPage : ovyProductDetailsPage; 
-
+  const themeColor = product.brand == "loway" ? lowayProductDetailsPage : ovyProductDetailsPage;
 
   if (!product) {
     return <div className="text-center py-20">Product not found</div>;
@@ -37,7 +36,7 @@ export default async function Page({ params }: any) {
           productInfo={product}
           themeColor={themeColor}
         />
-        <TrustBadges themeColor={themeColor}/>
+        <TrustBadges themeColor={themeColor} />
         <AboutProduct variant={product} themeColor={themeColor} />
         <ProductReviews reviews={reviewWithMedia} product={product} themeColor={themeColor} />
         <div className="  ">

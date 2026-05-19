@@ -16,5 +16,7 @@ export const AWS_SECRET_ACCESS_KEY: string = process.env.AWS_SECRET_ACCESS_KEY!;
 export const COGNITO_CLIENT_ID: string = process.env.COGNITO_CLIENT_ID!;
 export const COGNITO_CLIENT_SECRET: string = process.env.COGNITO_CLIENT_SECRET!;
 export const USER_POOL_ID: string = process.env.USER_POOL_ID!;
-export const BASE_AUTH_API_URL=process.env.NEXT_PUBLIC_BASE_AUTH_API_URL!;
-export const BASE_API_URL=process.env.BASE_API_URL!;
+export const BASE_AUTH_API_URL = process.env.NEXT_PUBLIC_BASE_AUTH_API_URL!;
+export const BASE_API_URL = process.env.BASE_API_URL!;
+
+export const NEXT_PUBLIC_S3_URL = process.env.NEXT_PUBLIC_S3_URL!;
