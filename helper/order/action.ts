@@ -6,9 +6,10 @@ import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 
 import { revalidatePath } from "next/cache";
-import { cart, cartItem, product, rewardCoinsHistory } from "@/db/schema";
+import { cart, cartItem, couponTransaction, product, rewardCoinsHistory } from "@/db/schema";
 import { order, orderItem, payment, users } from "@/db/schema";
 import { requireUserWithRefresh } from "../user/action";
+import { calculateCheckoutPricingForUser } from "../checkout/action";
 
 export const fetchOrders = async ({
   page = 1,
@@ -209,7 +210,7 @@ export async function updateOrderStatus(id: string, status: string | any) {
 
 export async function createOrder({
   items,
-  fixedAmount,
+  couponCode,
   address,
   userId,
   razorpayPaymentId,
@@ -217,7 +218,7 @@ export async function createOrder({
 }: {
   items: any;
   userId: any;
-  fixedAmount: number;
+  couponCode?: string;
   address: any;
   razorpayPaymentId: string;
   razorpayOrderId: string;
@@ -227,7 +228,15 @@ export async function createOrder({
       throw new Error("Order items are required");
     }
 
-    const productIds = items
+    const pricing = await calculateCheckoutPricingForUser({ userId, couponCode });
+
+    if (!pricing.success) {
+      throw new Error(pricing.message ?? "Invalid checkout total");
+    }
+
+    const checkoutItems = pricing.items.length > 0 ? pricing.items : items;
+
+    const productIds = checkoutItems
       .map((i: any) => i.productId)
       .filter((id: any): id is string => typeof id === "string");
 
@@ -248,7 +257,7 @@ export async function createOrder({
 
     const productMap = new Map(products.map((p) => [p.id, p]));
 
-    const safeAmount = Math.round(fixedAmount);
+    const safeAmount = Math.round(pricing.final);
 
     const result = await db.transaction(async (tx) => {
       const insertedOrder = await tx
@@ -267,7 +276,7 @@ export async function createOrder({
 
       const orderId = insertedOrder[0].id;
 
-      const orderItemsToInsert = items.map((item: any) => {
+      const orderItemsToInsert = checkoutItems.map((item: any) => {
         // const Id =
         //   (item as any).id || (item as any).productId;
         const Id = item.productId;
@@ -290,32 +299,48 @@ export async function createOrder({
         };
       });
 
-      await Promise.all([
-        tx.insert(orderItem).values(orderItemsToInsert),
-        tx.insert(payment).values({
-          orderId: orderId,
-          paymentId: razorpayPaymentId,
-          paymentStatus: "success",
-          paymentMethod: "razorpay",
-          paymentAmount: safeAmount,
-          paymentMeta: "success",
-          paymentOrderId: razorpayOrderId,
-        }),
-        tx.insert(rewardCoinsHistory).values({
-          orderId: orderId,
-          userId: userId,
-          coins: safeAmount,
-        }),
+      await tx.insert(orderItem).values(orderItemsToInsert);
+      await tx.insert(payment).values({
+        orderId: orderId,
+        paymentId: razorpayPaymentId,
+        paymentStatus: "success",
+        paymentMethod: "razorpay",
+        paymentAmount: safeAmount,
+        paymentMeta: {
+          status: "success",
+          subtotal: pricing.subtotal,
+          discount: pricing.discount,
+          discountedSubtotal: pricing.discountedSubtotal,
+          gst: pricing.gst,
+          shipping: pricing.shipping,
+          coupon: pricing.coupon,
+        },
+        paymentOrderId: razorpayOrderId,
+      });
+      await tx.insert(rewardCoinsHistory).values({
+        orderId: orderId,
+        userId: userId,
+        coins: safeAmount,
+      });
+      await tx
+        .update(users)
+        .set({
+          rewardOrderCoins: sql`${users.rewardOrderCoins} + ${safeAmount}`,
+        })
+        .where(eq(users.id, userId));
 
-        await tx
-          .update(users)
-          .set({
-            rewardOrderCoins: sql`${users.rewardOrderCoins} + ${safeAmount}`,
-          })
-          .where(eq(users.id, userId)),
-      ]);
+      if (pricing.coupon) {
+        await tx.insert(couponTransaction).values({
+          userId,
+          couponId: pricing.coupon.id,
+          code: pricing.coupon.code,
+          isDiscountPercentage: pricing.coupon.isDiscountPercentage,
+          discountPercentage: pricing.coupon.discountPercentage,
+          discountFixedAmount: pricing.coupon.discountFixedAmount,
+        });
+      }
 
-      return { orderId };
+      return { orderId, totalAmount: safeAmount };
     });
 
     // This part is commented out because the cart is not used yet , we use localstorage for manage cart
@@ -340,6 +365,7 @@ export async function createOrder({
     return {
       success: true,
       orderId: result.orderId,
+      totalAmount: result.totalAmount,
     };
   } catch (error) {
     console.error("Order creation failed:", error);

@@ -104,7 +104,11 @@ export async function getCurrentUser() {
       email,
     };
   } catch (error) {
-    console.error(error)
+    if (error instanceof Error && error.message.includes("Token expired")) {
+      return null;
+    }
+
+    console.error(error);
   }
 
 }
