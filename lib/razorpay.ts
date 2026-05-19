@@ -36,6 +36,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   name,
   description,
   items,
+  couponCode,
   // userId,
   address,
 }: {
@@ -43,6 +44,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   name: string;
   description: string;
   items: any[];
+  couponCode?: string;
   // userId: string;
   address: any;
 }) => {
@@ -102,7 +104,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   const res = await fetch("/api/razorpay/order", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ amount }),
+    body: JSON.stringify({ couponCode }),
   });
 
   const order = await res.json();
@@ -132,7 +134,7 @@ export const loadRazorpayScript = (): Promise<boolean> => {
               items,
               // userId,
               address,
-              amount,
+              couponCode,
             }),
           });
 

@@ -375,3 +375,35 @@ export const paymentGatewaySubscription = pgTable("payment_gateway_subscription"
   shourURL: varchar("shour_url"),
   startDate: timestamp("start_date").defaultNow(),
 });
+
+
+// ================= Coupon =================
+
+export const coupon = pgTable("coupon", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name", { length: 20 }).notNull(),
+  description: varchar("description", { length: 100 }),
+  code: varchar("code", { length: 20 }).notNull().unique(),
+  isDiscountPercentage: boolean("is_discount_percentage").notNull().default(false),
+  discountPercentage: integer("discount_percentage"),
+  discountFixedAmount: integer("discount_fixed_amount"),
+  minimumOrderValue: integer("minimum_order_value").notNull().default(0),
+  maximumDiscountAmount: integer("maximum_discount_amount").notNull().default(0),
+  useOnce: boolean("use_once").notNull().default(false),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const couponTransaction = pgTable("coupon_transaction", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  couponId: uuid("coupon_id")
+    .notNull()
+    .references(() => coupon.id),
+  code: varchar("code", { length: 20 }).notNull(),
+  isDiscountPercentage: boolean("is_discount_percentage").notNull().default(false),
+  discountPercentage: integer("discount_percentage"),
+  discountFixedAmount: integer("discount_fixed_amount"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});

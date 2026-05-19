@@ -3,12 +3,11 @@
 
 
 
-import { CheckCircle2, Phone, Mail, ChevronDown } from "lucide-react";
+import { CheckCircle2, Phone, Mail } from "lucide-react";
 
 import { useEffect, useState, useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { fetchOrderDetails } from "@/helper/index"; // server action
-import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import Link from "next/link";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,13 +18,8 @@ export default function Details({ id }: { id: string }) {
   const [isPending, startTransition] = useTransition();
   
 
-  const BASE = NEXT_PUBLIC_S3_BASE_URL!;
-
-  const toPublic = (key: string | null) =>
-    key ? `${BASE}/${key}` : "/placeholder.png";
-
   const formatCurrency = (amount: number | null | undefined) =>
-    amount ? `₹${(amount / 100).toLocaleString("en-IN")}` : "₹0";
+    `₹${Number(amount ?? 0).toLocaleString("en-IN")}`;
 
   const formatDate = (date: string | Date) =>
     new Date(date).toLocaleString("en-IN", {
@@ -59,6 +53,12 @@ export default function Details({ id }: { id: string }) {
       </div>
     );
   }
+
+  const paymentMeta =
+    typeof orderInfo?.payment?.paymentMeta === "object"
+      ? orderInfo.payment.paymentMeta
+      : null;
+  const appliedCoupon = paymentMeta?.coupon;
 
   return (
     <div className="w-full max-w-full mx-auto p-1 space-y-5">
@@ -145,15 +145,44 @@ export default function Details({ id }: { id: string }) {
             <CardContent className="space-y-3">
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Subtotal</span>
-                <span className="font-semibold">{''}</span>
+                <span className="font-semibold">
+                  {formatCurrency(paymentMeta?.subtotal)}
+                </span>
+              </div>
+              {paymentMeta?.discount > 0 && (
+                <>
+                  <div className="flex justify-between text-sm text-emerald-700">
+                    <span>
+                      Coupon Discount
+                      {appliedCoupon?.code ? ` (${appliedCoupon.code})` : ""}
+                    </span>
+                    <span className="font-semibold">
+                      -{formatCurrency(paymentMeta.discount)}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-slate-500">Discounted Subtotal</span>
+                    <span className="font-semibold">
+                      {formatCurrency(paymentMeta.discountedSubtotal)}
+                    </span>
+                  </div>
+                </>
+              )}
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-500">GST</span>
+                <span className="font-semibold">
+                  {formatCurrency(paymentMeta?.gst)}
+                </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-500">Shipping</span>
-                <span className="font-semibold">{''}</span>
+                <span className="font-semibold">
+                  {formatCurrency(paymentMeta?.shipping)}
+                </span>
               </div>
               <div className="border-t border-slate-100 pt-3 flex justify-between items-center">
                 <span className="font-bold">Total</span>
-                <span className="font-bold text-lg text-[#D4AF37]">₹ {orderInfo?.order?.totalAmount}</span>
+                <span className="font-bold text-lg text-[#D4AF37]">{formatCurrency(orderInfo?.order?.totalAmount)}</span>
               </div>
             </CardContent>
           </Card>

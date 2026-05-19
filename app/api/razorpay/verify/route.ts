@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import crypto from "crypto";
 import { NextResponse } from "next/server";
-import { checkUserFirstOrder, createOrder, createSubscription, sendFirstPurchaseEmail, sendOrderConfirmationEmail } from "@/helper";
+import { checkUserFirstOrder, createOrder, sendFirstPurchaseEmail, sendOrderConfirmationEmail } from "@/helper";
 import { RAZORPAY_KEY_SECRET } from "@/env";
-import { getCurrentUser, getProfile, requireUserWithRefresh } from "@/helper/user/action";
+import { getProfile } from "@/helper/user/action";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -14,7 +14,7 @@ export async function POST(req: Request) {
     razorpay_signature,
     items,
     address,
-    amount,
+    couponCode,
 
   } = body;
 
@@ -38,15 +38,19 @@ export async function POST(req: Request) {
   const result:any = await createOrder({
     userId,
     items,
-    fixedAmount: amount,
+    couponCode,
     address,
     razorpayPaymentId: razorpay_payment_id,
     razorpayOrderId: razorpay_order_id,
   });
 
+  if (!result?.success) {
+    return NextResponse.json(result, { status: 400 });
+  }
+
   const currentDate = new Date().toLocaleDateString();
 
-   await sendOrderConfirmationEmail(email,fullName,result?.orderId,currentDate,amount)
+   await sendOrderConfirmationEmail(email,fullName,result?.orderId,currentDate,result?.totalAmount)
 
   return NextResponse.json(result);
 }
