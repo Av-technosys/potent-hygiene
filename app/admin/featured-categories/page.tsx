@@ -1,5 +1,8 @@
 import { pageSize as defaultPageSize } from "@/const/globalconst";
-import { fetchAdminFeaturedCategories } from "@/helper/adminListing/action";
+import {
+  fetchAdminFeaturedCategories,
+  fetchFeaturedCategoryOptions,
+} from "@/helper/adminListing/action";
 import FeaturedCategoriesClient from "./featuredCategoriesClient";
 
 interface PageProps {
@@ -21,11 +24,15 @@ const Page = async ({ searchParams }: PageProps) => {
   const pageSize = toInt(params.page_size, defaultPageSize);
   const search = params.search ?? "";
 
-  const result = await fetchAdminFeaturedCategories({ page, pageSize, search });
+  const [result, categoryOptions] = await Promise.all([
+    fetchAdminFeaturedCategories({ page, pageSize, search }),
+    fetchFeaturedCategoryOptions(),
+  ]);
 
   return (
     <FeaturedCategoriesClient
       categories={result.data}
+      categoryOptions={categoryOptions}
       total={result.meta.totalPages}
       currentPage={result.meta.page}
       pageSize={result.meta.pageSize}

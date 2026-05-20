@@ -14,7 +14,8 @@ import {
   returnRequestImage,
   users,
 } from "@/db/schema";
-import { desc, eq, ilike, inArray, or, sql } from "drizzle-orm";
+import { desc, eq, ilike, inArray, notInArray, or, sql } from "drizzle-orm";
+import { revalidatePath } from "next/cache";
 
 type ListingOptions = {
   page?: number;
@@ -407,4 +408,154 @@ export async function fetchAdminReturnRequests({
       totalPages: Math.ceil(total / limit),
     },
   };
+}
+
+export async function fetchAdminDashboardStats() {
+  const [
+    [{ totalOrders }],
+    [{ totalProducts }],
+    [{ activeProducts }],
+    [{ totalUsers }],
+    [{ verifiedUsers }],
+    [{ totalRevenue }],
+    [{ successfulPayments }],
+    [{ pendingOrders }],
+  ] = await Promise.all([
+    db.select({ totalOrders: sql<number>`count(*)` }).from(order),
+    db.select({ totalProducts: sql<number>`count(*)` }).from(product),
+    db
+      .select({ activeProducts: sql<number>`count(*)` })
+      .from(product)
+      .where(eq(product.isInStock, true)),
+    db.select({ totalUsers: sql<number>`count(*)` }).from(users),
+    db
+      .select({ verifiedUsers: sql<number>`count(*)` })
+      .from(users)
+      .where(eq(users.emailVerified, true)),
+    db
+      .select({
+        totalRevenue: sql<number>`coalesce(sum(${payment.paymentAmount}), 0)`,
+      })
+      .from(payment)
+      .where(eq(payment.paymentStatus, "success")),
+    db
+      .select({ successfulPayments: sql<number>`count(*)` })
+      .from(payment)
+      .where(eq(payment.paymentStatus, "success")),
+    db
+      .select({ pendingOrders: sql<number>`count(*)` })
+      .from(order)
+      .where(eq(order.status, "pending")),
+  ]);
+
+  return {
+    totalOrders: Number(totalOrders),
+    totalProducts: Number(totalProducts),
+    activeProducts: Number(activeProducts),
+    totalUsers: Number(totalUsers),
+    verifiedUsers: Number(verifiedUsers),
+    totalRevenue: Number(totalRevenue),
+    successfulPayments: Number(successfulPayments),
+    pendingOrders: Number(pendingOrders),
+  };
+}
+
+export async function fetchFeaturedProductOptions() {
+  const alreadyFeatured = db
+    .select({ productId: featuredProduct.productId })
+    .from(featuredProduct);
+
+  return db
+    .select({
+      value: product.id,
+      label: product.name,
+      sku: product.sku,
+    })
+    .from(product)
+    .where(notInArray(product.id, alreadyFeatured))
+    .orderBy(product.name);
+}
+
+export async function fetchFeaturedCategoryOptions() {
+  const alreadyFeatured = db
+    .select({ categoryId: featuredCategory.categoryId })
+    .from(featuredCategory);
+
+  return db
+    .select({
+      value: category.id,
+      label: category.name,
+      slug: category.slug,
+    })
+    .from(category)
+    .where(notInArray(category.id, alreadyFeatured))
+    .orderBy(category.name);
+}
+
+export async function addFeaturedProduct(productId: string) {
+  try {
+    const existing = await db
+      .select({ id: featuredProduct.id })
+      .from(featuredProduct)
+      .where(eq(featuredProduct.productId, productId))
+      .limit(1);
+
+    if (existing.length) {
+      return { success: false, message: "Product is already featured" };
+    }
+
+    await db.insert(featuredProduct).values({ productId });
+    revalidatePath("/admin/featured-products");
+
+    return { success: true, message: "Product added to featured" };
+  } catch (error) {
+    console.error("addFeaturedProduct failed:", error);
+    return { success: false, message: "Failed to add featured product" };
+  }
+}
+
+export async function removeFeaturedProduct(id: string) {
+  try {
+    await db.delete(featuredProduct).where(eq(featuredProduct.id, id));
+    revalidatePath("/admin/featured-products");
+
+    return { success: true, message: "Featured product removed" };
+  } catch (error) {
+    console.error("removeFeaturedProduct failed:", error);
+    return { success: false, message: "Failed to remove featured product" };
+  }
+}
+
+export async function addFeaturedCategory(categoryId: string) {
+  try {
+    const existing = await db
+      .select({ id: featuredCategory.id })
+      .from(featuredCategory)
+      .where(eq(featuredCategory.categoryId, categoryId))
+      .limit(1);
+
+    if (existing.length) {
+      return { success: false, message: "Category is already featured" };
+    }
+
+    await db.insert(featuredCategory).values({ categoryId });
+    revalidatePath("/admin/featured-categories");
+
+    return { success: true, message: "Category added to featured" };
+  } catch (error) {
+    console.error("addFeaturedCategory failed:", error);
+    return { success: false, message: "Failed to add featured category" };
+  }
+}
+
+export async function removeFeaturedCategory(id: string) {
+  try {
+    await db.delete(featuredCategory).where(eq(featuredCategory.id, id));
+    revalidatePath("/admin/featured-categories");
+
+    return { success: true, message: "Featured category removed" };
+  } catch (error) {
+    console.error("removeFeaturedCategory failed:", error);
+    return { success: false, message: "Failed to remove featured category" };
+  }
 }

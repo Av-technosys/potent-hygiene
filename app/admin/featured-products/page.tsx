@@ -1,5 +1,8 @@
 import { pageSize as defaultPageSize } from "@/const/globalconst";
-import { fetchAdminFeaturedProducts } from "@/helper/adminListing/action";
+import {
+  fetchAdminFeaturedProducts,
+  fetchFeaturedProductOptions,
+} from "@/helper/adminListing/action";
 import FeaturedProductsClient from "./featuredProductsClient";
 
 interface PageProps {
@@ -21,11 +24,15 @@ const Page = async ({ searchParams }: PageProps) => {
   const pageSize = toInt(params.page_size, defaultPageSize);
   const search = params.search ?? "";
 
-  const result = await fetchAdminFeaturedProducts({ page, pageSize, search });
+  const [result, productOptions] = await Promise.all([
+    fetchAdminFeaturedProducts({ page, pageSize, search }),
+    fetchFeaturedProductOptions(),
+  ]);
 
   return (
     <FeaturedProductsClient
       products={result.data}
+      productOptions={productOptions}
       total={result.meta.totalPages}
       currentPage={result.meta.page}
       pageSize={result.meta.pageSize}
