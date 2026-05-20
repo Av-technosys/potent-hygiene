@@ -9,11 +9,12 @@ import {
   FileText,
   User,
   MessageSquare,
-  Settings,
   Code,
   Feather,
   ShoppingCart,
-  IndianRupee
+  IndianRupee,
+  RotateCcw,
+  XCircle,
 } from "lucide-react";
 
 const navItems = [
@@ -26,6 +27,8 @@ const navItems = [
   { label: "User", href: "/admin/users", icon: User },
   { label: "Review", href: "/admin/reviews", icon: MessageSquare },
     { label: "Payment", href: "/admin/payment", icon: IndianRupee },
+  { label: "Cancel Requests", href: "/admin/cancel-requests", icon: XCircle },
+  { label: "Return Requests", href: "/admin/return-requests", icon: RotateCcw },
 
   {
     label: "Featured Products",
@@ -38,7 +41,6 @@ const navItems = [
     icon: Feather ,
   },
   { label: "Coupon", href: "/admin/coupon", icon: Code },
-  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export function Sidebar() {
