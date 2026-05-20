@@ -624,7 +624,7 @@ export async function deleteProduct(id: string) {
 
 export async function getProducts({
   page = 1,
-  pageSize = 10,
+  pageSize =20,
   search = "",
   category: categorySlug,
   type = "",

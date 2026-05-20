@@ -150,14 +150,7 @@ export default function ProductDetailPage({
                     onClick={() => setBannerImage(item?.mediaURL)}
                     className="cursor-pointer"
                   >
-                    <img
-                      src={item?.mediaURL}
-                      className={`w-full h-auto object-cover rounded-lg
-                   ${item.mediaURL === bannerImage
-                          ? `border-2  border-${themeColor.darkColor} `
-                          : "border border-gray-200 "
-                        }`}
-                    />
+             
 
                     <Image src={`${NEXT_PUBLIC_S3_URL}/${item?.mediaURL}`} height={300} width={300} alt={item?.mediaURL} />
                   </div>

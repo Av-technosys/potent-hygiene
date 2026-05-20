@@ -68,6 +68,7 @@
 
 "use client";
 
+import { pageSize as defaultPageSize } from "@/const/globalconst";
 import {
   Pagination,
   PaginationContent,
@@ -81,14 +82,17 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 interface Props {
   currentPage: number;
   totalPages: number;
+  pageSize?: number;
 }
 
-const ProductPagination = ({ currentPage, totalPages }: Props) => {
+const ProductPagination = ({
+  currentPage,
+  totalPages,
+  pageSize = defaultPageSize,
+}: Props) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const pageSize = 3;
 
   const pushPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString());
