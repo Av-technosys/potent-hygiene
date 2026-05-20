@@ -14,6 +14,7 @@ import {
   jsonb,
   pgEnum
 } from "drizzle-orm/pg-core";
+import { cancelRequestStatusEnum, returnRequestStatusEnum } from "./enum";
 
 
 // ================= USERS =================
@@ -158,6 +159,22 @@ export const productVarientBox = pgTable("product_varient_box", {
   name: varchar("name"),
   description: varchar("description"),
   image: varchar("image"),
+});
+
+// ============== Featured Product ===============
+
+export const featuredProduct = pgTable("featured_product", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productId: uuid("product_id").notNull().references(() => product.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const featuredCategory = pgTable("featured_category", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  categoryId: uuid("category_id").references(() => category.id),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
 
 // ================= PRODUCT CATEGORY =================
@@ -344,6 +361,50 @@ export const payment = pgTable("payment", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+
+//================cancel req============
+
+export const cancelRequest = pgTable("cancel_request", {
+
+  id: uuid("id").primaryKey().defaultRandom(),
+  orderId: uuid("order_id")
+    .notNull()
+    .references(() => order.id),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  userReason: text("user_reason"),
+  adminReason: text("admin_reason"),
+  status: cancelRequestStatusEnum("status").default("pending"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+
+export const returnRequest = pgTable("return_request", {
+  id: uuid("id").primaryKey().defaultRandom(),
+
+  orderItemId: uuid("order_item_id")
+    .notNull()
+    .references(() => orderItem.id),
+  userId: uuid("user_id")
+    .notNull()
+    .references(() => users.id),
+  reason: text("reason").notNull(),
+  adminReason: text("admin_reason"),
+  status: returnRequestStatusEnum("status").default("pending"),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  updatedAt: timestamp("updated_at").notNull().defaultNow(),
+});
+
+export const returnRequestImage = pgTable("return_request_image", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  returnRequestId: uuid("return_request_id")
+    .notNull()
+    .references(() => returnRequest.id, { onDelete: "cascade" }),
+  imageUrl: varchar("image_url").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
 
 // ================= SUBSCRIPTION PAYMENT =================
 
