@@ -479,3 +479,12 @@ export const couponTransaction = pgTable("coupon_transaction", {
   discountFixedAmount: integer("discount_fixed_amount"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
+
+export const contactUs = pgTable("contact_us", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  name: varchar("name"),
+  email: varchar("email"),
+  number: varchar("number"),
+  message: text("message"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
