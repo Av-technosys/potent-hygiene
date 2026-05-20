@@ -1,6 +1,7 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -9,6 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { removeFeaturedProduct } from "@/helper/adminListing/action";
+import { Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { toast } from "sonner";
 
 export type FeaturedProductRow = {
   id: string;
@@ -39,6 +45,21 @@ function formatAmount(amount: number | null) {
 
 const FeaturedProductsTable = ({ products, page, pageSize }: Props) => {
   const startIndex = (page - 1) * pageSize;
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+
+  function handleRemove(id: string) {
+    startTransition(async () => {
+      const response = await removeFeaturedProduct(id);
+
+      if (response.success) {
+        toast.success(response.message);
+        router.refresh();
+      } else {
+        toast.error(response.message);
+      }
+    });
+  }
 
   return (
     <div className="mt-8 overflow-x-auto">
@@ -51,6 +72,7 @@ const FeaturedProductsTable = ({ products, page, pageSize }: Props) => {
             <TableHead>Slug</TableHead>
             <TableHead>Price</TableHead>
             <TableHead>Stock</TableHead>
+            <TableHead className="text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
 
@@ -81,11 +103,23 @@ const FeaturedProductsTable = ({ products, page, pageSize }: Props) => {
                     {item.isInStock ? "In stock" : "Out of stock"}
                   </Badge>
                 </TableCell>
+                <TableCell className="text-right">
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="icon-sm"
+                    disabled={isPending}
+                    onClick={() => handleRemove(item.id)}
+                    className="bg-red-100 text-red-700 hover:bg-red-200"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={6} className="h-24 text-center text-gray-600">
+              <TableCell colSpan={7} className="h-24 text-center text-gray-600">
                 No featured products found.
               </TableCell>
             </TableRow>
