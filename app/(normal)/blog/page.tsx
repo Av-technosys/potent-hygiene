@@ -3,7 +3,7 @@ import Footer from "@/app/components/common/Footer";
 import BlogListClient from "./BlogListClient"; // Aapka client component
 import { getBlogs } from "@/helper/blog/action";
 import { Suspense } from "react";
-import Loading from "../loading";
+import Loading from "../../loading";
 
 export default async function BlogPage() {
   // Database se live blogs fetch kar rahe hain
@@ -11,7 +11,6 @@ export default async function BlogPage() {
 
   return (
     <div className="min-h-screen bg-[#FDFCF9]">
-      <BlogHeader />
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="text-center mb-12">
@@ -30,7 +29,6 @@ export default async function BlogPage() {
         </Suspense>
       </main>
 
-      <Footer />
     </div>
   );
 }

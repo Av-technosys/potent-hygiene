@@ -49,11 +49,10 @@ export default function BlogListClient({
           <button
             key={item}
             onClick={() => setActiveCategory(item)}
-            className={`shrink-0 px-5 py-2 rounded-full border text-sm transition font-medium ${
-              activeCategory === item
-                ? "bg-[#168BA0] text-white border-[#168BA0]"
-                : "bg-white text-[#168BA0] border-[#168BA0] hover:bg-teal-50"
-            }`}
+            className={`shrink-0 px-5 py-2 rounded-full border text-sm transition font-medium ${activeCategory === item
+              ? "bg-[#168BA0] text-white border-[#168BA0]"
+              : "bg-white text-[#168BA0] border-[#168BA0] hover:bg-teal-50"
+              }`}
           >
             {item}
           </button>
@@ -68,22 +67,20 @@ export default function BlogListClient({
             return (
               <div
                 key={blog.slug || index}
-                className={`rounded-2xl h-full shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col ${
-                  isFeatured ? "md:col-span-2" : "col-span-1"
-                }`}
+                className={`rounded-2xl h-full shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 flex flex-col ${isFeatured ? "md:col-span-2" : "col-span-1"
+                  }`}
               >
                 {/* Image Wrapper - Parent must be relative and have a height */}
                 <div
-                  className={`relative w-full overflow-hidden rounded-t-2xl bg-neutral-100 ${
-                    isFeatured ? "h-72 md:h-[300px]" : "h-64"
-                  }`}
+                  className={`relative w-full overflow-hidden rounded-t-2xl bg-neutral-100 ${isFeatured ? "h-72 md:h-[300px]" : "h-auto"
+                    }`}
                 >
                   <Image
                     src={blog.image || "/placeholder.jpg"}
                     alt={blog.title}
-                    fill // Ab ye upar wale parent ki height (h-72 ya h-64) ko pakad lega
-                    className="object-cover transition-transform duration-500 hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    width={600}
+                    height={400}
+                    className="object-contain w-full h-auto transition-transform duration-500 hover:scale-105"
                     priority={isFeatured} // Featured card ko fast load karne ke liye
                     unoptimized
                   />
@@ -91,11 +88,10 @@ export default function BlogListClient({
 
                 <div className="p-6 flex flex-col flex-1">
                   <h2
-                    className={`font-bold text-gray-900 leading-tight mb-3 ${
-                      isFeatured
-                        ? "text-2xl md:text-3xl"
-                        : "text-lg line-clamp-2"
-                    }`}
+                    className={`font-bold text-gray-900 leading-tight mb-3 ${isFeatured
+                      ? "text-2xl md:text-3xl"
+                      : "text-lg line-clamp-2"
+                      }`}
                   >
                     {blog.title}
                   </h2>
