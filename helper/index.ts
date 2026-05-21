@@ -30,7 +30,11 @@ export {
   changeOrderStatus,
   updateOrderStatus,
   createOrder,
-  checkUserFirstOrder
+  checkUserFirstOrder,
+  createCancelRequest,
+  createReturnRequest,
+  updateCancelRequestStatus,
+  updateReturnRequestStatus,
 } from "./order/action";
 
 export {
@@ -106,6 +110,7 @@ export {
   sendRefillReminderEmail,
   sendDeliveryConfirmationEmail,
   sendCartAbandonmentEmail,
+  sendOrderStatusUpdateEmail,
   sendWelcomeEmail
 } from "./emailTemplates/action";
 

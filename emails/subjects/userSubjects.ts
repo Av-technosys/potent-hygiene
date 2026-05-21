@@ -8,4 +8,5 @@ export const userSubjects = {
   refillReminder: "Refill Reminder / Subscription Prompt",
   deliveryConfirmation: "Delivery Confirmation",
   cartAbandonment: "Your Cart Abandoned",
+  orderStatusUpdate: "Your Potent Hygiene Order Status Update",
 } as const;

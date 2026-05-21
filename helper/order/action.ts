@@ -6,10 +6,17 @@ import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 
 import { revalidatePath } from "next/cache";
-import { cart, cartItem, couponTransaction, product, rewardCoinsHistory } from "@/db/schema";
+import { cart, cartItem, cancelRequest, couponTransaction, product, returnRequest, returnRequestImage, rewardCoinsHistory } from "@/db/schema";
 import { order, orderItem, payment, users } from "@/db/schema";
 import { requireUserWithRefresh } from "../user/action";
 import { calculateCheckoutPricingForUser } from "../checkout/action";
+import { ORDER_STATUS } from "@/const/globalconst";
+import {
+  sendDeliveryConfirmationEmail,
+  sendOrderStatusUpdateEmail,
+  sendShippingConfirmationEmail,
+  sendUserExperienceEmail,
+} from "../emailTemplates/action";
 
 export const fetchOrders = async ({
   page = 1,
@@ -78,6 +85,50 @@ export const fetchOrderDetails = async (orderId: string) => {
   }
 };
 
+const CANCELABLE_ORDER_STATUSES = [
+  ORDER_STATUS.PENDING,
+  ORDER_STATUS.PAID,
+  ORDER_STATUS.PROCESSING,
+];
+
+async function sendOrderStatusMail(orderId: string, status: string) {
+  const [row] = await db
+    .select({
+      email: users.email,
+      name: users.name,
+    })
+    .from(order)
+    .leftJoin(users, eq(order.userId, users.id))
+    .where(eq(order.id, orderId))
+    .limit(1);
+
+  if (!row?.email) return;
+
+  const firstName = row.name ?? "there";
+  const currentDate = new Date().toLocaleDateString("en-IN");
+  const orderLink = "https://www.potenthygiene.com/dashboard/orders";
+
+  if (status === ORDER_STATUS.SHIPPED) {
+    await sendShippingConfirmationEmail(row.email, orderId, firstName, orderLink, "FedEx");
+    return;
+  }
+
+  if (status === ORDER_STATUS.DELIVERED) {
+    await sendDeliveryConfirmationEmail(row.email, firstName, orderId, currentDate, orderLink);
+    await sendUserExperienceEmail(row.email, firstName, "https://www.potenthygiene.com/dashboard/reviews");
+    return;
+  }
+
+  const prettyStatus = status.replace(/_/g, " ");
+  await sendOrderStatusUpdateEmail(
+    row.email,
+    firstName,
+    orderId,
+    prettyStatus,
+    `Your order status has been updated to ${prettyStatus}.`,
+  );
+}
+
 export const changeOrderStatus = async (id: string, status: string) => {
   const result = await db
     .update(order)
@@ -88,12 +139,183 @@ export const changeOrderStatus = async (id: string, status: string) => {
     .where(eq(order.id, id))
     .returning();
 
+  if (result[0]) {
+    await sendOrderStatusMail(id, status);
+  }
+
   return result[0];
 };
 
 export async function updateOrderStatus(id: string, status: string | any) {
   await changeOrderStatus(id, status);
   revalidatePath("/admin/order");
+  revalidatePath("/dashboard/orders");
+}
+
+export async function createCancelRequest(orderId: string, userReason: string) {
+  try {
+    const { userId } = await requireUserWithRefresh();
+    const [orderRow] = await db
+      .select()
+      .from(order)
+      .where(and(eq(order.id, orderId), eq(order.userId, userId)))
+      .limit(1);
+
+    if (!orderRow) return { success: false, message: "Order not found" };
+    if (!orderRow.status || !CANCELABLE_ORDER_STATUSES.includes(orderRow.status as any)) {
+      return { success: false, message: "This order can no longer be cancelled" };
+    }
+
+    const [existing] = await db
+      .select()
+      .from(cancelRequest)
+      .where(and(eq(cancelRequest.orderId, orderId), eq(cancelRequest.userId, userId)))
+      .limit(1);
+
+    if (existing) return { success: false, message: "Cancel request already submitted" };
+
+    await db.insert(cancelRequest).values({
+      orderId,
+      userId,
+      userReason,
+    });
+
+    revalidatePath("/dashboard/orders");
+    revalidatePath("/admin/cancel-requests");
+    return { success: true, message: "Cancel request submitted" };
+  } catch (error) {
+    console.error("createCancelRequest error:", error);
+    return { success: false, message: "Failed to submit cancel request" };
+  }
+}
+
+export async function createReturnRequest(orderItemId: string, reason: string, imageUrls: string[] = []) {
+  try {
+    const { userId } = await requireUserWithRefresh();
+    const [row] = await db
+      .select({
+        item: orderItem,
+        order: order,
+      })
+      .from(orderItem)
+      .leftJoin(order, eq(orderItem.orderId, order.id))
+      .where(eq(orderItem.id, orderItemId))
+      .limit(1);
+
+    if (!row?.item || !row.order || row.order.userId !== userId) {
+      return { success: false, message: "Order item not found" };
+    }
+
+    if (row.order.status !== ORDER_STATUS.DELIVERED) {
+      return { success: false, message: "Return is available after delivery" };
+    }
+
+    const [existing] = await db
+      .select()
+      .from(returnRequest)
+      .where(and(eq(returnRequest.orderItemId, orderItemId), eq(returnRequest.userId, userId)))
+      .limit(1);
+
+    if (existing) return { success: false, message: "Return request already submitted" };
+
+    const [created] = await db
+      .insert(returnRequest)
+      .values({
+        orderItemId,
+        userId,
+        reason,
+      })
+      .returning({ id: returnRequest.id });
+
+    const cleanImages = imageUrls.filter(Boolean);
+    if (cleanImages.length > 0) {
+      await db.insert(returnRequestImage).values(
+        cleanImages.map((imageUrl) => ({
+          returnRequestId: created.id,
+          imageUrl,
+        })),
+      );
+    }
+
+    revalidatePath("/dashboard/orders");
+    revalidatePath("/admin/return-requests");
+    return { success: true, message: "Return request submitted" };
+  } catch (error) {
+    console.error("createReturnRequest error:", error);
+    return { success: false, message: "Failed to submit return request" };
+  }
+}
+
+export async function updateCancelRequestStatus(
+  requestId: string,
+  status: "approved" | "rejected",
+  adminReason?: string,
+) {
+  try {
+    const [updated] = await db
+      .update(cancelRequest)
+      .set({
+        status,
+        adminReason,
+        updatedAt: new Date(),
+      })
+      .where(eq(cancelRequest.id, requestId))
+      .returning();
+
+    if (!updated) return { success: false, message: "Cancel request not found" };
+
+    if (status === "approved") {
+      await changeOrderStatus(updated.orderId, ORDER_STATUS.CANCELED);
+    }
+
+    revalidatePath("/admin/cancel-requests");
+    revalidatePath("/admin/order");
+    revalidatePath("/dashboard/orders");
+    return { success: true, message: `Cancel request ${status}` };
+  } catch (error) {
+    console.error("updateCancelRequestStatus error:", error);
+    return { success: false, message: "Failed to update cancel request" };
+  }
+}
+
+export async function updateReturnRequestStatus(
+  requestId: string,
+  status: "approved" | "rejected",
+  adminReason?: string,
+) {
+  try {
+    const [updated] = await db
+      .update(returnRequest)
+      .set({
+        status,
+        adminReason,
+        updatedAt: new Date(),
+      })
+      .where(eq(returnRequest.id, requestId))
+      .returning();
+
+    if (!updated) return { success: false, message: "Return request not found" };
+
+    if (status === "approved") {
+      const [item] = await db
+        .select({ orderId: orderItem.orderId })
+        .from(orderItem)
+        .where(eq(orderItem.id, updated.orderItemId))
+        .limit(1);
+
+      if (item?.orderId) {
+        await changeOrderStatus(item.orderId, ORDER_STATUS.RETURNED);
+      }
+    }
+
+    revalidatePath("/admin/return-requests");
+    revalidatePath("/admin/order");
+    revalidatePath("/dashboard/orders");
+    return { success: true, message: `Return request ${status}` };
+  } catch (error) {
+    console.error("updateReturnRequestStatus error:", error);
+    return { success: false, message: "Failed to update return request" };
+  }
 }
 // export async function createOrder({
 //   items,
@@ -396,14 +618,36 @@ export async function getOrdersByUserId() {
       .orderBy(desc(order.createdAt));
 
     const orderData = await Promise.all(
-      orders.map(async (order) => {
-        const items = await db
-          .select()
-          .from(orderItem)
-          .where(eq(orderItem.orderId, order.id));
+      orders.map(async (orderRow) => {
+        const [items, cancelRequests] = await Promise.all([
+          db
+            .select()
+            .from(orderItem)
+            .where(eq(orderItem.orderId, orderRow.id)),
+          db
+            .select()
+            .from(cancelRequest)
+            .where(eq(cancelRequest.orderId, orderRow.id)),
+        ]);
+
+        const returnRequests = items.length
+          ? await db
+              .select()
+              .from(returnRequest)
+              .where(inArray(returnRequest.orderItemId, items.map((item) => item.id)))
+          : [];
+
+        const returnRequestMap = new Map(
+          returnRequests.map((request) => [request.orderItemId, request]),
+        );
+
         return {
-          ...order,
-          order_items: items,
+          ...orderRow,
+          cancelRequest: cancelRequests[0] ?? null,
+          order_items: items.map((item) => ({
+            ...item,
+            returnRequest: returnRequestMap.get(item.id) ?? null,
+          })),
         };
       }),
     );

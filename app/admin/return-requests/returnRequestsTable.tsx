@@ -2,6 +2,7 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { updateReturnRequestStatus } from "@/helper/order/action";
 import {
   Dialog,
   DialogContent,
@@ -9,7 +10,9 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogFooter,
 } from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 import {
   Table,
   TableBody,
@@ -19,6 +22,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ImageIcon } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+import { toast } from "sonner";
 
 export type ReturnRequestRow = {
   id: string;
@@ -64,30 +70,62 @@ function statusClass(status: ReturnRequestRow["status"]) {
 
 const ReturnRequestsTable = ({ requests, page, pageSize }: Props) => {
   const startIndex = (page - 1) * pageSize;
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [activeRequest, setActiveRequest] = useState<ReturnRequestRow | null>(null);
+  const [actionType, setActionType] = useState<"approved" | "rejected" | null>(null);
+  const [adminReason, setAdminReason] = useState("");
+
+  const openActionDialog = (request: ReturnRequestRow, status: "approved" | "rejected") => {
+    setActiveRequest(request);
+    setActionType(status);
+    setAdminReason(status === "approved" ? "Refund confirmed by admin" : "");
+  };
+
+  const closeActionDialog = () => {
+    setActiveRequest(null);
+    setActionType(null);
+    setAdminReason("");
+  };
+
+  const submitStatus = () => {
+    if (!activeRequest || !actionType) return;
+    startTransition(async () => {
+      const result = await updateReturnRequestStatus(activeRequest.id, actionType, adminReason);
+      if (result.success) {
+        toast.success(result.message);
+        closeActionDialog();
+        router.refresh();
+      } else {
+        toast.error(result.message);
+      }
+    });
+  };
 
   return (
-    <div className="mt-8 overflow-x-auto">
-      <Table>
+    <div className="mt-8 w-full overflow-hidden">
+      <Table className="w-full table-fixed">
         <TableHeader>
           <TableRow>
-            <TableHead>S.No</TableHead>
-            <TableHead>Product</TableHead>
-            <TableHead>Order ID</TableHead>
-            <TableHead>Customer</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead>Reason</TableHead>
-            <TableHead>Images</TableHead>
+            <TableHead className="w-[5%]">S.No</TableHead>
+            <TableHead className="w-[20%]">Product</TableHead>
+            <TableHead className="w-[14%]">Order ID</TableHead>
+            <TableHead className="w-[18%]">Customer</TableHead>
+            <TableHead className="w-[10%]">Status</TableHead>
+            <TableHead className="w-[9%]">Amount</TableHead>
+            <TableHead className="w-[8%]">Reason</TableHead>
+            <TableHead className="w-[7%]">Images</TableHead>
+            <TableHead className="w-[9%] text-right">Action</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
           {requests.length > 0 ? (
             requests.map((request, index) => (
-              <TableRow key={request.id}>
-                <TableCell>{startIndex + index + 1}</TableCell>
+              <TableRow key={request.id} className="align-top">
+                <TableCell className="align-top">{startIndex + index + 1}</TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-3 min-w-[240px]">
+                  <div className="flex items-center gap-3">
                     {request.productImage ? (
                       <img
                         src={request.productImage}
@@ -97,29 +135,29 @@ const ReturnRequestsTable = ({ requests, page, pageSize }: Props) => {
                     ) : (
                       <div className="h-12 w-12 rounded-md border bg-muted" />
                     )}
-                    <div>
-                      <p className="font-medium">{request.productName ?? "-"}</p>
-                      <p className="text-xs text-muted-foreground">{request.productSku ?? "-"}</p>
+                    <div className="min-w-0">
+                      <p className="truncate font-medium">{request.productName ?? "-"}</p>
+                      <p className="truncate text-xs text-muted-foreground">{request.productSku ?? "-"}</p>
                     </div>
                   </div>
                 </TableCell>
-                <TableCell>{request.orderId ?? "-"}</TableCell>
+                <TableCell className="align-top">
+                  <p className="truncate" title={request.orderId ?? ""}>{request.orderId ?? "-"}</p>
+                </TableCell>
                 <TableCell>
-                  <div className="min-w-[180px]">
-                    <p className="font-medium">{request.customerName ?? "-"}</p>
-                    <p className="text-xs text-muted-foreground">{request.customerEmail ?? "-"}</p>
+                  <div>
+                    <p className="truncate font-medium">{request.customerName ?? "-"}</p>
+                    <p className="truncate text-xs text-muted-foreground">{request.customerEmail ?? "-"}</p>
                   </div>
                 </TableCell>
-                <TableCell>
+                <TableCell className="align-top">
                   <Badge className={statusClass(request.status)}>{request.status ?? "pending"}</Badge>
                 </TableCell>
-                <TableCell>{formatAmount(request.productPrice)}</TableCell>
-                <TableCell>
-                  <p className="max-w-[320px] line-clamp-3 text-sm text-muted-foreground">
-                    {request.reason}
-                  </p>
+                <TableCell className="align-top">{formatAmount(request.productPrice)}</TableCell>
+                <TableCell className="align-top">
+                  <ReasonDialog title="Return Reason" reason={request.reason} />
                 </TableCell>
-                <TableCell>
+                <TableCell className="align-top">
                   <Dialog>
                     <DialogTrigger asChild>
                       <Button
@@ -161,19 +199,103 @@ const ReturnRequestsTable = ({ requests, page, pageSize }: Props) => {
                     </DialogContent>
                   </Dialog>
                 </TableCell>
+                <TableCell className="align-top text-right">
+                  {request.status === "pending" || !request.status ? (
+                    <div className="flex flex-col items-end gap-2">
+                      <Button
+                        size="sm"
+                        disabled={isPending}
+                        onClick={() => openActionDialog(request, "approved")}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={isPending}
+                        onClick={() => openActionDialog(request, "rejected")}
+                      >
+                        Reject
+                      </Button>
+                    </div>
+                  ) : (
+                    <span className="text-sm text-muted-foreground">Done</span>
+                  )}
+                </TableCell>
               </TableRow>
             ))
           ) : (
             <TableRow>
-              <TableCell colSpan={8} className="h-24 text-center text-gray-600">
+              <TableCell colSpan={9} className="h-24 text-center text-gray-600">
                 No return requests found.
               </TableCell>
             </TableRow>
           )}
         </TableBody>
       </Table>
+
+      <Dialog open={Boolean(activeRequest)} onOpenChange={(open) => !open && closeActionDialog()}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {actionType === "approved" ? "Approve Return Request" : "Reject Return Request"}
+            </DialogTitle>
+            <DialogDescription>
+              {actionType === "approved"
+                ? "Confirm that the customer refund is done before approving this request."
+                : "Add the reason that will be saved with this rejected request."}
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="rounded-md border bg-muted/30 p-3 text-sm">
+            <p className="font-medium">{activeRequest?.productName ?? "Return item"}</p>
+            <p className="break-all text-muted-foreground">Order: {activeRequest?.orderId ?? "-"}</p>
+          </div>
+
+          <Textarea
+            value={adminReason}
+            onChange={(event) => setAdminReason(event.target.value)}
+            placeholder={actionType === "approved" ? "Refund confirmation note" : "Reject reason"}
+          />
+
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={closeActionDialog}>
+              Close
+            </Button>
+            <Button
+              type="button"
+              disabled={isPending || !adminReason.trim()}
+              onClick={submitStatus}
+            >
+              {actionType === "approved" ? "Approve" : "Reject"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
+function ReasonDialog({ title, reason }: { title: string; reason: string | null }) {
+  if (!reason) return <span className="text-sm text-muted-foreground">-</span>;
+
+  return (
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button type="button" variant="outline" size="sm">
+          View
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+        </DialogHeader>
+        <p className="max-h-[55vh] overflow-y-auto whitespace-pre-wrap break-words rounded-md border bg-muted/30 p-4 text-sm text-muted-foreground">
+          {reason}
+        </p>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default ReturnRequestsTable;

@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+/* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -116,12 +117,21 @@ export default function EditProduct({ productDetails }: any) {
     if (!productDetails?.filters) return;
 
     const slugs = extractSlugs(productDetails.filters);
+    const typeSlugs = productDetails.type ? [productDetails.type] : slugs;
+    const sizeSlugs =
+      Array.isArray(productDetails.size) && productDetails.size.length
+        ? productDetails.size
+        : slugs;
+    const flowSlugs =
+      Array.isArray(productDetails.flowType) && productDetails.flowType.length
+        ? productDetails.flowType
+        : slugs;
 
-    setProductType(mapSlugsToObjects(slugs, PRODUCT_FILTER.product_type));
+    setProductType(mapSlugsToObjects(typeSlugs, PRODUCT_FILTER.product_type));
 
-    setSize(mapSlugsToObjects(slugs, PRODUCT_FILTER.size));
+    setSize(mapSlugsToObjects(sizeSlugs, PRODUCT_FILTER.size));
 
-    setFlowType(mapSlugsToObjects(slugs, PRODUCT_FILTER.flow_or_usage_type));
+    setFlowType(mapSlugsToObjects(flowSlugs, PRODUCT_FILTER.flow_or_usage_type));
 
     // setMaterial(mapSlugsToObjects(slugs, PRODUCT_FILTER.material));
 
@@ -321,6 +331,10 @@ export default function EditProduct({ productDetails }: any) {
     if (selectedCategories.length === 0)
       return toast.error("Select a category");
 
+    const selectedProductType = productType?.[0]?.slug ?? "";
+    const selectedSizes = (size || []).map((item: any) => item.slug);
+    const selectedFlowTypes = (flowType || []).map((item: any) => item.slug);
+
     const formData = new FormData();
     formData.append("id", variants.id);
     selectedCategories.forEach((catId) => formData.append("category[]", catId));
@@ -329,6 +343,9 @@ export default function EditProduct({ productDetails }: any) {
       ...variants,
       id: variants.isExisting ? variants.id : undefined, // Old variants keep ID, new ones don't
       brand: brand,
+      type: selectedProductType,
+      size: selectedSizes,
+      flowType: selectedFlowTypes,
       bannerImage: variants.banner?.preview,
       media: variants.gallery.map((g: any) => g.preview),
       highlights: variants.highlights.filter(
