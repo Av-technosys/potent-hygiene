@@ -32,6 +32,8 @@ function withLegacyKeys(data: TemplateData = {}) {
     "Reorder Link": data.reorderLink,
     "Delivery Date": data.deliveryDate,
     "Checkout Link": data.checkoutLink,
+    "Order Status": data.status,
+    "Status Message": data.message,
   };
 }
 
@@ -273,6 +275,28 @@ export async function sendCartAbandonmentEmail(
         productNames,
         checkoutLink,
         reviewLink,
+      },
+    }),
+  );
+}
+
+export async function sendOrderStatusUpdateEmail(
+  email: string,
+  firstName: string,
+  orderId: string,
+  status: string,
+  message: string,
+) {
+  return sendSafely(() =>
+    sendUserTemplateEmail({
+      to: email,
+      subject: userSubjects.orderStatusUpdate,
+      template: "orderStatusUpdate",
+      data: {
+        firstName,
+        orderId,
+        status,
+        message,
       },
     }),
   );

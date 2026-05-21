@@ -212,6 +212,9 @@ export async function createProduct(formData: FormData): Promise<void> {
           basePrice: variants.price,
           strikethroughPrice: variants.strikethroughPrice,
           bannerImage: variants.bannerImage || null,
+          type: variants.type || null,
+          size: Array.isArray(variants.size) ? variants.size : [],
+          flowType: Array.isArray(variants.flowType) ? variants.flowType : [],
           isInStock: variants.isInStock,
           hasVarientBox: variants.hasVarientBox,
           highlights: variants.highlights || [],
@@ -314,7 +317,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
 
       // Update or Insert variants
 
-      let vId = productId;
+      const vId = productId;
 
       if (vId) {
         // Update existing
@@ -328,6 +331,9 @@ export async function updateProduct(formData: FormData): Promise<void> {
             basePrice: variants.price,
             strikethroughPrice: variants.strikethroughPrice,
             bannerImage: variants.bannerImage || null,
+            type: variants.type || null,
+            size: Array.isArray(variants.size) ? variants.size : [],
+            flowType: Array.isArray(variants.flowType) ? variants.flowType : [],
             isInStock: variants.isInStock,
             hasVarientBox: variants.hasVarientBox,
             highlights: variants.highlights || [],

@@ -266,6 +266,10 @@ export default function AddProductForm() {
     if (selectedCategories.length === 0)
       return toast.error("Select a category");
 
+    const selectedProductType = productType?.[0]?.slug ?? "";
+    const selectedSizes = (size || []).map((item: any) => item.slug);
+    const selectedFlowTypes = (flowType || []).map((item: any) => item.slug);
+
     const formData = new FormData();
     formData.append("id", variants.id);
     selectedCategories.forEach((catId) => formData.append("category[]", catId));
@@ -274,6 +278,9 @@ export default function AddProductForm() {
       ...variants,
       // id: variants.isExisting ? variants.id : undefined, // Old variants keep ID, new ones don't
       brand: brand,
+      type: selectedProductType,
+      size: selectedSizes,
+      flowType: selectedFlowTypes,
       bannerImage: variants.banner?.preview,
       media: variants.gallery.map((g: any) => g.preview),
       highlights: variants.highlights.filter(

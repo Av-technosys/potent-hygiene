@@ -108,7 +108,6 @@ export function Navbar() {
                   <IconMenu2 size={28} />
                 </button>
               </SheetTrigger>
-
               <SheetContent
                 side="left"
                 className="w-75 bg-white p-0 border-r-0 [&>button]:hidden"
@@ -258,3 +257,45 @@ export function Navbar() {
     </nav>
   );
 }
+
+
+
+
+// // let maping = {
+// // ")" : "(",
+// // "]" : "[",
+// // "}" : "{"
+// // }
+
+// // let stack = []
+
+// // const isValidBracket = (str) => {
+
+//   [
+// //    for(let i = 0; i< str.length; i++){
+
+// //        // Opening bracket
+// //       if(!maping[str[i]]){
+// //         stack.push(str[i])
+// //       }
+
+// //       else{
+       
+
+// //       }
+// //     if(stack.length <= 0){
+// //       stack.push(str[i])
+// //     }
+// //     if(maping[str[i]]){
+// //       maping[str[i]] == stack[i]
+// //       stack.pop()
+
+// //     return true
+// //     }
+
+// //   }
+// //   return false
+// // }
+
+
+// // isValidBracket("[()]{}")
