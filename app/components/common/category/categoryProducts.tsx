@@ -9,6 +9,7 @@ import AddToWishlist from "./addToWishlist";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import { NEXT_PUBLIC_S3_URL } from "@/env";
 
 export default function CategoryProducts({ products, productsCategory }: any) {
 
@@ -80,7 +81,7 @@ export default function CategoryProducts({ products, productsCategory }: any) {
               href={`/product-detail/${value.slug}`}
             >
               <Image
-                src={value.bannerImage || "/product.png"}
+                src={`${NEXT_PUBLIC_S3_URL}/${value.bannerImage}`}
                 alt={value.name}
                 fill
                 className="object-cover transition-transform duration-500 hover:scale-105"

@@ -8,6 +8,7 @@ import AddToWishlist from "@/app/components/common/category/addToWishlist";
 import { addToCart } from "@/store/cartActions";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { NEXT_PUBLIC_S3_URL } from "@/env";
 
 export default function BestsellingCard({ product, buttonColor, brand }: any) {
   const router = useRouter();
@@ -67,7 +68,7 @@ export default function BestsellingCard({ product, buttonColor, brand }: any) {
       {/* Image */}
       <div className="relative aspect-square w-full overflow-hidden rounded-4xl bg-gray-50">
         <Image
-          src={product.image || "/product.png"}
+          src={`${NEXT_PUBLIC_S3_URL}/${product.image}`}
           alt={product.name}
           fill
           className="object-cover"

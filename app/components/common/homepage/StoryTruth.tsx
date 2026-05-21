@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
 
 // const StoryTruth = () => {
 //   return (
@@ -130,7 +131,7 @@ const StoryTruth = ({
               ))}
             </div>
 
-            <div className="pt-4">
+            <Link target="_blank" href={"blog/periods-power-productivity-how-managing-menstrual-health-can-skyrocket-your-efficiency"} className="pt-4">
               <Button
                 className="rounded-full px-10 py-6 text-sm font-semibold text-white shadow-lg hover:scale-105 transition-all"
                 style={{
@@ -139,7 +140,7 @@ const StoryTruth = ({
               >
                 Read Our Full Story
               </Button>
-            </div>
+            </Link>
 
           </div>
 

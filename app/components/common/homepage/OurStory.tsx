@@ -1,6 +1,7 @@
 
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 type Props = {
   badgeText: string;
@@ -78,7 +79,7 @@ export function OurStory({
             </div>
 
             {/* Button */}
-            <div className="pt-2 md:pt-4">
+            <Link target="_blank" href={"/blog/period-leave-is-it-the-next-big-workplace-revolution"} className="pt-2 md:pt-4">
               <Button
                 className="rounded-full px-10 py-6 text-sm font-bold text-white"
                 style={{
@@ -87,7 +88,7 @@ export function OurStory({
               >
                 Read Our Full Story
               </Button>
-            </div>
+            </Link>
           </div>
         </div>
       </div>

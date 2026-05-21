@@ -6,10 +6,10 @@ import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious
 import Link from "next/link";
 
 const categories = [
-  { id: 1, title: "Menstrual Cup", video: "/landingVideos/choose_cup.mp4", thumb: "/thumb1.png", slug: "menstrual-cups" },
-  { id: 2, title: "Ovy pads", video: "/landingVideos/ovy_pads.mp4", thumb: "/thumb2.png", slug: "organic-sanitary-pads" },
-  { id: 3, title: "Pee & Puke Bags", video: "/landingVideos/pee_gel.mp4", thumb: "/thumb3.png", slug: "pee-and-puke-bags-2" },
-  { id: 4, title: "Big Pads", video: "/landingVideos/pads.mp4", thumb: "/thumb3.png", slug: "big-pads" },
+  { id: 1, title: "Menstrual Cup", video: "/landingVideos/choose_cup.mp4", thumb: "/thumb1.png", slug: "fe019833-ad10-4c33-921e-09b46a98c413" },
+  { id: 2, title: "Ovy pads", video: "/landingVideos/ovy_pads.mp4", thumb: "/thumb2.png", slug: "50efdc35-a00d-4186-bd98-854c27d21521" },
+  { id: 3, title: "Pee & Puke Bags", video: "/landingVideos/pee_gel.mp4", thumb: "/thumb3.png", slug: "5d282a01-1620-4c4c-b16f-b2510c7311aa" },
+  { id: 4, title: "Big Pads", video: "/landingVideos/pads.mp4", thumb: "/thumb3.png", slug: "50efdc35-a00d-4186-bd98-854c27d21521" },
 ];
 
 export function ProductCategories() {
