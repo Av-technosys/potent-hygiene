@@ -7,7 +7,7 @@ import slugify from "slugify";
 //import path from "path";
 import { redirect } from "next/navigation";
 import { desc, eq } from "drizzle-orm";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, unstable_cache } from "next/cache";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
@@ -183,13 +183,18 @@ export async function deleteCategory(id: string) {
 }
 export async function getCategories() {
   try {
-    return await db
-      .select()
-      .from(category)
+    return await db.select().from(category).orderBy(desc(category.priority))
   } catch (error) {
     console.error(error);
     return [];
   }
+}
+
+export async function getCashedCategory() {
+  return unstable_cache(getCategories, ['categories'], {
+    tags: ["categories"],
+    revalidate: 60 * 60 * 24
+  })
 }
 
 export async function getAllProductsByCategorySlug(slug: string) {

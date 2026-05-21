@@ -5,8 +5,8 @@ const features = [
   {
     title: "100% safe & Dermatologically Tested",
     description:
-      "Dermatologically tested products that meet the highest safety standards for your peace of mind.",
-    icon: <ShieldCheck className="h-6 w-6 text-white" />,
+      "Dermatologically tested for trusted safety and peace of mind.",
+    icon: < ShieldCheck className="h-6 w-6 text-white" />,
   },
   {
     title: "Eco-Friendly Packaging",
@@ -59,12 +59,12 @@ export function WhyChooseUs() {
         {/* --- X-SCROLL GRID --- */}
         {/* Mobile: flex-row with overflow | Laptop: 3-column grid */}
         <div
-          className="flex overflow-x-auto gap-4 pb-8 no-scrollbar snap-x snap-mandatory"
+          className="grid grid-cols-2 md:grid-cols-3 gap-4 pb-8 "
         >
           {features.map((feature, index) => (
             <div
               key={index}
-              className="bg-white p-6 md:p-8 rounded-[28px] md:rounded-xl shadow-sm border border-gray-50 transition-all hover:shadow-md group w-[75%] sm:w-[60%] md:w-[45%] lg:w-[30%] shrink-0 snap-start"
+              className="bg-white p-6 md:p-8 rounded-[28px] md:rounded-xl shadow-sm border border-gray-50 transition-all hover:shadow-md group "
             >
               {/* Icon */}
               <div className="mb-5 md:mb-6 flex h-12 w-12 md:h-14 md:w-14 items-center justify-center rounded-xl md:rounded-2xl bg-linear-to-br from-[#168BA0] to-[#AFE7F1] shadow-inner group-hover:rotate-6 transition-transform">

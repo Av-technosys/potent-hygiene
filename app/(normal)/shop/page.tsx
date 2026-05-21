@@ -3,7 +3,7 @@ import FilterBar from "../../components/common/category/filterTopBar";
 export const dynamic = "force-dynamic";
 import FiltersSidebar from "../../components/common/category/filterSideBar";
 import CategoryProducts from "../../components/common/category/categoryProducts";
-import { getProducts } from "@/helper/product/action";
+import { getProductCategories, getProducts, getUserProduct } from "@/helper/product/action";
 import { getCategories } from "@/helper";
 
 interface PageProps {
@@ -16,8 +16,8 @@ interface PageProps {
     material?: string;
     size?: string;
     flow?: string;
-    cramps?:string;
-    allergies?:string;
+    cramps?: string;
+    allergies?: string;
     min?: any;
     max?: any;
     stock?: any;
@@ -25,41 +25,24 @@ interface PageProps {
   };
 }
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 200;
 
 const Page = async ({ searchParams }: PageProps) => {
   const params = await searchParams;
+
   const allCategories = await getCategories();
-
-  const result = await getProducts({
-    page: Number(params.page ?? "1"),
-    pageSize: Number(PAGE_SIZE),
-    search: params.search ?? "",
-    category: params.category,
-    type:params.type,
-    material:params.material,
-    size:params.size,
-    flow:params.flow,
-    cramps:params.cramps,
-    allergies:params.allergies,
-    min:params.min,
-    max:params.max,
-    stock:params.stock,
-    brand:params.brand
-  });
-
-  const totalItems:any = result.items.length;
+  const products = await getUserProduct();
+  const productsCategory = await getProductCategories();
 
   return (
     <div className=" container">
 
-      <FilterBar total={totalItems} />
+      <FilterBar total={products?.length} />
       <div className=" py-8  flex gap-6">
-        <FiltersSidebar categories={allCategories} />
+        <FiltersSidebar allCategories={allCategories} />
         <CategoryProducts
-          products={result.items}
-          total={5}
-          currentPage={result.page}
+          products={products}
+          productsCategory={productsCategory}
         />
       </div>
 

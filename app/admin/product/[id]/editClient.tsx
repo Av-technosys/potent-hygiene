@@ -83,9 +83,9 @@ export default function EditProduct({ productDetails }: any) {
   const [flowType, setFlowType] = useState<any[]>([]);
   const [material, setMaterial] = useState<any[]>([]);
   const [cramps, setCramps] = useState<any[]>([]);
-  const [sensitive, setSensitive]=useState<any[]>([]);
+  const [sensitive, setSensitive] = useState<any[]>([]);
 
-  const[brand,setBrand] = useState<any>(productDetails.brand);
+  const [brand, setBrand] = useState<any>(productDetails.brand);
 
   const [varientBox, setVarientBox] = useState(productDetails.hasVarientBox);
 
@@ -123,11 +123,11 @@ export default function EditProduct({ productDetails }: any) {
 
     setFlowType(mapSlugsToObjects(slugs, PRODUCT_FILTER.flow_or_usage_type));
 
-    setMaterial(mapSlugsToObjects(slugs, PRODUCT_FILTER.material));
+    // setMaterial(mapSlugsToObjects(slugs, PRODUCT_FILTER.material));
 
-    setCramps(mapSlugsToObjects(slugs, PRODUCT_FILTER.cramps_or_discomfort));
+    // setCramps(mapSlugsToObjects(slugs, PRODUCT_FILTER.cramps_or_discomfort));
 
-    setSensitive(mapSlugsToObjects(slugs, PRODUCT_FILTER.allergies_or_sensitivities));
+    // setSensitive(mapSlugsToObjects(slugs, PRODUCT_FILTER.allergies_or_sensitivities));
   }, [productDetails]);
 
   const {
@@ -349,7 +349,7 @@ export default function EditProduct({ productDetails }: any) {
         ...(sensitive || []),
       ],
       VarientBoxes: varientBox ? variantBoxes : [],
-      hasVarientBox:varientBox
+      hasVarientBox: varientBox
     };
 
     formData.append("variants", JSON.stringify(payload));
@@ -624,14 +624,14 @@ export default function EditProduct({ productDetails }: any) {
               </CardContent>
             </Card>
 
-             <Card>
+            <Card>
               <CardHeader>Brand Name</CardHeader>
               <CardContent>
                 <RadioGroup
                   value={brand}
                   onValueChange={(value) => {
                     setBrand(value);
-                   
+
                   }}
                   className="w-fit"
                 >
@@ -684,7 +684,7 @@ export default function EditProduct({ productDetails }: any) {
                       key={index}
                       className="border rounded-xl p-4 grid md:grid-cols-6 gap-4 items-center"
                     >
-                      
+
                       <div className="col-span-1">
                         <div
                           onClick={() => fileRefs.current[index]?.click()}
@@ -707,7 +707,7 @@ export default function EditProduct({ productDetails }: any) {
                           type="file"
                           accept="image/*"
                           hidden
-                          ref={(el:any) => (fileRefs.current[index] = el)} 
+                          ref={(el: any) => (fileRefs.current[index] = el)}
                           onChange={(e) => handleVariantImage(e, index)}
                         />
                       </div>
@@ -741,7 +741,7 @@ export default function EditProduct({ productDetails }: any) {
                       {/* Delete */}
                       <div className="col-span-1 flex justify-end">
                         <Button
-                        type="button"
+                          type="button"
                           variant="destructive"
                           size="icon"
                           onClick={() => removeVariantBox(index)}

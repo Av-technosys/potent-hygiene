@@ -125,8 +125,8 @@ export default function ProductDetailPage({
             <Image
               src={`${NEXT_PUBLIC_S3_URL}/${bannerImage}`}
               alt="Product"
-              height={200}
-              width={200}
+              height={500}
+              width={500}
               className="rounded-xl w-full h-auto object-cover"
             />
           </div>
@@ -150,7 +150,7 @@ export default function ProductDetailPage({
                     onClick={() => setBannerImage(item?.mediaURL)}
                     className="cursor-pointer"
                   >
-             
+
 
                     <Image src={`${NEXT_PUBLIC_S3_URL}/${item?.mediaURL}`} height={300} width={300} alt={item?.mediaURL} />
                   </div>

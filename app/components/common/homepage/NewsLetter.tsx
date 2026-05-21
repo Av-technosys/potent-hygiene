@@ -101,7 +101,7 @@ export function Newsletter({
                   className="absolute right-1.5 top-1 h-11 lg:h-14 rounded-full px-6 font-bold text-white"
                   style={{ backgroundColor: buttonColor }}
                 >
-                  {loading ? "..." : "Subscribe"}
+                  {loading ? "Subscribing..." : "Subscribe"}
                 </Button>
               </div>
             </div>

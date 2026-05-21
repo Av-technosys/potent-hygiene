@@ -4,58 +4,97 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { PRODUCT_FILTER } from "@/const/filters";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { getCategories } from "@/helper";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useState, useEffect, useMemo } from "react";
+import debounce from 'debounce';
 
-export default function FiltersSidebar({ categories }: any) {
+export default function FiltersSidebar({ allCategories }: any) {
+
+  const filterBarData = {
+    category: allCategories,
+    productType: PRODUCT_FILTER.product_type,
+    flow: PRODUCT_FILTER.flow_or_usage_type,
+    size: PRODUCT_FILTER.size
+  }
+
   const router = useRouter();
   const params = useSearchParams();
+  const pathname = usePathname();
+  const paramsString = params.toString();
 
-  // ✅ local state (instant UI)
-  const [filters, setFilters] = useState<any>({
-    category: params.get("category") || "",
-    type: params.get("type") || "",
-    flow: params.get("flow") || "",
-    size: params.get("size") || "",
-    material: params.get("material") || "",
-    cramps: params.get("cramps") || "",
-    allergies: params.get("allergies") || "",
-    stock: params.get("stock") || "",
-    min: params.get("min") || "",
-    max: params.get("max") || "",
+
+  const [optimisticFilter, setOptimisticFilter] = useState({
+    category: params.getAll("category"),
+    productType: params.getAll("productType"),
+    flow: params.getAll("flow"),
+    size: params.getAll("size"),
   });
 
+  // sync only when url actually changes
   useEffect(() => {
-    const newParams = new URLSearchParams();
-
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value) newParams.set(key, String(value));
+    setOptimisticFilter({
+      category: params.getAll("category"),
+      productType: params.getAll("productType"),
+      flow: params.getAll("flow"),
+      size: params.getAll("size"),
     });
-
-    router.replace(`?${newParams.toString().toLowerCase()}`);
-  }, [filters, router]);
-
-  const toggleFilter = (key: string, value: string) => {
-    setFilters((prev: any) => ({
-      ...prev,
-      [key]: prev[key] === value ? "" : value,
-    }));
-  };
+  }, [paramsString]);
 
   const clearAll = () => {
-    setFilters({
-      category: "",
-      type: "",
-      flow: "",
-      size: "",
-      material: "",
-      cramps: "",
-      allergies: "",
-      stock: "",
-      min: "",
-      max: "",
+    setOptimisticFilter({
+      category: [],
+      productType: [],
+      flow: [],
+      size: [],
+    });
+
+    router.replace(pathname, { scroll: false });
+  };
+
+  // stable debounce
+  const debouncedPush = useMemo(
+    () =>
+      debounce((query: string) => {
+        router.replace(query ? `${pathname}${query}` : pathname, {
+          scroll: false,
+        });
+      }, 500),
+    [router, pathname]
+  );
+
+  const handleFilterChange = (type: string, value: string) => {
+    setOptimisticFilter((prev) => {
+      const key = type as keyof typeof prev;
+
+      const existingValues = prev[key] || [];
+
+      const updatedValues = existingValues.includes(value)
+        ? existingValues.filter((v: string) => v !== value)
+        : [...existingValues, value];
+
+      // create query from updated state
+      const current = new URLSearchParams(params.toString());
+
+      current.delete(type);
+
+      updatedValues.forEach((v) => {
+        current.append(type, v);
+      });
+
+      const query = current.toString();
+
+      debouncedPush(query ? `?${query}` : "");
+
+      return {
+        ...prev,
+        [key]: updatedValues,
+      };
     });
   };
+
+
+
 
   return (
     <Card className="hidden md:block w-72 rounded-2xl shadow-md bg-white h-fit sticky top-4 max-h-[96vh] overflow-y-auto no-scrollbar">
@@ -70,12 +109,12 @@ export default function FiltersSidebar({ categories }: any) {
         {/* Categories */}
         <div>
           <h3 className="font-medium mb-3">Categories</h3>
-          {categories?.map((item: any) => (
+          {filterBarData?.category?.map((item: any) => (
             <div key={item.name} className="flex items-center gap-2 mb-2">
               <Checkbox
-                checked={filters.category === item.slug}
+                checked={optimisticFilter.category.includes(item.id)}
                 onCheckedChange={() =>
-                  toggleFilter("category", item.slug)
+                  handleFilterChange("category", item.id)
                 }
               />
               <label>{item.name}</label>
@@ -86,12 +125,12 @@ export default function FiltersSidebar({ categories }: any) {
         {/* Product Type */}
         <div>
           <h3 className="font-medium mb-3">Product Type</h3>
-          {PRODUCT_FILTER.product_type.map((item) => (
+          {filterBarData?.productType?.map((item: any) => (
             <div key={item.name} className="flex items-center gap-2 mb-2">
               <Checkbox
-                checked={filters.type === item.slug}
+                checked={optimisticFilter.productType.includes(item.slug)}
                 onCheckedChange={() =>
-                  toggleFilter("type", item.slug)
+                  handleFilterChange("productType", item.slug)
                 }
               />
               <label>{item.name}</label>
@@ -102,12 +141,12 @@ export default function FiltersSidebar({ categories }: any) {
         {/* Flow */}
         <div>
           <h3 className="font-medium mb-3">Flow Type</h3>
-          {PRODUCT_FILTER.flow_or_usage_type.map((item) => (
+          {filterBarData?.flow?.map((item: any) => (
             <div key={item.name} className="flex items-center gap-2 mb-2">
               <Checkbox
-                checked={filters.flow === item.slug}
+                checked={optimisticFilter.flow.includes(item.slug)}
                 onCheckedChange={() =>
-                  toggleFilter("flow", item.slug)
+                  handleFilterChange("flow", item.slug)
                 }
               />
               <label>{item.name}</label>
@@ -118,12 +157,12 @@ export default function FiltersSidebar({ categories }: any) {
         {/* Size */}
         <div>
           <h3 className="font-medium mb-3">Size</h3>
-          {PRODUCT_FILTER.size.map((item) => (
+          {filterBarData?.size?.map((item: any) => (
             <div key={item.name} className="flex items-center gap-2 mb-2">
               <Checkbox
-                checked={filters.size === item.slug}
+                checked={optimisticFilter.size.includes(item.slug)}
                 onCheckedChange={() =>
-                  toggleFilter("size", item.slug)
+                  handleFilterChange("size", item.slug)
                 }
               />
               <label>{item.name}</label>
@@ -131,60 +170,61 @@ export default function FiltersSidebar({ categories }: any) {
           ))}
         </div>
 
-        {/* Material */}
-        <div>
-          <h3 className="font-medium mb-3">Material</h3>
-          {PRODUCT_FILTER.material.map((item) => (
-            <div key={item.name} className="flex items-center gap-2 mb-2">
-              <Checkbox
-                checked={filters.material === item.slug}
-                onCheckedChange={() =>
-                  toggleFilter("material", item.slug)
-                }
-              />
-              <label>{item.name}</label>
-            </div>
-          ))}
-        </div>
-
-        {/* Price */}
-        <div>
-          <h3 className="font-medium mb-3">Price Range</h3>
-          <div className="flex gap-2">
-            <Input
-              placeholder="₹0"
-              value={filters.min}
-              onChange={(e) =>
-                setFilters((prev: any) => ({
-                  ...prev,
-                  min: e.target.value,
-                }))
-              }
-            />
-            <Input
-              placeholder="₹1000"
-              value={filters.max}
-              onChange={(e) =>
-                setFilters((prev: any) => ({
-                  ...prev,
-                  max: e.target.value,
-                }))
-              }
-            />
-          </div>
-        </div>
-
-        {/* Stock */}
-        <div className="flex items-center gap-2">
-          <Checkbox
-            checked={filters.stock === "true"}
-            onCheckedChange={() =>
-              toggleFilter("stock", "true")
-            }
-          />
-          <label>In Stock Only</label>
-        </div>
       </CardContent>
     </Card>
   );
 }
+
+// {/* Material */}
+// <div>
+//   <h3 className="font-medium mb-3">Material</h3>
+//   {filterBarData?.material?.map((item: any) => (
+//     <div key={item.name} className="flex items-center gap-2 mb-2">
+//       <Checkbox
+//         checked={filters.material === item.slug}
+//         onCheckedChange={() =>
+//           toggleFilter("material", item.slug)
+//         }
+//       />
+//       <label>{item.name}</label>
+//     </div>
+//   ))}
+// </div>
+
+// {/* Price */}
+// <div>
+//   <h3 className="font-medium mb-3">Price Range</h3>
+//   <div className="flex gap-2">
+//     <Input
+//       placeholder="₹0"
+//       value={filters.min}
+//       onChange={(e) =>
+//         setFilters((prev: any) => ({
+//           ...prev,
+//           min: e.target.value,
+//         }))
+//       }
+//     />
+//     <Input
+//       placeholder="₹1000"
+//       value={filters.max}
+//       onChange={(e) =>
+//         setFilters((prev: any) => ({
+//           ...prev,
+//           max: e.target.value,
+//         }))
+//       }
+//     />
+//   </div>
+// </div>
+
+// {/* Stock */}
+// <div className="flex items-center gap-2">
+//   <Checkbox
+//     checked={filters.stock === "true"}
+//     onCheckedChange={() =>
+//       toggleFilter("stock", "true")
+//     }
+//   />
+//   <label>In Stock Only</label>
+// </div>

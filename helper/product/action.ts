@@ -27,8 +27,8 @@ interface GetProductsOptions {
   material?: string;
   size?: string;
   flow?: string;
-  cramps?:string;
-  allergies?:string;
+  cramps?: string;
+  allergies?: string;
   min?: any;
   max?: any;
   stock?: any;
@@ -624,7 +624,7 @@ export async function deleteProduct(id: string) {
 
 export async function getProducts({
   page = 1,
-  pageSize =20,
+  pageSize = 20,
   search = "",
   category: categorySlug,
   type = "",
@@ -636,7 +636,7 @@ export async function getProducts({
   min = "",
   max = "",
   stock = "",
-  brand="",
+  brand = "",
 }: GetProductsOptions) {
   const filters = [];
 
@@ -680,7 +680,7 @@ export async function getProducts({
     filters.push(eq(product.isInStock, true));
   }
 
-  if(brand){
+  if (brand) {
     filters.push(eq(product.brand, brand))
   }
 
@@ -739,6 +739,21 @@ export async function getProducts({
     totalPages,
     page,
   };
+}
+
+export async function getUserProduct() {
+  try {
+    return await db.select({ id: product.id, name: product.name, slug: product.slug, bannerImage: product.bannerImage, basePrice: product.basePrice, strikethroughPrice: product.strikethroughPrice }).from(product);
+  } catch (error) {
+    console.log(error)
+  }
+}
+export async function getProductCategories() {
+  try {
+    return await db.select().from(productCategory);
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 // export async function getProductSimilarProducts(slug: string | any) {
@@ -877,7 +892,7 @@ export async function getBestSellingProducts() {
   }
 }
 
-export async function getBrandBestSellingProducts(slug:any){
+export async function getBrandBestSellingProducts(slug: any) {
   try {
     const brandProducts = await db.select({
       id: product.id,
@@ -895,7 +910,7 @@ export async function getBrandBestSellingProducts(slug:any){
   }
 }
 
-export async function getBrandNewArrivalProducts(slug:any){
+export async function getBrandNewArrivalProducts(slug: any) {
   try {
     const brandProducts = await db.select({
       id: product.id,
@@ -915,34 +930,34 @@ export async function getBrandNewArrivalProducts(slug:any){
 
 
 
-export async function getQuizSuggestedProducts(userAnswers:any){
- try {
-  const filters:string[] = userAnswers.map((a: any) => a.answer);
+export async function getQuizSuggestedProducts(userAnswers: any) {
+  try {
+    const filters: string[] = userAnswers.map((a: any) => a.answer);
 
-  // Step 1: find matching filters
-  const matchedFilters = await db
-    .select({ productId: productFilter.productId })
-    .from(productFilter)
-    .where(inArray(productFilter.filter, filters));
+    // Step 1: find matching filters
+    const matchedFilters = await db
+      .select({ productId: productFilter.productId })
+      .from(productFilter)
+      .where(inArray(productFilter.filter, filters));
 
-  // Step 2: unique productIds
-  const productIds:any = [
-    ...new Set(matchedFilters.map((f) => f.productId)),
-  ];
+    // Step 2: unique productIds
+    const productIds: any = [
+      ...new Set(matchedFilters.map((f) => f.productId)),
+    ];
 
-  if (productIds.length === 0) return [];
+    if (productIds.length === 0) return [];
 
-  // Step 3: fetch products
-  const products = await db
-    .select()
-    .from(product)
-    .where(inArray(product.id, productIds));
+    // Step 3: fetch products
+    const products = await db
+      .select()
+      .from(product)
+      .where(inArray(product.id, productIds));
 
-  return products;
-} catch (error) {
-  console.log(error);
-  return [];
-}
+    return products;
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
 }
 
 // export async function getBrandBestSellingProducts(slug:any){

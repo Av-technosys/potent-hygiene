@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { db } from "@/db";
-import { address, subscriptionPayment, users } from "@/db/schema";
+import { address, contactUs, subscriptionPayment, users } from "@/db/schema";
 import { eq, and } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { CognitoJwtVerifier } from "aws-jwt-verify";
@@ -301,8 +301,9 @@ export async function subscribeEmail(email: string) {
     return { success: false, message: "Please enter a valid email" };
   }
 
-  await db.insert(subscriptionPayment).values({
+  await db.insert(contactUs).values({
     email,
+    message: "Newsletter",
   });
 
   return { success: true, message: "Subscribed successfully 🎉" };

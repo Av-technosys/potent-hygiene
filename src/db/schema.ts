@@ -116,6 +116,7 @@ export const category = pgTable("categories", {
   slug: varchar("slug").unique().notNull(),
   bannerImage: varchar("banner_image"),
   description: varchar("description"),
+  priority: integer("priority").default(1),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
 
@@ -139,6 +140,7 @@ export const product = pgTable("products", {
   bannerImage: varchar("banner_image"),
   highlights: varchar("highlights").array(),
   brand: productBrandEnum("brand").default("ovy"),
+  type: varchar("type"),
 
   hasVarientBox: boolean("has_variant_box").default(false),
   minBoxQuintity: integer("min_box_quintity"),
@@ -152,8 +154,8 @@ export const product = pgTable("products", {
   rateing2Star: integer("rateing_2_star").default(0),
   rateing1Star: integer("rateing_1_star").default(0),
 
-  size: varchar("size"),
-  flowType: varchar("flow_type"),
+  size: varchar("size").array(),
+  flowType: varchar("flow_type").array(),
 
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

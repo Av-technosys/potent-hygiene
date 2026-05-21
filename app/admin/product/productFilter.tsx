@@ -84,7 +84,7 @@ export default function ProductFilters({
         setState={setFlowType}
       />
 
-      <FilterCard
+      {/* <FilterCard
         title="Material"
         data={PRODUCT_FILTER.material}
         state={material}
@@ -103,7 +103,7 @@ export default function ProductFilters({
         data={PRODUCT_FILTER.allergies_or_sensitivities}
         state={sensitive}
         setState={setSensitive}
-      />
+      /> */}
     </div>
   );
 }
