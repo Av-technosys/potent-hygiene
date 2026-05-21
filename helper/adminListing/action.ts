@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import {
   cancelRequest,
   category,
+  contactUs,
   featuredCategory,
   featuredProduct,
   order,
@@ -69,6 +70,58 @@ export async function fetchAdminUsers({
   const [{ count }] = await db
     .select({ count: sql<number>`count(*)` })
     .from(users)
+    .where(whereClause);
+
+  const total = Number(count);
+
+  return {
+    data,
+    meta: {
+      page: currentPage,
+      pageSize: limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+}
+
+export async function fetchAdminContactMessages({
+  page = 1,
+  pageSize = 10,
+  search = "",
+}: ListingOptions) {
+  const currentPage = normalizePage(page);
+  const limit = normalizePageSize(pageSize);
+  const offset = (currentPage - 1) * limit;
+  const text = search.trim();
+
+  const whereClause = text
+    ? or(
+        ilike(contactUs.name, `%${text}%`),
+        ilike(contactUs.email, `%${text}%`),
+        ilike(contactUs.number, `%${text}%`),
+        ilike(contactUs.message, `%${text}%`),
+      )
+    : undefined;
+
+  const data = await db
+    .select({
+      id: contactUs.id,
+      name: contactUs.name,
+      email: contactUs.email,
+      number: contactUs.number,
+      message: contactUs.message,
+      createdAt: contactUs.createdAt,
+    })
+    .from(contactUs)
+    .where(whereClause)
+    .orderBy(desc(contactUs.createdAt))
+    .limit(limit)
+    .offset(offset);
+
+  const [{ count }] = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(contactUs)
     .where(whereClause);
 
   const total = Number(count);

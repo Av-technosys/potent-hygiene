@@ -95,6 +95,7 @@ export {
   createReview,
   getProductReviews,
   toggleApproveReview,
+  rejectReview,
   deleteReview,
   getReviewStats,
   getUserAllReviews,

@@ -1,19 +1,73 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { db } from "@/db";
-import { review, reviewMedia, users, product } from "@/db/schema";
-import { and, eq, is, sql } from "drizzle-orm";
+import { order, orderItem, review, reviewMedia, users, product } from "@/db/schema";
+import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireUserWithRefresh } from "../user/action";
+import { ORDER_STATUS } from "@/const/globalconst";
+
+function ratingIncrement(rating: number) {
+  if (rating === 5) return { rateing5Star: sql`${product.rateing5Star} + 1` };
+  if (rating === 4) return { rateing4Star: sql`${product.rateing4Star} + 1` };
+  if (rating === 3) return { rateing3Star: sql`${product.rateing3Star} + 1` };
+  if (rating === 2) return { rateing2Star: sql`${product.rateing2Star} + 1` };
+  return { rateing1Star: sql`${product.rateing1Star} + 1` };
+}
+
+function ratingDecrement(rating: number) {
+  if (rating === 5) return { rateing5Star: sql`greatest(${product.rateing5Star} - 1, 0)` };
+  if (rating === 4) return { rateing4Star: sql`greatest(${product.rateing4Star} - 1, 0)` };
+  if (rating === 3) return { rateing3Star: sql`greatest(${product.rateing3Star} - 1, 0)` };
+  if (rating === 2) return { rateing2Star: sql`greatest(${product.rateing2Star} - 1, 0)` };
+  return { rateing1Star: sql`greatest(${product.rateing1Star} - 1, 0)` };
+}
 
 export async function createReview(reviewData: any) {
   try {
-    const { userId, productVarientId, rating, message, media } = reviewData;
+    const { userId } = await requireUserWithRefresh();
+    const { productVarientId, orderItemId, rating, message, media } = reviewData;
 
 
     if (!productVarientId) {
       throw new Error("Product  ID is required for review submission");
     }
+    if (!orderItemId) {
+      throw new Error("Order item ID is required for review submission");
+    }
+
     await db.transaction(async (tx) => {
+      const [deliveredItem] = await tx
+        .select({
+          orderId: order.id,
+          orderStatus: order.status,
+          productId: orderItem.productId,
+        })
+        .from(orderItem)
+        .innerJoin(order, eq(orderItem.orderId, order.id))
+        .where(
+          and(
+            eq(orderItem.id, orderItemId),
+            eq(orderItem.productId, productVarientId),
+            eq(order.userId, userId),
+          ),
+        )
+        .limit(1);
+
+      if (!deliveredItem || deliveredItem.orderStatus !== ORDER_STATUS.DELIVERED) {
+        throw new Error("Review is allowed only after delivery");
+      }
+
+      const [existingReview] = await tx
+        .select({ id: review.id })
+        .from(review)
+        .where(and(eq(review.userId, userId), eq(review.productId, productVarientId)))
+        .limit(1);
+
+      if (existingReview) {
+        throw new Error("Review already submitted for this product");
+      }
+
       const userInfo = await tx.query.users.findFirst({
         where: eq(users.id, userId),
         columns: {
@@ -45,10 +99,17 @@ export async function createReview(reviewData: any) {
       }
     });
 
+    revalidatePath("/dashboard/orders");
+    revalidatePath("/dashboard/reviews");
+    revalidatePath("/admin/reviews");
+
     return { success: true };
   } catch (error) {
     console.error("Failed to create review:", error);
-    return { success: false };
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : "Failed to create review",
+    };
   }
 }
 
@@ -98,12 +159,39 @@ export async function toggleApproveReview(id: string) {
   try {
     if (!id) throw new Error("Review id missing");
 
-    await db
-      .update(review)
-      .set({ isAdminApproved: true })
-      .where(eq(review.id, id));
+    const [existingReview] = await db
+      .select({
+        id: review.id,
+        rating: review.rating,
+        productId: review.productId,
+        isAdminApproved: review.isAdminApproved,
+        productSlug: product.slug,
+      })
+      .from(review)
+      .leftJoin(product, eq(review.productId, product.id))
+      .where(eq(review.id, id))
+      .limit(1);
+
+    if (!existingReview) throw new Error("Review not found");
+
+    await db.transaction(async (tx) => {
+      await tx
+        .update(review)
+        .set({ isAdminApproved: true })
+        .where(eq(review.id, id));
+
+      if (!existingReview.isAdminApproved && existingReview.productId && existingReview.rating) {
+        await tx
+          .update(product)
+          .set(ratingIncrement(existingReview.rating))
+          .where(eq(product.id, existingReview.productId));
+      }
+    });
 
     revalidatePath("/admin/reviews");
+    if (existingReview.productSlug) {
+      revalidatePath(`/product-detail/${existingReview.productSlug}`);
+    }
 
     return {
       success: true,
@@ -114,13 +202,45 @@ export async function toggleApproveReview(id: string) {
   }
 }
 
+export async function rejectReview(id: string) {
+  return deleteReview(id);
+}
+
 export async function deleteReview(id: string) {
   try {
     if (!id) throw new Error("Review id missing");
 
-    await db.delete(review).where(eq(review.id, id));
+    const [existingReview] = await db
+      .select({
+        id: review.id,
+        rating: review.rating,
+        productId: review.productId,
+        isAdminApproved: review.isAdminApproved,
+        productSlug: product.slug,
+      })
+      .from(review)
+      .leftJoin(product, eq(review.productId, product.id))
+      .where(eq(review.id, id))
+      .limit(1);
+
+    if (!existingReview) throw new Error("Review not found");
+
+    await db.transaction(async (tx) => {
+      await tx.delete(reviewMedia).where(eq(reviewMedia.reviewId, id));
+      await tx.delete(review).where(eq(review.id, id));
+
+      if (existingReview.isAdminApproved && existingReview.productId && existingReview.rating) {
+        await tx
+          .update(product)
+          .set(ratingDecrement(existingReview.rating))
+          .where(eq(product.id, existingReview.productId));
+      }
+    });
 
     revalidatePath("/admin/reviews");
+    if (existingReview.productSlug) {
+      revalidatePath(`/product-detail/${existingReview.productSlug}`);
+    }
 
     return { success: true };
   } catch (error) {

@@ -6,7 +6,7 @@ import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 
 import { revalidatePath } from "next/cache";
-import { cart, cartItem, cancelRequest, couponTransaction, product, returnRequest, returnRequestImage, rewardCoinsHistory } from "@/db/schema";
+import { cart, cartItem, cancelRequest, couponTransaction, product, returnRequest, returnRequestImage, review, rewardCoinsHistory } from "@/db/schema";
 import { order, orderItem, payment, users } from "@/db/schema";
 import { requireUserWithRefresh } from "../user/action";
 import { calculateCheckoutPricingForUser } from "../checkout/action";
@@ -630,16 +630,29 @@ export async function getOrdersByUserId() {
             .where(eq(cancelRequest.orderId, orderRow.id)),
         ]);
 
-        const returnRequests = items.length
-          ? await db
-              .select()
-              .from(returnRequest)
-              .where(inArray(returnRequest.orderItemId, items.map((item) => item.id)))
-          : [];
+        const productIds = items
+          .map((item) => item.productId)
+          .filter((productId): productId is string => Boolean(productId));
+
+        const [returnRequests, reviews] = items.length
+          ? await Promise.all([
+              db
+                .select()
+                .from(returnRequest)
+                .where(inArray(returnRequest.orderItemId, items.map((item) => item.id))),
+              productIds.length
+                ? db
+                    .select()
+                    .from(review)
+                    .where(and(eq(review.userId, userId), inArray(review.productId, productIds)))
+                : Promise.resolve([]),
+            ])
+          : [[], []];
 
         const returnRequestMap = new Map(
           returnRequests.map((request) => [request.orderItemId, request]),
         );
+        const reviewMap = new Map(reviews.map((review) => [review.productId, review]));
 
         return {
           ...orderRow,
@@ -647,6 +660,7 @@ export async function getOrdersByUserId() {
           order_items: items.map((item) => ({
             ...item,
             returnRequest: returnRequestMap.get(item.id) ?? null,
+            review: item.productId ? reviewMap.get(item.productId) ?? null : null,
           })),
         };
       }),
