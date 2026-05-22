@@ -47,8 +47,8 @@ export default function WishlistProducts() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
       {products.map((product: any) => (
-        <Card key={product.productId} className="rounded-3xl shadow-sm">
-          <CardContent className="p-4">
+        <Card key={product.productId} className="rounded-3xl py-0 shadow-sm">
+          <CardContent className="p-2">
             <div className="relative aspect-square bg-[#EADCF3] rounded-xl flex items-center justify-center">
               <button
                 onClick={() => removeWishlist(product.productId)}

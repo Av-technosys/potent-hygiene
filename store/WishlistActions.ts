@@ -52,14 +52,18 @@ export const removeFromWishlist = async (productId: string) => {
 };
 
 export const syncWishlistFromDB = async () => {
-    const data = await getWishlistDB();
+    try {
+        const data = await getWishlistDB();
 
-    const formatted = data.map((item: any) => ({
-        productId: item.productId,
-        name: item.name,
-        price: item.price,
-        image: item.image,
-    }));
+        const formatted = data.map((item: any) => ({
+            productId: item.productId,
+            name: item.name,
+            price: item.price,
+            image: item.image,
+        }));
 
-    useWishlistStore.getState().setWishlist(formatted);
+        useWishlistStore.getState().setWishlist(formatted);
+    } catch (error) {
+        console.error("Failed to sync wishlist:", error);
+    }
 };
