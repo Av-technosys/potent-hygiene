@@ -2,6 +2,7 @@
 "use client";
 
 import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import AddToWishlist from "@/app/components/common/category/addToWishlist";
@@ -67,7 +68,7 @@ export default function BestsellingCard({ product, buttonColor, brand }: any) {
       {/* Image */}
       <div className="relative aspect-square w-full overflow-hidden rounded-4xl bg-gray-50">
         <Image
-          src={product.image || "/product.png"}
+          src={getImageUrl(product.image || "/product.png")}
           alt={product.name}
           fill
           className="object-cover"

@@ -5,6 +5,7 @@ import { Minus, Plus, ArrowLeft, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useCartStore } from "@/store/cartStore";
+import { getImageUrl } from "@/lib/imageUrl";
 
 import { updateCartQuantity, removeFromCart } from "@/store/cartActions";
 
@@ -45,7 +46,7 @@ export function CartItems() {
               {/* Product Image */}
               <div className="flex-shrink-0 w-full sm:w-[100px]">
                 <Image
-                  src={item.image}
+                  src={getImageUrl(item.image)}
                   alt={item.title}
                   width={100}
                   height={100}

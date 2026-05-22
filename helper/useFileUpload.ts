@@ -11,8 +11,8 @@ export function useFileUpload() {
     setUploading(true);
 
     try {
-      const preview = URL.createObjectURL(file);
       const { fileKey,fileUrl } = await uploadFileToS3(file , folder);
+      const preview = fileUrl;
 
       return { preview, fileKey,fileUrl };
     } finally {

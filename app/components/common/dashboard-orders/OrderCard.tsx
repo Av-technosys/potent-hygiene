@@ -19,6 +19,8 @@ import { TrackOrderModal } from "./TrackOrderModal";
 import { RaiseSupportModal } from "./RaiseSupportModal";
 import { ChangeEvent, useState, useTransition } from "react";
 import { toast } from "sonner";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export const OrderCard = ({ order_details, setorderReview,setSingleOrderData }: { order_details: any, setorderReview: any, setSingleOrderData: any }) => {
   // Variable ko yahan define kiya hai taaki niche logic mein issue na aaye
@@ -72,11 +74,13 @@ export const OrderCard = ({ order_details, setorderReview,setSingleOrderData }: 
             <div key={idx} className="flex flex-col gap-3 border-b border-gray-100 py-4 last:border-b-0 md:flex-row md:items-center md:justify-between">
               <div className="flex items-start gap-4">
                 <span>{idx + 1}.</span>
-                <div className="w-20 h-20">
-                  <img
-                    src={item.productImage}
-                    className="object-cover"
+                <div className="relative w-20 h-20 overflow-hidden">
+                  <Image
+                    src={getImageUrl(item.productImage)}
                     alt="product image"
+                    fill
+                    sizes="80px"
+                    className="object-cover"
                   />
                 </div>
                 <div>
@@ -232,8 +236,8 @@ function ReturnRequestDialog({ orderItem }: { orderItem: any }) {
     setImageUrls((current) => [
       ...current,
       ...uploaded
-        .map((file) => file.fileUrl)
-        .filter((fileUrl): fileUrl is string => Boolean(fileUrl)),
+        .map((file) => file.fileKey)
+        .filter(Boolean),
     ]);
   };
 

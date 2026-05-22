@@ -16,6 +16,7 @@ import {
   productVarientBox,
   productFilter,
 } from "@/db/schema";
+import { getImageKey } from "@/lib/imageUrl";
 import { bestSellingSlug, isUUID } from "@/const/globalconst";
 
 interface GetProductsOptions {
@@ -211,7 +212,7 @@ export async function createProduct(formData: FormData): Promise<void> {
           description: variants.description,
           basePrice: variants.price,
           strikethroughPrice: variants.strikethroughPrice,
-          bannerImage: variants.bannerImage || null,
+          bannerImage: getImageKey(variants.bannerImage) || null,
           type: variants.type || null,
           size: Array.isArray(variants.size) ? variants.size : [],
           flowType: Array.isArray(variants.flowType) ? variants.flowType : [],
@@ -241,7 +242,7 @@ export async function createProduct(formData: FormData): Promise<void> {
           variants.gallery.map((url: any) => ({
             productId,
             mediaType: "image",
-            mediaURL: url.preview,
+            mediaURL: getImageKey(url.preview ?? url),
           })),
         );
       }
@@ -274,7 +275,7 @@ export async function createProduct(formData: FormData): Promise<void> {
             productId,
             name: varient.name,
             description: varient.description,
-            image: varient.image,
+            image: getImageKey(varient.image),
           })),
         );
       }
@@ -330,7 +331,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
             description: variants.description,
             basePrice: variants.price,
             strikethroughPrice: variants.strikethroughPrice,
-            bannerImage: variants.bannerImage || null,
+            bannerImage: getImageKey(variants.bannerImage) || null,
             type: variants.type || null,
             size: Array.isArray(variants.size) ? variants.size : [],
             flowType: Array.isArray(variants.flowType) ? variants.flowType : [],
@@ -349,7 +350,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
           variants.gallery.map((url: any) => ({
             productId: vId!,
             mediaType: "image",
-            mediaURL: url.preview,
+            mediaURL: getImageKey(url.preview ?? url),
           })),
         );
       }
@@ -388,7 +389,7 @@ export async function updateProduct(formData: FormData): Promise<void> {
             productId: vId!,
             name: varient.name,
             description: varient.description,
-            image: varient.image,
+            image: getImageKey(varient.image),
           })),
         );
       }

@@ -2,6 +2,7 @@
 "use client";
 
 import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Heart } from "lucide-react";
@@ -58,7 +59,7 @@ export default function WishlistProducts() {
 
               <Image
                 alt={"product image"}
-                src={product.image}
+                src={getImageUrl(product.image)}
                 width={180}
                 height={180}
               />

@@ -7,7 +7,7 @@
         
 //         {/* LEFT IMAGE */}
 //         <div className="relative h-[400px] lg:h-auto">
-//           <img
+//           <Image
 //             src="/divya-agrawal.jpeg" // replace with your image
 //             alt="Founder"
 //             className="w-full h-full object-cover"
@@ -55,6 +55,7 @@
 
 
 import React from "react";
+import Image from "next/image";
 
 const achievements = [
   {
@@ -122,9 +123,11 @@ const FounderSection = () => {
         
         {/* LEFT IMAGE */}
         <div className="relative h-[400px] lg:h-auto">
-          <img
+          <Image
             src="/divya-agrawal.jpeg"
             alt="Founder"
+            fill
+            sizes="(min-width: 1024px) 50vw, 100vw"
             className="w-full h-full object-cover"
           />
         </div>

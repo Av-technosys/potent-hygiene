@@ -9,6 +9,7 @@ import AddToWishlist from "./addToWishlist";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export default function CategoryProducts({ products, productsCategory }: any) {
 
@@ -80,7 +81,7 @@ export default function CategoryProducts({ products, productsCategory }: any) {
               href={`/product-detail/${value.slug}`}
             >
               <Image
-                src={value.bannerImage || "/product.png"}
+                src={getImageUrl(value.bannerImage || "/product.png")}
                 alt={value.name}
                 fill
                 className="object-cover transition-transform duration-500 hover:scale-105"

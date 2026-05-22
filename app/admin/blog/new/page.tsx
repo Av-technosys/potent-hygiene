@@ -65,11 +65,11 @@ export default function BlogForm() {
     if (!file) return;
 
   try {
-    const { fileUrl } = await upload(file, "blog");
+    const { fileKey } = await upload(file, "blog");
 
     setFormData((prev) => ({
       ...prev,
-      [field]: fileUrl, // ✅ DB + preview same
+      [field]: fileKey,
     }));
   } catch (error) {
     console.error("Upload failed", error);

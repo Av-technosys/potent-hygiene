@@ -1,6 +1,7 @@
 // components/sections/blog-section.tsx
 
 import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
@@ -39,7 +40,7 @@ export async function BlogSection() {
                 {/* Image */}
                 <div className="relative w-full h-auto  overflow-hidden">
                   <Image
-                    src={article?.image}
+                    src={getImageUrl(article?.image)}
                     alt={article?.title || "Blog Post"}
                     width={300}
                     height={300}

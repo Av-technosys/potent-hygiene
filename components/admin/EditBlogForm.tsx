@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 import {
   IconDeviceFloppy,
   IconX,
@@ -75,11 +76,11 @@ export default function EditBlogForm({ initialData }: { initialData: any }) {
   if (!file) return;
 
   try {
-    const { fileUrl } = await upload(file, "blog");
+    const { fileKey } = await upload(file, "blog");
 
     setFormData((prev) => ({
       ...prev,
-      [field]: fileUrl, // ✅ DB + preview same
+      [field]: fileKey,
     }));
   } catch (error) {
     console.error("Upload failed", error);
@@ -178,7 +179,7 @@ export default function EditBlogForm({ initialData }: { initialData: any }) {
             {formData.image && (
               <div className="mt-3 relative h-40 w-full rounded-lg overflow-hidden border">
                 <Image
-                  src={formData.image}
+                  src={getImageUrl(formData.image)}
                   alt="Preview"
                   fill
                   className="object-cover"
@@ -235,7 +236,7 @@ export default function EditBlogForm({ initialData }: { initialData: any }) {
               {formData.userImage && (
                 <div className="mt-2 relative h-24 w-24 rounded-full overflow-hidden border">
                   <Image
-                    src={formData.userImage}
+                    src={getImageUrl(formData.userImage)}
                     alt="Author"
                     fill
                     className="object-cover"

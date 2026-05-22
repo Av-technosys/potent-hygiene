@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 import { Star, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -75,7 +76,7 @@ export function Recommended() {
                 {/* 1. Image Container */}
                 <div className={`relative aspect-square w-full mb-4 rounded-2xl overflow-hidden ${product.bgColor}`}>
                   <Image 
-                    src={product.image} 
+                    src={getImageUrl(product.image)}
                     alt={product.name} 
                     fill 
                     className="object-cover" 

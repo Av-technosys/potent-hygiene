@@ -1,4 +1,3 @@
-/* eslint-disable @next/next/no-img-element */
 /* eslint-disable react-hooks/set-state-in-effect */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
@@ -17,6 +16,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Plus, Trash2, X } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -33,6 +33,7 @@ import {
   productVarientType,
 } from "@/types/productTypes";
 import ProductFilters from "../productFilter";
+import { getImageUrl } from "@/lib/imageUrl";
 import { PRODUCT_FILTER } from "@/const/filters";
 import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -279,7 +280,7 @@ export default function EditProduct({ productDetails }: any) {
           maxHeight: 2000,
           ratio: 2000 / 2000,
         });
-        const { preview, fileKey, fileUrl } = await upload(file, "product");
+        const { fileKey, fileUrl } = await upload(file, "product");
         const currentGallery = variants.gallery;
         // updateVariant(activeIndex, {
         //   gallery: [
@@ -306,10 +307,10 @@ export default function EditProduct({ productDetails }: any) {
     if (!file) return;
 
     try {
-      const { fileKey, fileUrl } = await upload(file, "product"); // tera existing upload fn
+      const { fileKey } = await upload(file, "product"); // tera existing upload fn
 
       const updated = [...variantBoxes];
-      updated[index].image = fileUrl;
+      updated[index].image = fileKey;
       setVariantBoxes(updated);
     } catch (err) {
       console.error(err);
@@ -346,8 +347,8 @@ export default function EditProduct({ productDetails }: any) {
       type: selectedProductType,
       size: selectedSizes,
       flowType: selectedFlowTypes,
-      bannerImage: variants.banner?.preview,
-      media: variants.gallery.map((g: any) => g.preview),
+      bannerImage: variants.banner?.key,
+      media: variants.gallery.map((g: any) => g.key),
       highlights: variants.highlights.filter(
         (h: string) => h.trim().length > 0,
       ),
@@ -553,9 +554,13 @@ export default function EditProduct({ productDetails }: any) {
                     {!variants.banner ? (
                       <p>Click to upload banner</p>
                     ) : (
-                      <img
-                        src={variants.banner.preview}
+                      <Image
+                        src={getImageUrl(variants.banner.preview)}
+                        alt="Banner preview"
+                        fill
+                        sizes="(min-width: 1024px) 50vw, 100vw"
                         className="w-full h-full object-contain"
+                        unoptimized
                       />
                     )}
                   </div>
@@ -568,10 +573,13 @@ export default function EditProduct({ productDetails }: any) {
                     onChange={(e) => handleBanner(e.target.files?.[0])}
                   />
                   {variants.banner && (
-                    <img
-                      src={variants.banner.preview}
-                      className="h-32 w-24 object-cover rounded-md border mt-2"
+                    <Image
+                      src={getImageUrl(variants.banner.preview)}
                       alt="Preview"
+                      width={96}
+                      height={128}
+                      className="h-32 w-24 object-cover rounded-md border mt-2"
+                      unoptimized
                     />
                   )}
                 </div>
@@ -705,12 +713,16 @@ export default function EditProduct({ productDetails }: any) {
                       <div className="col-span-1">
                         <div
                           onClick={() => fileRefs.current[index]?.click()}
-                          className="h-20 w-20 border rounded-md overflow-hidden flex items-center justify-center bg-gray-100 cursor-pointer hover:opacity-80"
+                          className="relative h-20 w-20 border rounded-md overflow-hidden flex items-center justify-center bg-gray-100 cursor-pointer hover:opacity-80"
                         >
                           {item.image ? (
-                            <img
-                              src={item.image}
-                              className="h-full w-full object-cover"
+                            <Image
+                              src={getImageUrl(item.image)}
+                              alt={`${item.name || "Variant"} image`}
+                              fill
+                              sizes="80px"
+                              className="object-cover"
+                              unoptimized
                             />
                           ) : (
                             <span className="text-xs text-gray-400">

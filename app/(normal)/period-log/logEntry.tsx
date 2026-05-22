@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Minus, Plus, Droplet } from "lucide-react";
 import { CalendarPeriodLog } from "@/components/CalendarPeriodLog";
+import Image from "next/image";
 
 // export default function LogEntry() {
 //   const [cycle, setCycle] = useState(28);
@@ -114,7 +115,7 @@ import { CalendarPeriodLog } from "@/components/CalendarPeriodLog";
 
 //           {/* RIGHT IMAGE */}
 //           <div className="hidden lg:flex justify-center">
-//             <img
+//             <Image
 //               src="/logentry.png"
 //               alt="illustration"
 //               className="max-w-md w-full"
@@ -239,7 +240,13 @@ export default function LogEntry() {
           </Card>
 
           <div className="hidden lg:flex justify-center">
-            <img src="/logentry.png" className="max-w-md w-full" />
+            <Image
+              src="/logentry.png"
+              alt="Period log illustration"
+              width={448}
+              height={448}
+              className="max-w-md w-full"
+            />
           </div>
         </div>
 

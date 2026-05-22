@@ -6,6 +6,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { requireUserWithRefresh } from "../user/action";
 import { ORDER_STATUS } from "@/const/globalconst";
+import { getImageKey } from "@/lib/imageUrl";
 
 function ratingIncrement(rating: number) {
   if (rating === 5) return { rateing5Star: sql`${product.rateing5Star} + 1` };
@@ -93,7 +94,7 @@ export async function createReview(reviewData: any) {
           media.map((img: any) => ({
             reviewId: reviewId[0].id,
             mediaType: "image",
-            mediaURL: img,
+            mediaURL: getImageKey(img),
           })),
         );
       }

@@ -20,3 +20,4 @@ export const BASE_AUTH_API_URL = process.env.NEXT_PUBLIC_BASE_AUTH_API_URL!;
 export const BASE_API_URL = process.env.BASE_API_URL!;
 
 export const NEXT_PUBLIC_S3_URL = process.env.NEXT_PUBLIC_S3_URL!;
+export const NEXT_PUBLIC_IMAGE_URL = process.env.NEXT_PUBLIC_IMAGE_URL!;

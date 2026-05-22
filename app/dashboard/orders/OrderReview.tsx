@@ -8,8 +8,8 @@ import { useFileUpload } from "@/helper/useFileUpload";
 
 import { toast } from "sonner";
 import { on } from "events";
-import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { createReview } from "@/helper";
+import { getImageUrl } from "@/lib/imageUrl";
 import {
   Card,
   CardContent,
@@ -228,7 +228,7 @@ export const OrderReview = ({
                           <div className="flex gap-3 items-center ">
                             <div className="w-12 h-12  overflow-hidden  relative rounded-md">
                               <Image
-                                src={item.productImage}
+                                src={getImageUrl(item.productImage)}
                                 alt={item.productName}
                                 fill
                                 className="object-cover"

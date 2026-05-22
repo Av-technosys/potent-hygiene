@@ -6,7 +6,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ImagePlus, X } from "lucide-react";
+import Image from "next/image";
 import React, { RefObject } from "react";
+import { getImageUrl } from "@/lib/imageUrl";
 
 type ImageItem = { key: string; preview: string };
 
@@ -64,10 +66,13 @@ export default function GallerySection({
                   key={i}
                   className="relative group aspect-square border rounded-lg overflow-hidden bg-muted"
                 >
-                  <img
-                    src={img.preview}
-                    className="h-full w-full object-cover"
+                  <Image
+                    src={getImageUrl(img.preview)}
                     alt="preview"
+                    fill
+                    sizes="(min-width: 640px) 33vw, 50vw"
+                    className="object-cover"
+                    unoptimized
                   />
 
                   <div className="absolute inset-0 flex items-center justify-center">

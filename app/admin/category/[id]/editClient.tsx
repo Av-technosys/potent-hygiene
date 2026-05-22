@@ -21,11 +21,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { getAllCategoriesMeta, updateCategory } from "@/helper/category/action";
 import { toast } from "sonner";
 // Naya ImageUpload component import karein
 import ImageUpload from "@/components/ImageUpload";
 import { useFileUpload } from "@/helper";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export default function EditCategory({ categoryInfo }: any) {
   const router = useRouter();
@@ -65,7 +67,7 @@ export default function EditCategory({ categoryInfo }: any) {
       name: form.name,
       parentId: selectedParent,
       description: form.description,
-      bannerImage: preview, // Naya upload kiya hua URL ya purana URL
+      bannerImage: preview,
     };
 
     const response = await updateCategory(categoryData);
@@ -81,9 +83,9 @@ export default function EditCategory({ categoryInfo }: any) {
     if (!file) return;
 
     try {
-      const { fileKey, fileUrl } = await upload(file, "category");
+      const { fileKey } = await upload(file, "category");
 
-      setPreview(fileUrl as any); // UI ke liye
+      setPreview(fileKey);
 
       // IMPORTANT: agar tu key store karna chahta hai (recommended)
       setForm((prev) => ({
@@ -185,9 +187,13 @@ export default function EditCategory({ categoryInfo }: any) {
                     {!preview ? (
                       <p>Click to upload category image</p>
                     ) : (
-                      <img
-                        src={preview}
+                      <Image
+                        src={getImageUrl(preview)}
+                        alt="Category image preview"
+                        fill
+                        sizes="(min-width: 1024px) 50vw, 100vw"
                         className="w-full h-full object-contain"
+                        unoptimized
                       />
                     )}
 

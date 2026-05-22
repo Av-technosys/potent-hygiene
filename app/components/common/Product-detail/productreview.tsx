@@ -2,6 +2,8 @@
 
 import { Star, ThumbsUp, User } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export default function ProductReviews({ reviews, product, themeColor }: any) {
   const ratings = [
@@ -128,11 +130,13 @@ export default function ProductReviews({ reviews, product, themeColor }: any) {
 
                 <div className="w-full mt-3 flex items-center gap-2">
                   {review?.media?.map((media: any, index: number) => (
-                    <img
-                      className="w-20 h-20 rounded-md"
+                    <Image
                       key={index}
-                      src={`${process.env.NEXT_PUBLIC_S3_BASE_URL}/${media.mediaURL}`}
+                      src={getImageUrl(media.mediaURL)}
                       alt="reviewImage"
+                      width={80}
+                      height={80}
+                      className="w-20 h-20 rounded-md object-cover"
                     />
                   ))}
                 </div>

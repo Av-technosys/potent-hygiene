@@ -3,6 +3,7 @@ import AddToWishlist from "@/app/components/common/category/addToWishlist";
 import { Button } from "@/components/ui/button";
 import { getQuizSuggestedProducts } from "@/helper";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { addToCart as addToCartAction } from "@/store/cartActions";
@@ -94,7 +95,7 @@ const SuggestedProducts = () => {
                 href={`/product-detail/${value.slug}`}
               >
                 <Image
-                  src={value.bannerImage || "/product.png"}
+                  src={getImageUrl(value.bannerImage || "/product.png")}
                   alt={value.name}
                   fill
                   className="object-cover transition-transform duration-500 hover:scale-105"

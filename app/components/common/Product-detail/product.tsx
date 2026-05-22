@@ -17,7 +17,7 @@ import {
 import SizeSelectorBox from "./sizeSelectorBox";
 import { toast } from "sonner";
 import { subscriptionPlans } from "@/const/globalconst";
-import { NEXT_PUBLIC_S3_URL } from "@/env";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export default function ProductDetailPage({
   // categoryName,
@@ -123,7 +123,7 @@ export default function ProductDetailPage({
         <div className=" md:sticky md:top-4  h-fit col-span-2">
           <div className="w-full h-auto relative ">
             <Image
-              src={`${NEXT_PUBLIC_S3_URL}/${bannerImage}`}
+              src={getImageUrl(bannerImage)}
               alt="Product"
               height={500}
               width={500}
@@ -152,7 +152,7 @@ export default function ProductDetailPage({
                   >
 
 
-                    <Image src={`${NEXT_PUBLIC_S3_URL}/${item?.mediaURL}`} height={300} width={300} alt={item?.mediaURL} />
+                    <Image src={getImageUrl(item?.mediaURL)} height={300} width={300} alt={item?.mediaURL} />
                   </div>
                 </CarouselItem>
               ))}
@@ -449,7 +449,7 @@ function ProductVarient({
                 >
                   <div className="w-28 h-28 relative rounded-md overflow-hidden">
                     <Image
-                      src={v.bannerImage}
+                      src={getImageUrl(v.bannerImage)}
                       alt="product thumbnail"
                       fill
                       className="object-contain rounded-md"

@@ -1,7 +1,8 @@
 // /* eslint-disable @typescript-eslint/no-explicit-any */
+import { getImageUrl } from "@/lib/imageUrl";
 export type UploadResult = {
   fileKey: string;
-  fileUrl?: string;
+  fileUrl: string;
 };
 
 // export async function uploadFileToS3(file: File , folder: any): Promise<UploadResult> {
@@ -54,8 +55,7 @@ export async function uploadFileToS3(file: File, folder: any): Promise<UploadRes
 
   if (!upload.ok) throw new Error("Upload failed");
 
-  // ✅ IMPORTANT: build S3 public URL
-  const fileUrl = `https://potent-hygiene.s3.amazonaws.com/${fileKey}`;
+  const fileUrl = getImageUrl(fileKey);
 
   return { fileKey, fileUrl };
 }

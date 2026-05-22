@@ -11,6 +11,7 @@ import { order, orderItem, payment, users } from "@/db/schema";
 import { requireUserWithRefresh } from "../user/action";
 import { calculateCheckoutPricingForUser } from "../checkout/action";
 import { ORDER_STATUS } from "@/const/globalconst";
+import { getImageKey } from "@/lib/imageUrl";
 import {
   sendDeliveryConfirmationEmail,
   sendOrderStatusUpdateEmail,
@@ -227,7 +228,7 @@ export async function createReturnRequest(orderItemId: string, reason: string, i
       })
       .returning({ id: returnRequest.id });
 
-    const cleanImages = imageUrls.filter(Boolean);
+    const cleanImages = imageUrls.map((imageUrl) => getImageKey(imageUrl)).filter(Boolean);
     if (cleanImages.length > 0) {
       await db.insert(returnRequestImage).values(
         cleanImages.map((imageUrl) => ({

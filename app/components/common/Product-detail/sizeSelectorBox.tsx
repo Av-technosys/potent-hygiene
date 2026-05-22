@@ -1,5 +1,7 @@
 "use client";
 import { useEffect } from "react";
+import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export default function SizeSelectorBox({
   items,
@@ -54,13 +56,15 @@ export default function SizeSelectorBox({
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <div
-                    className={`w-10 h-10 rounded-full overflow-hidden border`}
+                    className={`relative w-10 h-10 rounded-full overflow-hidden border`}
                     style={{ borderColor: themeColor.darkColor }}
                   >
-                    <img
-                      src={item.image}
+                    <Image
+                      src={getImageUrl(item.image)}
                       alt={item.name}
-                      className="object-cover "
+                      fill
+                      sizes="40px"
+                      className="object-cover"
                     />
                   </div>
                   <span className="text-sm sm:text-base font-medium">

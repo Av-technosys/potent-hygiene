@@ -22,9 +22,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ImageIcon } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export type ReturnRequestRow = {
   id: string;
@@ -127,11 +129,15 @@ const ReturnRequestsTable = ({ requests, page, pageSize }: Props) => {
                 <TableCell>
                   <div className="flex items-center gap-3">
                     {request.productImage ? (
-                      <img
-                        src={request.productImage}
-                        alt={request.productName ?? "Product"}
-                        className="h-12 w-12 rounded-md object-cover border"
-                      />
+                      <div className="relative h-12 w-12 overflow-hidden rounded-md border">
+                        <Image
+                          src={getImageUrl(request.productImage)}
+                          alt={request.productName ?? "Product"}
+                          fill
+                          sizes="48px"
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="h-12 w-12 rounded-md border bg-muted" />
                     )}
@@ -183,16 +189,20 @@ const ReturnRequestsTable = ({ requests, page, pageSize }: Props) => {
                         {request.images.map((image) => (
                           <a
                             key={image.id}
-                            href={image.imageUrl}
+                            href={getImageUrl(image.imageUrl)}
                             target="_blank"
                             rel="noreferrer"
                             className="block overflow-hidden rounded-md border bg-muted"
                           >
-                            <img
-                              src={image.imageUrl}
-                              alt="Return request attachment"
-                              className="h-48 w-full object-cover"
-                            />
+                            <div className="relative h-48 w-full">
+                              <Image
+                                src={getImageUrl(image.imageUrl)}
+                                alt="Return request attachment"
+                                fill
+                                sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+                                className="object-cover"
+                              />
+                            </div>
                           </a>
                         ))}
                       </div>
