@@ -32,6 +32,8 @@ import {
 } from "@tabler/icons-react";
 import { useCartStore } from "@/store/cartStore";
 import { isUserLoggedIn } from "@/helper/auth/action";
+import { syncWishlistFromDB } from "@/store/WishlistActions";
+import { syncCartFromDB } from "@/store/cartActions";
 
 const navLinks = [
   { name: "Home", href: "/", icon: <IconHome size={20} /> },
@@ -92,6 +94,13 @@ export function Navbar() {
     const checkSession = async () => {
       const isAuth = await isUserLoggedIn();
       setIsLoggedIn(isAuth);
+
+      if (isAuth) {
+        await Promise.all([syncWishlistFromDB(), syncCartFromDB()]);
+      } else {
+        useWishlistStore.getState().setWishlist([]);
+        useCartStore.getState().clearCart();
+      }
     };
 
     checkSession();

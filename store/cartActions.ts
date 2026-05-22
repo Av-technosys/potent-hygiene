@@ -127,21 +127,25 @@ export const clearCart = async () => {
 
 // Sync from DB
 export const syncCartFromDB = async () => {
-  const result = await getCart();
+  try {
+    const result = await getCart();
 
-  if (result.success && result.items) {
-    const formattedItems = result.items.map((item: any) => ({
-      productId: item.productId,
-      sku: item.sku || "",
-      slug: item.slug || "",
-      title: item.title || "Product",
-      image: item.image || "/product.png",
-      price: item.price || 0,
-      originalPrice: item.originalPrice,
-      quantity: item.quantity ?? 0,
-      addedAt: Date.now(),
-    }));
+    if (result.success && result.items) {
+      const formattedItems = result.items.map((item: any) => ({
+        productId: item.productId,
+        sku: item.sku || "",
+        slug: item.slug || "",
+        title: item.title || "Product",
+        image: item.image || "/product.png",
+        price: item.price || 0,
+        originalPrice: item.originalPrice,
+        quantity: item.quantity ?? 0,
+        addedAt: Date.now(),
+      }));
 
-    useCartStore.getState().setCart(formattedItems);
+      useCartStore.getState().setCart(formattedItems);
+    }
+  } catch (error) {
+    console.error("Failed to sync cart:", error);
   }
 };
