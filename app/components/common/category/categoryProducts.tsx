@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import Image from "next/image";CameraCamera
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { addToCart as addToCartAction } from "@/store/cartActions";
 import AddToWishlist from "./addToWishlist";
@@ -28,7 +28,6 @@ export default function CategoryProducts({ products, productsCategory }: any) {
   const material = params.get("material");
   const priceRange = params.get("pr")?.split("-");
 
-  console.log(category, " category")
 
 
   const filteredProducts = productDetaials.filter((prodItem: any) => {
@@ -38,7 +37,6 @@ export default function CategoryProducts({ products, productsCategory }: any) {
     });
   });
 
-  console.log(productDetaials);
 
 
   // ✅ FIXED ADD TO CART
