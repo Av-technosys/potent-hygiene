@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import Image from "next/image";
+import Image from "next/image";CameraCamera
 import { Button } from "@/components/ui/button";
 import { addToCart as addToCartAction } from "@/store/cartActions";
 import AddToWishlist from "./addToWishlist";

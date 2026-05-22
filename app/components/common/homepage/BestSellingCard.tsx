@@ -9,6 +9,7 @@ import AddToWishlist from "@/app/components/common/category/addToWishlist";
 import { addToCart } from "@/store/cartActions";
 import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
+import { NEXT_PUBLIC_S3_URL } from "@/env";
 
 export default function BestsellingCard({ product, buttonColor, brand }: any) {
   const router = useRouter();
