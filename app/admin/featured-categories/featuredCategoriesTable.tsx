@@ -11,9 +11,11 @@ import {
 } from "@/components/ui/table";
 import { removeFeaturedCategory } from "@/helper/adminListing/action";
 import { Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export type FeaturedCategoryRow = {
   id: string;
@@ -70,11 +72,15 @@ const FeaturedCategoriesTable = ({ categories, page, pageSize }: Props) => {
                 <TableCell>
                   <div className="flex items-center gap-3 min-w-[220px]">
                     {item.bannerImage ? (
-                      <img
-                        src={item.bannerImage}
-                        alt={item.categoryName ?? "Category"}
-                        className="h-12 w-12 rounded-md object-cover border"
-                      />
+                      <div className="relative h-12 w-12 overflow-hidden rounded-md border">
+                        <Image
+                          src={getImageUrl(item.bannerImage)}
+                          alt={item.categoryName ?? "Category"}
+                          fill
+                          sizes="48px"
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="h-12 w-12 rounded-md border bg-muted" />
                     )}

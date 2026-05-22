@@ -9,7 +9,7 @@ import AddToWishlist from "./addToWishlist";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useMemo } from "react";
-import { NEXT_PUBLIC_S3_URL } from "@/env";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export default function CategoryProducts({ products, productsCategory }: any) {
 
@@ -28,7 +28,6 @@ export default function CategoryProducts({ products, productsCategory }: any) {
   const material = params.get("material");
   const priceRange = params.get("pr")?.split("-");
 
-  console.log(category, " category")
 
 
   const filteredProducts = productDetaials.filter((prodItem: any) => {
@@ -38,7 +37,6 @@ export default function CategoryProducts({ products, productsCategory }: any) {
     });
   });
 
-  console.log(productDetaials);
 
 
   // ✅ FIXED ADD TO CART
@@ -81,7 +79,7 @@ export default function CategoryProducts({ products, productsCategory }: any) {
               href={`/product-detail/${value.slug}`}
             >
               <Image
-                src={`${NEXT_PUBLIC_S3_URL}/${value.bannerImage}`}
+                src={getImageUrl(value.bannerImage || "/product.png")}
                 alt={value.name}
                 fill
                 className="object-cover transition-transform duration-500 hover:scale-105"

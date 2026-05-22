@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const RoshniSection = () => {
   const initiatives = [
@@ -47,9 +48,11 @@ const RoshniSection = () => {
       {/* HEADER */}
       <div className="mb-10 flex items-center justify-start gap-6">
          <div className="bg-white rounded-2xl p-4 shadow-sm">
-      <img
+      <Image
         src="/roshniBanner.jpeg" // replace with your logo
         alt="Roshni NGO"
+        width={80}
+        height={80}
         className="w-20 h-20 object-contain"
       />
     </div>
@@ -124,14 +127,18 @@ const RoshniSection = () => {
 
           {/* IMAGES */}
           <div className="grid grid-cols-2 gap-4">
-            <img
+            <Image
               src="/roshni1.jpeg"
               alt="image"
+              width={240}
+              height={128}
               className="rounded-lg object-cover h-32 w-full"
             />
-            <img
+            <Image
               src="/roshni2.jpeg"
               alt="image"
+              width={240}
+              height={128}
               className="rounded-lg object-cover h-32 w-full"
             />
           </div>

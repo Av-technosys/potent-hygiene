@@ -8,8 +8,8 @@ import { useFileUpload } from "@/helper/useFileUpload";
 
 import { toast } from "sonner";
 import { on } from "events";
-import { NEXT_PUBLIC_S3_BASE_URL } from "@/env";
 import { createReview } from "@/helper";
+import { getImageUrl } from "@/lib/imageUrl";
 import {
   Card,
   CardContent,
@@ -24,6 +24,7 @@ export const OrderReview = ({
   orderDetails,
   setorderDetailsReview,
   onBack,
+  onClick,
 }: any) => {
   const { upload, uploading } = useFileUpload();
   const [ratings, setRatings] = useState<{ [key: string]: number }>({});
@@ -57,6 +58,10 @@ export const OrderReview = ({
 
     const folder = "review";
     const { preview, fileKey } = await upload(file, folder);
+    if (!fileKey) {
+      toast.error("Failed to upload image");
+      return;
+    }
 
     setPreviews((prev) => {
       const filtered = prev.filter(
@@ -75,7 +80,7 @@ export const OrderReview = ({
     });
   };
 
-  const handleSubmitReview = async (productVarientId: string) => {
+  const handleSubmitReview = async (productVarientId: string, orderItemId: string) => {
     const productMedia = fileKey
       .filter((f) => f.variantId === productVarientId)
       .map((f) => f.fileKey);
@@ -83,6 +88,7 @@ export const OrderReview = ({
     const reviewData = {
       userId: orderDetails.userId,
       productVarientId,
+      orderItemId,
       rating: ratings[productVarientId] || 0,
       message: comments[productVarientId] || "",
       media: productMedia,
@@ -102,7 +108,7 @@ export const OrderReview = ({
           setFileKey([]);
           setPreviews([]);
         } else {
-          toast.error("Failed to submit review");
+          toast.error(response.message ?? "Failed to submit review");
         }
       } else {
         toast.error("Please give rating and write a review to the product");
@@ -116,7 +122,7 @@ export const OrderReview = ({
       <div>
         <nav
           className="flex items-center gap-1 text-[13px] text-gray-500 p-2 cursor-pointer"
-          onClick={() => onBack()}
+          onClick={() => (onBack ?? onClick)?.()}
         >
           <span>Home</span> <ChevronRight size={12} />
           <span>My orders</span> <ChevronRight size={12} />
@@ -210,6 +216,7 @@ export const OrderReview = ({
                     item.productId ||
                     item.productId ||
                     item.productVariant?.id;
+                  const alreadyReviewed = Boolean(item.review);
 
                   return (
                     <Card
@@ -221,7 +228,7 @@ export const OrderReview = ({
                           <div className="flex gap-3 items-center ">
                             <div className="w-12 h-12  overflow-hidden  relative rounded-md">
                               <Image
-                                src={item.productImage}
+                                src={getImageUrl(item.productImage)}
                                 alt={item.productName}
                                 fill
                                 className="object-cover"
@@ -315,13 +322,16 @@ export const OrderReview = ({
                         <Button
                           className="w-full"
                           disabled={
-                            loadingProduct === variantId &&
-                            loadingProduct !== null
+                            alreadyReviewed ||
+                            (loadingProduct === variantId &&
+                              loadingProduct !== null)
                           }
-                          onClick={() => handleSubmitReview(variantId)}
+                          onClick={() => handleSubmitReview(variantId, item.id)}
                         >
-                          {loadingProduct === variantId &&
-                            loadingProduct !== null
+                          {alreadyReviewed
+                            ? "Review Submitted"
+                            : loadingProduct === variantId &&
+                              loadingProduct !== null
                             ? "Submitting..."
                             : "Submit Review"}
                         </Button>

@@ -1,5 +1,6 @@
 import { getBlogBySlug } from "@/helper/blog/action";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 import Link from "next/link";
 import { IconArrowLeft } from "@tabler/icons-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -54,7 +55,7 @@ export default async function BlogDetailPage({
 
           <div className="relative rounded-2xl overflow-hidden bg-neutral-100 group">
             <Image
-              src={blog.image || "/placeholder.jpg"}
+              src={getImageUrl(blog.image || "/placeholder.jpg")}
               alt={blog.title || "Blog Image"}
               width={600}
               height={400}

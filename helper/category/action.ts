@@ -12,6 +12,7 @@ import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
 import { category, productCategory, product } from "@/db/schema";
+import { getImageKey } from "@/lib/imageUrl";
 
 
 interface GetCategoriesOptions {
@@ -28,7 +29,7 @@ export async function createCategory(categoryData: any) {
       name,
       slug,
       description,
-      bannerImage: bannerImage || null,
+      bannerImage: getImageKey(bannerImage) || null,
     });
 
     revalidatePath("/admin/category");
@@ -51,7 +52,7 @@ export async function updateCategory(categoryData: any) {
         name,
         slug: slugify(name, { lower: true }),
         description,
-        bannerImage: bannerImage || null,
+        bannerImage: getImageKey(bannerImage) || null,
 
       })
       .where(eq(category.id, id));

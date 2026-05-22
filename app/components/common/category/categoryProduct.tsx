@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useWishlistStore } from "@/store/WishlistStore";
 import { addToWishlist, removeFromWishlist } from "@/store/WishlistActions";
+import { getImageUrl } from "@/lib/imageUrl";
 
 interface CategoryProductsProps {
   categories: any[];
@@ -69,7 +70,7 @@ export default function CategoryProducts({ categories }: CategoryProductsProps) 
             onClick={() => router.push(`/shop?type=${product.title}`)}
           >
             <Image
-              src={product.bannerImage}
+              src={getImageUrl(product.bannerImage)}
               alt={product.name}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"

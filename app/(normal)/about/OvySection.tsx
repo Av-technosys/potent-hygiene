@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const OvySection = () => {
   const products = [
@@ -71,7 +72,13 @@ const OvySection = () => {
         {/* RIGHT CARD */}
         <div className="bg-white/70 backdrop-blur border border-gray-200 rounded-2xl p-8 text-center">
           <div className="w-32 h-32 mx-auto mb-6  rounded-full overflow-hidden">
-            <img src="/ovy-women.png" alt="women" className="h-full w-full object-cover" />
+            <Image
+              src="/ovy-women.png"
+              alt="women"
+              width={128}
+              height={128}
+              className="h-full w-full object-cover"
+            />
           </div>
 
           <h3 className="text-2xl font-serif text-gray-900 mb-4">

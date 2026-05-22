@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Heart, Star } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export default function RelatedProducts({ products, themeColor }: any) {
  
@@ -49,7 +50,7 @@ if(products.length > 0){
               {/* Product Image */}
               <Link href={product.slug} className="rounded-xl overflow-hidden">
                 <Image
-                  src={product.bannerImage}
+                  src={getImageUrl(product.bannerImage)}
                   alt={product.name}
                   width={200}
                   height={150}

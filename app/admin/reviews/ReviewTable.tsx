@@ -35,7 +35,8 @@ import { Table, TableBody, TableCell, TableHead, TableRow } from "@/components/u
 import { TableHeader } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { deleteReview, toggleApproveReview } from "@/helper";
+import { deleteReview, rejectReview, toggleApproveReview } from "@/helper";
+import { useRouter } from "next/navigation";
 
 interface ReviewTableProps {
   page: number;
@@ -47,6 +48,7 @@ const PAGE_SIZE = pageSize;
 const ReviewTable = ({ page, reviews }: ReviewTableProps) => {
   const startIndex = (page - 1) * PAGE_SIZE;
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
@@ -57,8 +59,22 @@ async function handleApprove(id: string) {
 
     if (res?.success) {
       toast.success("Review approved");
+      router.refresh();
     } else {
       toast.error(res?.message ?? "Failed to approve review");
+    }
+  });
+}
+
+async function handleReject(id: string) {
+  startTransition(async () => {
+    const res = await rejectReview(id);
+
+    if (res?.success) {
+      toast.success("Review rejected");
+      router.refresh();
+    } else {
+      toast.error(res?.message ?? "Failed to reject review");
     }
   });
 }
@@ -73,6 +89,7 @@ async function handleDelete() {
 
     if (res?.success) {
       toast.success("Review deleted");
+      router.refresh();
     } else {
       toast.error(res?.message ?? "Failed to delete review");
     }
@@ -190,6 +207,26 @@ async function handleDelete() {
   </Tooltip>
 </TooltipProvider>
 
+
+                    {/* DELETE CONFIRM */}
+                    {!review.isAdminApproved && (
+                      <TooltipProvider delayDuration={150}>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button
+                              size="icon"
+                              variant="secondary"
+                              className="bg-orange-100 text-orange-700 hover:bg-orange-200"
+                              disabled={isPending}
+                              onClick={() => handleReject(review.id)}
+                            >
+                              <Undo2 size={18} strokeWidth={2.5} />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Reject review</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    )}
 
                     {/* DELETE CONFIRM */}
                     <AlertDialog>

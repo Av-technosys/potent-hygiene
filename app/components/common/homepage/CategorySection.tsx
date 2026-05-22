@@ -1,6 +1,7 @@
 import { getCategories } from "@/helper";
 import Image from "next/image";
 import Link from "next/link";
+import { getImageUrl } from "@/lib/imageUrl";
 
 type Props = {
   title?: string;
@@ -41,7 +42,7 @@ export async function CategoryGrid({
               <div className="relative h-auto w-full overflow-hidden rounded-md mb-4 flex items-center justify-center">
                 <Image
                   unoptimized
-                  src={category.bannerImage || "/placeholder.jpg"}
+                  src={getImageUrl(category.bannerImage || "/placeholder.jpg")}
                   alt={category.name || "Category"}
                   width={350}
                   height={350}

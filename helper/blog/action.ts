@@ -3,6 +3,7 @@
 
 import { blog } from "@/db/blogSchema"; 
 import { db } from "@/lib/db";
+import { getImageKey } from "@/lib/imageUrl";
 
 import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
@@ -58,8 +59,8 @@ export async function createBlog(blogData: any) {
       title: blogData.title,
       metaDescription: blogData.metaDescription,
       blogCategory: blogData.blogCategory,
-      image: blogData.image,
-      userImage: blogData.userImage,
+      image: getImageKey(blogData.image),
+      userImage: getImageKey(blogData.userImage),
       userName: blogData.userName,
       date: blogData.date,
       data: blogData.data, 
@@ -92,8 +93,8 @@ export async function updateBlog(blogId: string, blogData: any) {
         title: blogData.title,
         metaDescription: blogData.metaDescription,
         blogCategory: blogData.blogCategory,
-        image: blogData.image,
-        userImage: blogData.userImage,
+        image: getImageKey(blogData.image),
+        userImage: getImageKey(blogData.userImage),
         userName: blogData.userName,
         date: blogData.date,
         data: blogData.data,

@@ -12,9 +12,11 @@ import {
 } from "@/components/ui/table";
 import { removeFeaturedProduct } from "@/helper/adminListing/action";
 import { Trash2 } from "lucide-react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export type FeaturedProductRow = {
   id: string;
@@ -84,11 +86,15 @@ const FeaturedProductsTable = ({ products, page, pageSize }: Props) => {
                 <TableCell>
                   <div className="flex items-center gap-3 min-w-[220px]">
                     {item.bannerImage ? (
-                      <img
-                        src={item.bannerImage}
-                        alt={item.productName ?? "Product"}
-                        className="h-12 w-12 rounded-md object-cover border"
-                      />
+                      <div className="relative h-12 w-12 overflow-hidden rounded-md border">
+                        <Image
+                          src={getImageUrl(item.bannerImage)}
+                          alt={item.productName ?? "Product"}
+                          fill
+                          sizes="48px"
+                          className="object-cover"
+                        />
+                      </div>
                     ) : (
                       <div className="h-12 w-12 rounded-md border bg-muted" />
                     )}

@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { ImagePlus, Loader2 } from "lucide-react";
 import { apiFetch } from "@/lib/apiFetch";
+import Image from "next/image";
+import { getImageKey } from "@/lib/imageUrl";
 
 interface ImageUploadProps {
   onUploadSuccess: (url: string) => void;
@@ -37,11 +39,9 @@ export default function ImageUpload({
       });
 
       if (res.status === 200 && res.data?.url) {
-        // set preview
         setPreview(res.data.url);
 
-        // callback
-        onUploadSuccess(res.data.url);
+        onUploadSuccess(getImageKey(res.data.filePath ?? res.data.url));
       } else {
         console.error("❌ Upload failed:", res.data);
       }
@@ -66,10 +66,13 @@ export default function ImageUpload({
 
         {preview ? (
           <div className="relative w-full h-full flex items-center justify-center">
-            <img
+            <Image
               src={preview}
               alt="Preview"
-              className="max-h-40 object-contain rounded-md"
+              width={160}
+              height={160}
+              className="max-h-40 w-auto object-contain rounded-md"
+              unoptimized
             />
             <div className="absolute inset-0 bg-black/5 opacity-0 hover:opacity-100 transition-opacity flex items-center justify-center">
               <p className="text-xs bg-white/90 px-2 py-1 rounded shadow-sm font-medium">

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/imageUrl";
 import { IconArrowRight } from "@tabler/icons-react";
 
 const categories = [
@@ -76,7 +77,7 @@ export default function BlogListClient({
                     }`}
                 >
                   <Image
-                    src={blog.image || "/placeholder.jpg"}
+                    src={getImageUrl(blog.image || "/placeholder.jpg")}
                     alt={blog.title}
                     width={600}
                     height={400}

@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 export const LoowaySection = () => {
   const products = [
     {
@@ -24,7 +26,13 @@ export const LoowaySection = () => {
         {/* LEFT CARD */}
         <div className="bg-white rounded-2xl p-8 shadow-sm text-center">
          <div className="w-32 h-32 mx-auto mb-6  rounded-full overflow-hidden">
-            <img src="/ovy-women-road.png" alt="women" className="h-full w-full object-cover" />
+            <Image
+              src="/ovy-women-road.png"
+              alt="women"
+              width={128}
+              height={128}
+              className="h-full w-full object-cover"
+            />
           </div>
 
 

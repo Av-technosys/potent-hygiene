@@ -20,11 +20,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { createCategory, getAllCategoriesMeta } from "@/helper/category/action";
 import { toast } from "sonner";
 // Naya component import karein
 import ImageUpload from "@/components/ImageUpload"; 
 import { useFileUpload } from "@/helper";
+import { getImageUrl } from "@/lib/imageUrl";
 
 export default function AddCategoryForm() {
   const router = useRouter();
@@ -48,7 +50,7 @@ export default function AddCategoryForm() {
       name: e.target.name.value,
       parentId: parentId,
       description: e.target.description.value,
-      bannerImage: bannerUrl, // ImageKit ka URL yahan bhej rahe hain
+      bannerImage: bannerUrl,
     };
 
     const response = await createCategory(categoryData);
@@ -64,15 +66,9 @@ export default function AddCategoryForm() {
     if (!file) return;
 
     try {
-      const { fileKey, fileUrl } = await upload(file, "category");
+      const { fileKey } = await upload(file, "category");
 
-      setBannerUrl(fileUrl as any); // UI ke liye
-
-      // IMPORTANT: agar tu key store karna chahta hai (recommended)
-      // setForm((prev) => ({
-      //   ...prev,
-      //   bannerKey: fileKey,
-      // }));
+      setBannerUrl(fileKey);
 
       toast.success("Image uploaded");
     } catch (err: any) {
@@ -148,9 +144,13 @@ export default function AddCategoryForm() {
                     {!bannerUrl ? (
                       <p>Click to upload category image</p>
                     ) : (
-                      <img
-                        src={bannerUrl}
+                      <Image
+                        src={getImageUrl(bannerUrl)}
+                        alt="Category image preview"
+                        fill
+                        sizes="(min-width: 1024px) 50vw, 100vw"
                         className="w-full h-full object-contain"
+                        unoptimized
                       />
                     )}
 
