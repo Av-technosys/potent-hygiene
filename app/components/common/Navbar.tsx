@@ -32,6 +32,8 @@ import {
 } from "@tabler/icons-react";
 import { useCartStore } from "@/store/cartStore";
 import { isUserLoggedIn } from "@/helper/auth/action";
+import { InputGroup, InputGroupAddon, InputGroupButton, InputGroupInput } from "@/components/ui/input-group";
+import { getImageUrl } from "@/lib/imageUrl";
 import { syncWishlistFromDB } from "@/store/WishlistActions";
 import { syncCartFromDB } from "@/store/cartActions";
 
@@ -247,10 +249,7 @@ export function Navbar() {
               </span>
             )}
           </div>
-
-          <button>
-            <Search className="h-5 w-5" />
-          </button>
+          <ProductSearch />
 
           <Link href={isLoggedIn ? "/dashboard/profile" : "/login"}>
             <Button
@@ -269,3 +268,86 @@ export function Navbar() {
 
 
 
+function ProductSearch() {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [results, setResults] = useState<{ id: string, name: string, slug: string, bannerImage: string }[]>([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  useEffect(() => {
+    if (!searchTerm.trim()) {
+      setResults([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    setShowDropdown(true);
+    setLoading(true);
+
+    const delayDebounceFn = setTimeout(async () => {
+      try {
+        const res = await fetch(`/api/search?q=${encodeURIComponent(searchTerm)}`);
+        const data = await res.json();
+        setResults(data.products || []);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 600);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchTerm]);
+
+  return (
+    <div className="relative">
+      <InputGroup className="rounded-full ring ring-[#168BA0]">
+        <InputGroupInput
+          placeholder="Search..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => { if (searchTerm) setShowDropdown(true); }}
+          onBlur={() => setTimeout(() => setShowDropdown(false), 200)}
+        />
+        <InputGroupAddon align={"inline-end"}>
+          <Search className="text-gray-500" size={20} />
+        </InputGroupAddon>
+      </InputGroup>
+
+      {showDropdown && (
+        <div className="absolute top-full mt-2 w-full min-w-[300px] bg-white border rounded-2xl shadow-lg z-50 right-0 max-h-96 overflow-y-auto">
+          {loading ? (
+            <div className="p-4 text-center text-gray-500 text-sm">Searching...</div>
+          ) : results.length > 0 ? (
+            <div className="flex flex-col">
+              {results.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/product-detail/${product.slug}`}
+                  className="flex items-center gap-3 p-3 hover:bg-gray-100 transition-colors border-b last:border-b-0"
+                  onClick={() => setShowDropdown(false)}
+                >
+                  {product.bannerImage ? (
+                    <Image
+                      src={getImageUrl(product.bannerImage)}
+                      alt={product.name || "Product"}
+                      width={40}
+                      height={40}
+                      className="rounded-md object-cover w-10 h-10"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 bg-gray-200 rounded-md flex-shrink-0" />
+                  )}
+                  <span className="text-sm font-medium text-gray-700 line-clamp-2">{product.name}</span>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="p-4 text-center text-gray-500 text-sm">Product not found.</div>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}

@@ -4,7 +4,7 @@
 import { db } from "@/lib/db";
 
 import { revalidatePath } from "next/cache";
-import { and, desc, eq, gte, ilike, inArray, lte, ne, sql } from "drizzle-orm";
+import { and, asc, desc, eq, gte, ilike, inArray, lte, ne, sql } from "drizzle-orm";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 
 import {
@@ -750,7 +750,7 @@ export async function getProducts({
 
 export async function getUserProduct() {
   try {
-    return await db.select({ id: product.id, name: product.name, slug: product.slug, bannerImage: product.bannerImage, basePrice: product.basePrice, strikethroughPrice: product.strikethroughPrice }).from(product);
+    return await db.select({ id: product.id, name: product.name, slug: product.slug, bannerImage: product.bannerImage, basePrice: product.basePrice, strikethroughPrice: product.strikethroughPrice, type: product.type }).from(product).orderBy(desc(product.createdAt))
   } catch (error) {
     console.log(error)
   }

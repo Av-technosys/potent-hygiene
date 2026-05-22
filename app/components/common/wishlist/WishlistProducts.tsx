@@ -10,10 +10,11 @@ import { useWishlistStore } from "@/store/WishlistStore";
 import { removeFromWishlist } from "@/store/WishlistActions";
 import { addToCart } from "@/store/cartActions";
 import Link from "next/link";
+import { NEXT_PUBLIC_S3_URL } from "@/env";
 
 export default function WishlistProducts() {
   const products = useWishlistStore((state) => state.items);
- 
+
 
   const removeWishlist = async (productId: string) => {
     await removeFromWishlist(productId);
@@ -47,9 +48,9 @@ export default function WishlistProducts() {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6">
       {products.map((product: any) => (
-        <Card key={product.productId} className="rounded-3xl py-0 shadow-sm">
-          <CardContent className="p-2">
-            <div className="relative aspect-square bg-[#EADCF3] rounded-xl flex items-center justify-center">
+        <Card key={product.productId} className="rounded-3xl p-0 shadow-sm">
+          <CardContent className="p-4">
+            <div className="relative w-full rounded-xl flex items-center justify-center">
               <button
                 onClick={() => removeWishlist(product.productId)}
                 className="absolute top-2 left-2 bg-white rounded-full p-1 shadow"
@@ -62,6 +63,7 @@ export default function WishlistProducts() {
                 src={getImageUrl(product.image)}
                 width={180}
                 height={180}
+                className=" w-full h-auto object-contain"
               />
             </div>
 

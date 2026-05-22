@@ -8,6 +8,7 @@ import { useCartStore } from "@/store/cartStore";
 import { getImageUrl } from "@/lib/imageUrl";
 
 import { updateCartQuantity, removeFromCart } from "@/store/cartActions";
+import { NEXT_PUBLIC_S3_URL } from "@/env";
 
 export function CartItems() {
   const router = useRouter();
@@ -15,7 +16,7 @@ export function CartItems() {
   // ✅ reactive Zustand state
   const items = useCartStore((state) => state.items);
 
- 
+
 
   return (
     <div className="w-full max-w-4xl mx-auto space-y-6">
@@ -93,7 +94,7 @@ export function CartItems() {
                         size="sm"
                         className="flex items-center gap-2 text-red-500 hover:text-red-600 hover:bg-red-50 transition-all"
                         onClick={() =>
-                          removeFromCart(item.productId, item.sku, item?.uuid,item?.cartSizes)
+                          removeFromCart(item.productId, item.sku, item?.uuid, item?.cartSizes)
                         }
                       >
                         <Trash2 className="h-4 w-4" />
