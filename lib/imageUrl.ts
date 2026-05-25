@@ -1,4 +1,6 @@
-const imageBaseUrl = process.env.NEXT_PUBLIC_IMAGE_URL;
+import { NEXT_PUBLIC_S3_URL } from "@/env";
+
+const imageBaseUrl = NEXT_PUBLIC_S3_URL;
 
 export function getImageUrl(src?: string | null) {
   if (!src) return "/placeholder.jpg";
@@ -13,7 +15,7 @@ export function getImageUrl(src?: string | null) {
     return src;
   }
 
-  const baseUrl = imageBaseUrl?.replace(/\/$/, "") ?? "";
+  const baseUrl = imageBaseUrl;
   const imagePath = src.replace(/^\//, "");
 
   return `${baseUrl}/${imagePath}`;

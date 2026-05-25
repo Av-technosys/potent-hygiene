@@ -23,19 +23,63 @@ export default function CategoryProducts({ products, productsCategory }: any) {
 
   const params = useSearchParams();
   const category = params.getAll("category");
-  const productType = params.get("pt");
-  const size = params.get("size");
+  const productType = params.getAll("productType");
+  const size = params.getAll("size");
+  const flowType = params.getAll("flowType");
   const material = params.get("material");
   const priceRange = params.get("pr")?.split("-");
 
 
 
   const filteredProducts = productDetaials.filter((prodItem: any) => {
-    if (!category || category.length === 0) return true;
-    return prodItem.categories.some((cat: any) => {
-      return category.includes(cat);
-    });
+    if ((!category || category.length === 0) && (!productType && !size && !material && !priceRange)) {
+      return true;
+    }
+
+    var isCat = false;
+    var isSize = false;
+    var isFlow = false;
+    var isType = false;
+
+    if (!!category && category.length > 0) {
+      isCat = prodItem.categories.some((cat: any) => {
+        return category.includes(cat);
+      });
+    } else {
+      isCat = true;
+    }
+
+    if (!!productType && productType.length > 0) {
+      isType = productType?.some((typ) => {
+        return prodItem?.type === productType;
+      })
+    } else {
+      isType = true;
+    }
+
+    console.log(isType, productType)
+
+    // size
+    if (!!size && size.length > 0) {
+      isSize = productType?.some((typ) => {
+        return prodItem?.size === typ;
+      })
+    } else {
+      isSize = true;
+    }
+
+    if (!!flowType && flowType.length > 0) {
+      isFlow = productType?.some((typ) => {
+        return prodItem?.type === typ;
+      })
+    } else {
+      isFlow = true;
+    }
+
+    return isCat || isSize || isFlow || isType;
   });
+
+  console.log(filteredProducts)
 
 
 

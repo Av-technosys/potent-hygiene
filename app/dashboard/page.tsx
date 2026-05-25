@@ -8,6 +8,8 @@ import { redirect } from "next/navigation";
 import { StatsCards } from "../components/common/dashboard/StatsCards";
 import { RecentOrders } from "../components/common/dashboard/RecentOrders";
 
+export const dynamic = 'force-dynamic';
+
 
 export default async function DashboardPage() {
   let data;
