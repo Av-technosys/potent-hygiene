@@ -17,9 +17,11 @@ import { lowayProductDetailsPage, ovyProductDetailsPage } from "@/const/globalco
 export default async function Page({ params }: any) {
   const { slug } = await params;
 
-  const product = await getFullProductDetails(slug);
-  const similarProducts = (await getProductSimilarProducts(slug)) || [];
-  const reviewWithMedia = await getProductReviews(slug);
+  const [product, similarProducts, reviewWithMedia] = await Promise.all([
+    getFullProductDetails(slug),
+    getProductSimilarProducts(slug),
+    getProductReviews(slug),
+  ]);
   // const catetoryName = similarProducts[0]?.category;
 
   const themeColor = product.brand == "loway" ? lowayProductDetailsPage : ovyProductDetailsPage;
@@ -51,7 +53,7 @@ export default async function Page({ params }: any) {
         </div>
         <AboutHero themeColor={themeColor} />
         <JournalsSection themeColor={themeColor} />
-        <RelatedProducts products={similarProducts} themeColor={themeColor} />
+        <RelatedProducts products={similarProducts || []} themeColor={themeColor} />
       </div>
     </div>
   );

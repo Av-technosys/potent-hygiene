@@ -44,6 +44,7 @@ export async function getCart() {
     return { success: false, error: "Failed to fetch cart" };
   }
 }
+
 export async function addToCart(
   productId: string,
   quantity: any,
