@@ -1,0 +1,34 @@
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "mix_box_recipe" jsonb;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "mix_box_l_quantity" integer;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "mix_box_xl_quantity" integer;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "mix_box_xl_plus_quantity" integer;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "total_pads" integer;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "box_count" integer;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "free_liners" integer;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "purchase_type" varchar;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "subscription_type" varchar;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "cycle_length" integer;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "period_length" integer;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "last_period_date" timestamp;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "next_period_date" timestamp;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "arrival_date" timestamp;
+ALTER TABLE "cart_item" ADD COLUMN IF NOT EXISTS "charge_date" timestamp;
+
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "mix_box_recipe" jsonb;
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "mix_box_l_quantity" integer;
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "mix_box_xl_quantity" integer;
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "mix_box_xl_plus_quantity" integer;
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "total_pads" integer;
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "box_count" integer;
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "free_liners" integer;
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "purchase_type" varchar;
+ALTER TABLE "order_item" ADD COLUMN IF NOT EXISTS "subscription_type" varchar;
+
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "subscription_type" varchar;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "mix_box_recipe" jsonb;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "cycle_length" integer;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "period_length" integer;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "last_period_date" timestamp;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "next_period_date" timestamp;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "arrival_date" timestamp;
+ALTER TABLE "subscriptions" ADD COLUMN IF NOT EXISTS "charge_date" timestamp;

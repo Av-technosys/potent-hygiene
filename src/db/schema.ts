@@ -27,22 +27,24 @@ export const returnRequestStatusEnum = pgEnum("return_request_status", [
   "refunded",
 ]);
 
+export const subscriptionTypeEnum = pgEnum("subscription_type", [
+  "monthly",
+  "every_2_months",
+  "cycle_sync",
+]);
+
 
 // ================= USERS =================
 
 export const users = pgTable("users", {
   id: uuid("id").primaryKey().defaultRandom(),
   name: text("name").notNull(),
+  cognitoId: text("cognito_id").notNull().unique(),
   email: text("email").notNull().unique(),
   phone: varchar("phone", { length: 15 }).notNull(),
-  password: text("password").notNull(),
-  emailVerified: boolean("email_verified").default(false),
+  isEmailVerified: boolean("is_email_verified").default(false),
   rewardOrderCoins: integer("reward_order_coins").default(0),
   referralCoins: integer("referral_coins").default(0),
-
-
-  otp: varchar("otp", { length: 6 }),
-  otpExpiresAt: timestamp("otp_expires_at"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -73,19 +75,13 @@ export const referralCoinHistory = pgTable("referral_coin_history", {
 export const address = pgTable("address", {
   id: serial("id").primaryKey(),
   userId: uuid("user_id").references(() => users.id).notNull(),
-  fullName: varchar("full_name"),
-  phone: varchar("phone"),
-  email: varchar("email"),
-
-  street: text("street"),
-  locality: varchar("locality"),
+  streetAddress1: text("street_address_1"),
+  streetAddress2: text("street_address_2"),
   city: varchar("city"),
   state: varchar("state"),
   pincode: varchar("pincode"),
   country: varchar("country"),
-
   isDefault: boolean("is_default").default(false),
-
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -95,16 +91,18 @@ export const address = pgTable("address", {
 export const blog = pgTable("blog", {
   id: uuid("id").primaryKey().defaultRandom(),
   title: varchar("title"),
+  description: text("description"),
+  metaTitle: varchar("meta_title"),
   metaDescription: varchar("meta_description"),
   blogCategory: varchar("blog_category"),
   image: varchar("image"),
   tags: varchar("tags").array(),
   date: varchar("date"),
   data: text("data"),
-  userImage: varchar("user_image"),
-  userName: varchar("user_name"),
+  authorImage: varchar("author_image"),
+  authorName: varchar("author_name"),
   slug: varchar("slug"),
-  isVisible: boolean("is_visible").default(true),
+  isPublished: boolean("is_published").default(false),
 });
 
 
@@ -127,7 +125,6 @@ export const productBrandEnum = pgEnum("product_brand", ["ovy", "loway"]);
 
 export const product = pgTable("products", {
   id: uuid("id").primaryKey().defaultRandom(),
-  parentId: uuid("parent_id").references((): any => product.id),
 
   sku: varchar("sku").notNull().unique(),
   slug: varchar("slug").unique().notNull(),
@@ -135,18 +132,12 @@ export const product = pgTable("products", {
   name: varchar("name"),
   description: varchar("description"),
 
-  basePrice: integer("base_price"),
-  strikethroughPrice: integer("strikethrough_price"),
-
   bannerImage: varchar("banner_image"),
   highlights: varchar("highlights").array(),
   brand: productBrandEnum("brand").default("ovy"),
   type: varchar("type"),
 
   hasVarientBox: boolean("has_variant_box").default(false),
-  allowCycleSync: boolean("allow_cycle_sync").default(false),
-  allowSubscription: boolean("allow_subscription").default(false),
-  isMixBox: boolean("is_mix_box").default(false),
   minBoxQuintity: integer("min_box_quintity"),
   custimizeBoxInfo: text("custimize_box_info"),
 
@@ -170,12 +161,26 @@ export const product = pgTable("products", {
   ]
 );
 
-export const productVarientBox = pgTable("product_varient_box", {
+// ================= PRODUCT VARIANTS =================
+
+export const productVariant = pgTable("product_variants", {
   id: uuid("id").primaryKey().defaultRandom(),
-  productId: uuid("product_id").references(() => product.id),
-  name: varchar("name"),
-  description: varchar("description"),
+  productId: uuid("product_id")
+    .references(() => product.id, { onDelete: "cascade" })
+    .notNull(),
+  sku: varchar("sku").notNull().unique(),
+  name: varchar("name").notNull(),
+  price: integer("price").notNull(),
+  strikethroughPrice: integer("strikethrough_price"),
   image: varchar("image"),
+  size: varchar("size"), // e.g. "L", "XL", "XL+"
+  flowType: varchar("flow_type"), // e.g. "heavy flow"
+  allowCycleSync: boolean("allow_cycle_sync").default(false),
+  allowSubscription: boolean("allow_subscription").default(false),
+  isMixBox: boolean("is_mix_box").default(false),
+  isInStock: boolean("is_in_stock").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // ============== Featured Product ===============
@@ -183,6 +188,7 @@ export const productVarientBox = pgTable("product_varient_box", {
 export const featuredProduct = pgTable("featured_product", {
   id: uuid("id").primaryKey().defaultRandom(),
   productId: uuid("product_id").notNull().references(() => product.id),
+  priority: integer("priority").default(1),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -190,6 +196,7 @@ export const featuredProduct = pgTable("featured_product", {
 export const featuredCategory = pgTable("featured_category", {
   id: uuid("id").primaryKey().defaultRandom(),
   categoryId: uuid("category_id").references(() => category.id),
+  priority: integer("priority").default(1),
   createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -212,6 +219,7 @@ export const productCategory = pgTable(
 export const productFilter = pgTable("product_filter", {
   productId: uuid("product_id").references(() => product.id),
   filter: varchar("filter"),
+
 },
   (table) => [
     primaryKey({ columns: [table.productId, table.filter] }),
@@ -248,7 +256,6 @@ export const review = pgTable("reviews", {
   userId: uuid("user_id").references(() => users.id),
   productId: uuid("product_id").references(() => product.id),
   name: varchar("name"),
-  email: varchar("email"),
   rating: integer("rating"),
   message: varchar("message"),
   isAdminApproved: boolean("is_admin_approved").default(false),
@@ -271,11 +278,13 @@ export const reviewMedia = pgTable("review_media", {
 export const subscriptions = pgTable("subscriptions", {
   id: serial("id").primaryKey(),
   userId: uuid("user_id").references(() => users.id),
+  productId: uuid("product_id").references(() => product.id),
+  productVariantId: uuid("product_variant_id").references(() => productVariant.id),
   startDate: timestamp("start_date").defaultNow(),
   endDate: timestamp("end_date"),
-  frequencyInMonths: integer("frequency_in_months"),
+  frequencyInDays: integer("frequency_in_days"),
   nextOrderDate: timestamp("next_order_date"),
-  subscriptionType: varchar("subscription_type"),
+  subscriptionType: subscriptionTypeEnum("subscription_type"),
   mixBoxRecipe: jsonb("mix_box_recipe"),
   cycleLength: integer("cycle_length"),
   periodLength: integer("period_length"),
@@ -303,20 +312,17 @@ export const cartItem = pgTable("cart_item", {
   id: uuid("id").primaryKey().defaultRandom(),
   cartId: uuid("cart_id").references(() => cart.id).notNull(),
   productId: uuid("product_id").references(() => product.id).notNull(),
-  productVarientBox: uuid("product_varient_box_id").references(() => productVarientBox.id),
+  productVariantId: uuid("product_variant_id").references(() => productVariant.id),
   isTypeSubscription: boolean("is_type_subscription").default(false),
-  frequencyInMonths: integer("frequency_in_months"),
+  frequencyInDays: integer("frequency_in_days"),
   clientCartItemId: uuid("client_cart_item_id"), //can be same for different varient for same product item added at a time which means a single cart item.
   quantity: integer("quantity").default(1),
   mixBoxRecipe: jsonb("mix_box_recipe"),
-  mixBoxLQuantity: integer("mix_box_l_quantity"),
-  mixBoxXLQuantity: integer("mix_box_xl_quantity"),
-  mixBoxXLPlusQuantity: integer("mix_box_xl_plus_quantity"),
   totalPads: integer("total_pads"),
   boxCount: integer("box_count"),
   freeLiners: integer("free_liners"),
   purchaseType: varchar("purchase_type"),
-  subscriptionType: varchar("subscription_type"),
+  subscriptionType: subscriptionTypeEnum("subscription_type"),
   cycleLength: integer("cycle_length"),
   periodLength: integer("period_length"),
   lastPeriodDate: timestamp("last_period_date"),
@@ -374,17 +380,15 @@ export const orderItem = pgTable("order_item", {
   id: uuid("id").primaryKey().defaultRandom(),
   orderId: uuid("order_id").references(() => order.id),
   productId: uuid("product_id").references(() => product.id),
+  productVariantId: uuid("product_variant_id").references(() => productVariant.id),
   productVarientBox: varchar("product_varient_box"),
   quantity: integer("quantity"),
   mixBoxRecipe: jsonb("mix_box_recipe"),
-  mixBoxLQuantity: integer("mix_box_l_quantity"),
-  mixBoxXLQuantity: integer("mix_box_xl_quantity"),
-  mixBoxXLPlusQuantity: integer("mix_box_xl_plus_quantity"),
   totalPads: integer("total_pads"),
   boxCount: integer("box_count"),
   freeLiners: integer("free_liners"),
   purchaseType: varchar("purchase_type"),
-  subscriptionType: varchar("subscription_type"),
+  subscriptionType: subscriptionTypeEnum("subscription_type"),
 
   productName: varchar("product_name"),
   productSlug: varchar("product_slug"),
@@ -470,11 +474,14 @@ export const paymentGatewayPlans = pgTable("payment_gateway_plans", {
   descirption: varchar("descirption"),
   billingFrequency: varchar("billing_frequency").notNull(),
   planId: varchar("plan_id").notNull().unique(),
-  frequencyType: varchar("frequency_type").notNull().default("monthly"),
+  frequencyType: subscriptionTypeEnum("frequency_type"),
 });
 
 export const paymentGatewaySubscription = pgTable("payment_gateway_subscription", {
   id: uuid("id").primaryKey().defaultRandom(),
+  userId: uuid("user_id").notNull().references(() => users.id),
+  subscriptionId: integer("subscription_id").notNull().references(() => subscriptions.id),
+  gatewaySubscriptionId: varchar("gateway_subscription_id").notNull(),
   planId: varchar("plan_id").notNull().references(() => paymentGatewayPlans.planId),
   totalCount: integer("total_count"),
   remainingCount: integer("remaining_count"),
@@ -482,7 +489,7 @@ export const paymentGatewaySubscription = pgTable("payment_gateway_subscription"
   customerNotify: boolean("customer_notify").default(false),
   startAt: timestamp("start_at"),
   expireBy: timestamp("expire_by"),
-  shourURL: varchar("shour_url"),
+  shortUrl: varchar("short_url"),
   startDate: timestamp("start_date").defaultNow(),
 });
 
