@@ -127,6 +127,7 @@ export const productBrandEnum = pgEnum("product_brand", ["ovy", "loway"]);
 
 export const product = pgTable("products", {
   id: uuid("id").primaryKey().defaultRandom(),
+  parentId: uuid("parent_id").references((): any => product.id),
 
   sku: varchar("sku").notNull().unique(),
   slug: varchar("slug").unique().notNull(),
@@ -143,6 +144,9 @@ export const product = pgTable("products", {
   type: varchar("type"),
 
   hasVarientBox: boolean("has_variant_box").default(false),
+  allowCycleSync: boolean("allow_cycle_sync").default(false),
+  allowSubscription: boolean("allow_subscription").default(false),
+  isMixBox: boolean("is_mix_box").default(false),
   minBoxQuintity: integer("min_box_quintity"),
   custimizeBoxInfo: text("custimize_box_info"),
 
@@ -488,5 +492,17 @@ export const contactUs = pgTable("contact_us", {
   email: varchar("email"),
   number: varchar("number"),
   message: text("message"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// ================= PRODUCT FAQ =================
+
+export const productFaq = pgTable("product_faq", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  productId: uuid("product_id")
+    .references(() => product.id, { onDelete: "cascade" })
+    .notNull(),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
