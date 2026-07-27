@@ -15,6 +15,7 @@ import { ProductCategories } from "../components/common/homepage/ProductCategori
 import { WhatsAppWidget } from "../components/common/homepage/WhatsAppWidget";
 
 export default function Home() {
+  
   return (
     <main className="min-h-screen   md:bg-white bg-linear-to-b from-[#E2F4F7] to-[#FFFFFF]">
 

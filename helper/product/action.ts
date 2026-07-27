@@ -50,6 +50,20 @@ function parseMedia(fd: FormData) {
   return fd.getAll("media").filter((v) => typeof v === "string") as string[];
 }
 
+function revalidateProductCache(productId?: string, slug?: string) {
+  revalidateTag("products", "max");
+  revalidatePath("/admin/product");
+  revalidatePath("/shop");
+
+  if (productId) {
+    revalidatePath(`/admin/product/${productId}`);
+  }
+
+  if (slug) {
+    revalidatePath(`/product-detail/${slug}`);
+  }
+}
+
 interface VariantInput {
   name: string;
   sku: string;
@@ -198,6 +212,8 @@ export async function createProduct(formData: FormData): Promise<void> {
     if (!variantsData) throw new Error("No variants provided");
 
     const variants: any = JSON.parse(variantsData);
+    let createdProductId = "";
+    let createdProductSlug = "";
 
     await db.transaction(async (tx) => {
       const slug = await generateUniqueSlug(tx, variants.name, product.slug);
@@ -225,6 +241,8 @@ export async function createProduct(formData: FormData): Promise<void> {
         .returning({ id: product.id });
 
       const productId = newProduct.id;
+      createdProductId = productId;
+      createdProductSlug = slug;
 
       // 2. Insert Categories
       if (categoryIds.length) {
@@ -281,7 +299,7 @@ export async function createProduct(formData: FormData): Promise<void> {
       }
     });
 
-    revalidatePath("/admin/product");
+    revalidateProductCache(createdProductId, createdProductSlug);
   } catch (error) {
     console.error("createProduct failed:", error);
     throw new Error("Unable to create product");
@@ -292,6 +310,12 @@ export async function updateProduct(formData: FormData): Promise<void> {
   try {
     const productId = formData.get("id") as string;
     if (!productId) throw new Error("Product ID missing");
+
+    const [existingProduct] = await db
+      .select({ slug: product.slug })
+      .from(product)
+      .where(eq(product.id, productId))
+      .limit(1);
 
     const categoryIds = [
       ...new Set(formData.getAll("category[]").filter(Boolean)),
@@ -408,25 +432,25 @@ export async function updateProduct(formData: FormData): Promise<void> {
       // }
     });
 
-    revalidatePath("/admin/product");
+    revalidateProductCache(productId, existingProduct?.slug);
   } catch (error) {
     console.error("updateProduct failed:", error);
     throw new Error("Unable to update product");
   }
 }
 
-export async function getFullProductDetails(identifier: string) {
-  try {
-    if (!identifier) throw new Error("Missing product identifier");
 
-    // const isThroughId = isUUID(identifier);
-    // if (!isThroughId) throw new Error("Invalid product identifier");
+async function getFullProductDetailsRaw(identifier: string) {
+  try {
+
+    if (!identifier) throw new Error("Missing product identifier");
 
     const [productDeails] = await db
       .select()
       .from(product)
       .where(eq(product.slug, identifier))
       .limit(1);
+
     if (!productDeails) throw new Error("Product not found");
 
     const [
@@ -436,28 +460,68 @@ export async function getFullProductDetails(identifier: string) {
       productMediaRes,
       filters,
     ] = await Promise.all([
-      db
-        .select()
-        .from(productVarientBox)
-        .where(eq(productVarientBox.productId, productDeails.id)),
-      db
-        .select()
-        .from(category)
-        .leftJoin(productCategory, eq(category.id, productCategory.categoryId))
-        .where(eq(productCategory.productId, productDeails.id)),
-      db
-        .select()
-        .from(productAttribute)
-        .where(eq(productAttribute.productId, productDeails.id)),
-      db
-        .select()
-        .from(productMedia)
-        .where(eq(productMedia.productId, productDeails.id)),
+      db.select().from(productVarientBox).where(eq(productVarientBox.productId, productDeails.id)),
+      db.select().from(category).leftJoin(productCategory, eq(category.id, productCategory.categoryId)).where(eq(productCategory.productId, productDeails.id)),
+      db.select().from(productAttribute).where(eq(productAttribute.productId, productDeails.id)),
+      db.select().from(productMedia).where(eq(productMedia.productId, productDeails.id)),
+      db.select().from(productFilter).where(eq(productFilter.productId, productDeails.id)),
+    ]);
 
-      db
-        .select()
-        .from(productFilter)
-        .where(eq(productFilter.productId, productDeails.id)),
+    return {
+      ...productDeails,
+      prodcutVarientBoxRes,
+      categoryRes,
+      productAttributeRes,
+      productMediaRes,
+      filters,
+    };
+  } catch (error) {
+    console.error("getFullProduct failed:", error);
+    throw new Error("Unable to fetch product");
+  }
+}
+
+export async function getFullProductDetails(identifier: string) {
+
+  return unstable_cache(
+    () => getFullProductDetailsRaw(identifier),
+    ["full-product-details", identifier],
+    {
+      revalidate: 300,
+      tags: ["products"],
+    }
+  )();
+}
+
+
+async function getFullProductRaw(identifier: string) {
+  try {
+
+    if (!identifier) throw new Error("Missing product identifier");
+
+    const isThroughId = isUUID(identifier);
+    if (!isThroughId) throw new Error("Invalid product identifier");
+
+    const [productDeails] = await db
+      .select()
+      .from(product)
+      .where(eq(product.id, identifier))
+      .limit(1);
+
+    if (!productDeails) throw new Error("Product not found");
+
+    const [
+      prodcutVarientBoxRes,
+      categoryRes,
+      productAttributeRes,
+      productMediaRes,
+      filters,
+    ] = await Promise.all([
+      db.select().from(productVarientBox).where(eq(productVarientBox.productId, productDeails.id)),
+      db.select().from(category).leftJoin(productCategory, eq(category.id, productCategory.categoryId)).where(eq(productCategory.productId, productDeails.id)),
+      db.select().from(productAttribute).where(eq(productAttribute.productId, productDeails.id)),
+      db.select().from(productMedia).where(eq(productMedia.productId, productDeails.id)),
+      db.select().from(productFilter).where(eq(productFilter.productId, identifier)),
     ]);
 
     return {
@@ -475,64 +539,16 @@ export async function getFullProductDetails(identifier: string) {
 }
 
 export async function getFullProduct(identifier: string) {
-  try {
-    if (!identifier) throw new Error("Missing product identifier");
 
-    const isThroughId = isUUID(identifier);
-    if (!isThroughId) throw new Error("Invalid product identifier");
-
-    const [productDeails] = await db
-      .select()
-      .from(product)
-      .where(eq(product.id, identifier))
-      .limit(1);
-    if (!productDeails) throw new Error("Product not found");
-
-    const [
-      prodcutVarientBoxRes,
-      categoryRes,
-      productAttributeRes,
-      productMediaRes,
-      filters,
-    ] = await Promise.all([
-      db
-        .select()
-        .from(productVarientBox)
-        .where(eq(productVarientBox.productId, productDeails.id)),
-      db
-        .select()
-        .from(category)
-        .leftJoin(productCategory, eq(category.id, productCategory.categoryId))
-        .where(eq(productCategory.productId, productDeails.id)),
-      db
-        .select()
-        .from(productAttribute)
-        .where(eq(productAttribute.productId, productDeails.id)),
-      db
-        .select()
-        .from(productMedia)
-        .where(eq(productMedia.productId, productDeails.id)),
-
-      db
-        .select()
-        .from(productFilter)
-        .where(eq(productFilter.productId, identifier)),
-    ]);
-
-    return {
-      ...productDeails,
-      prodcutVarientBoxRes,
-      categoryRes,
-      productAttributeRes,
-      productMediaRes,
-      filters,
-    };
-  } catch (error) {
-    console.error("getFullProduct failed:", error);
-    throw new Error("Unable to fetch product");
-  }
+  return unstable_cache(
+    () => getFullProductRaw(identifier),
+    ["full-product", identifier],
+    {
+      revalidate: 300,
+      tags: ["products"],
+    }
+  )();
 }
-
 export async function getCategoryName(categoryId: any) {
   try {
     const categoryName = await db
@@ -597,6 +613,12 @@ export async function getProductSimilarProducts(slug: string | any) {
 
 export async function deleteProduct(id: string) {
   try {
+    const [existingProduct] = await db
+      .select({ slug: product.slug })
+      .from(product)
+      .where(eq(product.id, id))
+      .limit(1);
+
     await db.transaction(async (tx) => {
       const variants = await tx
         .select({ id: product.id })
@@ -618,7 +640,7 @@ export async function deleteProduct(id: string) {
       await tx.delete(product).where(eq(product.id, id));
     });
 
-    revalidatePath("/admin/product");
+    revalidateProductCache(id, existingProduct?.slug);
     return {
       success: true,
       message: "Product and all variants deleted successfully",
@@ -629,22 +651,26 @@ export async function deleteProduct(id: string) {
   }
 }
 
-export async function getProducts({
-  page = 1,
-  pageSize = 20,
-  search = "",
-  category: categorySlug,
-  type = "",
-  material = "",
-  size = "",
-  flow = "",
-  cramps = "",
-  allergies = "",
-  min = "",
-  max = "",
-  stock = "",
-  brand = "",
-}: GetProductsOptions) {
+
+export const getProducts = unstable_cache(
+  async ({
+    page = 1,
+    pageSize = 20,
+    search = "",
+    category: categorySlug,
+    type = "",
+    material = "",
+    size = "",
+    flow = "",
+    cramps = "",
+    allergies = "",
+    min = "",
+    max = "",
+    stock = "",
+    brand = "",
+  }: GetProductsOptions) => {
+
+
   const filters = [];
 
   if (search.trim() !== "") {
@@ -745,16 +771,43 @@ export async function getProducts({
     items,
     totalPages,
     page,
-  };
-}
-
-export async function getUserProduct() {
-  try {
-    return await db.select({ id: product.id, name: product.name, slug: product.slug, bannerImage: product.bannerImage, basePrice: product.basePrice, strikethroughPrice: product.strikethroughPrice, type: product.type }).from(product).orderBy(desc(product.createdAt))
-  } catch (error) {
-    console.log(error)
   }
-}
+  
+},
+ ["products-list"],
+  {
+    revalidate: 300,
+    tags: ["products"],
+  } )
+
+
+
+export const getUserProduct = unstable_cache(
+  async () => {
+    try {
+
+      return await db
+        .select({
+          id: product.id,
+          name: product.name,
+          slug: product.slug,
+          bannerImage: product.bannerImage,
+          basePrice: product.basePrice,
+          strikethroughPrice: product.strikethroughPrice,
+        })
+        .from(product);
+    } catch (error) {
+      console.log(error);
+      return [];
+    }
+  },
+  ["user-products"],
+  {
+    revalidate: 300, 
+    tags: ["products"],
+  }
+);
+
 export async function getProductCategories() {
   try {
     return await db.select().from(productCategory);
@@ -847,39 +900,35 @@ export async function saveProductAttributes(productId: string, payload: any) {
   return { success: true };
 }
 
-export async function getProductsCount() {
-  try {
-    const result = await db
-      .select({ count: sql<number>`count(*)` })
-      .from(product);
+export const getProductsCount = unstable_cache(
+  async () => {
+    try {
 
-    return result[0].count || 0;
-  } catch (error) {
-    console.error("getProductsCount failed:", error);
-    return 0;
+      const result = await db
+        .select({
+          count: sql<number>`count(*)`,
+        })
+        .from(product);
+
+      return result[0].count || 0;
+    } catch (error) {
+      console.error("getProductsCount failed:", error);
+      return 0;
+    }
+  },
+  ["products-count"],
+  {
+    revalidate: 300,
+    tags: ["products"],
   }
-}
+);
 
-export async function getBestSellingProducts() {
-  try {
-    const products = await db
-      .select({
-        id: product.id,
-        name: product.name,
-        price: product.basePrice,
-        oldPrice: product.strikethroughPrice,
-        image: product.bannerImage,
-        slug: product.slug,
-      })
-      .from(product)
-      .innerJoin(productCategory, eq(productCategory.productId, product.id))
-      .innerJoin(category, eq(category.id, productCategory.categoryId))
-      .where(eq(category.slug, bestSellingSlug))
-      .limit(4);
 
-    // fallback
-    if (products.length === 0) {
-      return await db
+export const getBestSellingProducts = unstable_cache(
+  async () => {
+    try {
+
+      const products = await db
         .select({
           id: product.id,
           name: product.name,
@@ -889,15 +938,37 @@ export async function getBestSellingProducts() {
           slug: product.slug,
         })
         .from(product)
+        .innerJoin(productCategory, eq(productCategory.productId, product.id))
+        .innerJoin(category, eq(category.id, productCategory.categoryId))
+        .where(eq(category.slug, bestSellingSlug))
         .limit(4);
-    }
 
-    return products;
-  } catch (error) {
-    console.error(error);
-    return [];
+      if (products.length === 0) {
+        return await db
+          .select({
+            id: product.id,
+            name: product.name,
+            price: product.basePrice,
+            oldPrice: product.strikethroughPrice,
+            image: product.bannerImage,
+            slug: product.slug,
+          })
+          .from(product)
+          .limit(4);
+      }
+
+      return products;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  },
+  ["best-selling-products"],
+  {
+    revalidate: 300,
+    tags: ["products"],
   }
-}
+);
 
 export async function getBrandBestSellingProducts(slug: any) {
   try {
