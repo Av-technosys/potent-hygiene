@@ -3,6 +3,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { CartItem } from "./cartTypes";
+import { getMixBoxCartKey } from "@/lib/mixYourBox";
 
 type CartState = {
   items: CartItem[];
@@ -24,8 +25,21 @@ const getItemKey = (item: {
   productId: string;
   sku?: string;
   uuid?: string;
-}) =>
-  `${item.productId}-${item.sku || "default"}-${item.uuid || "no-uuid"}`;
+  mixBoxRecipe?: CartItem["mixBoxRecipe"];
+  purchaseType?: CartItem["purchaseType"];
+  subscriptionType?: CartItem["subscriptionType"];
+}) => {
+  if (item.mixBoxRecipe) {
+    return getMixBoxCartKey({
+      productId: item.productId,
+      recipe: item.mixBoxRecipe,
+      purchaseType: item.purchaseType ?? "one_time",
+      subscriptionType: item.subscriptionType ?? null,
+    });
+  }
+
+  return `${item.productId}-${item.sku || "default"}-${item.uuid || "no-uuid"}`;
+};
 
 export const useCartStore = create<CartState>()(
   persist(
@@ -41,6 +55,16 @@ export const useCartStore = create<CartState>()(
           );
 
           if (existing && item.isQuantityChangable == true) {
+            return {
+              items: state.items.map((i:any) =>
+                getItemKey(i) === getItemKey(item)
+                  ? { ...i, quantity: i.quantity + 1 }
+                  : i
+              ),
+            };
+          }
+
+          if (existing && item.mixBoxRecipe) {
             return {
               items: state.items.map((i:any) =>
                 getItemKey(i) === getItemKey(item)

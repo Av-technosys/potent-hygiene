@@ -4,6 +4,8 @@
 import { getAddresses } from "@/helper";
 import CheckoutClient from "./checkoutClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function CheckoutPage() {
   const address: any[] = await getAddresses();
 

@@ -11,6 +11,8 @@ import { eq } from "drizzle-orm";
 import ShareReferralClient from "./ShareReferralClient";
 import { Suspense } from "react";
 
+export const dynamic = "force-dynamic";
+
 const page = async () => {
 
   const { email } = await requireUserWithRefresh();

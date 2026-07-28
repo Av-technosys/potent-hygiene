@@ -11,6 +11,7 @@ import {
   orderItem,
   payment,
   product,
+  productVariant,
   returnRequest,
   returnRequestImage,
   users,
@@ -56,7 +57,7 @@ export async function fetchAdminUsers({
       name: users.name,
       email: users.email,
       phone: users.phone,
-      emailVerified: users.emailVerified,
+      emailVerified: users.isEmailVerified,
       rewardOrderCoins: users.rewardOrderCoins,
       referralCoins: users.referralCoins,
       createdAt: users.createdAt,
@@ -226,15 +227,24 @@ export async function fetchAdminFeaturedProducts({
       productSku: product.sku,
       productSlug: product.slug,
       bannerImage: product.bannerImage,
-      basePrice: product.basePrice,
+      basePrice: productVariant.price,
       isInStock: product.isInStock,
     })
     .from(featuredProduct)
     .leftJoin(product, eq(featuredProduct.productId, product.id))
+    .leftJoin(productVariant, eq(product.id, productVariant.productId))
     .where(whereClause)
     .orderBy(desc(featuredProduct.createdAt))
-    .limit(limit)
+    .limit(limit * 5)
     .offset(offset);
+
+  // deduplicate products
+  const seen = new Set();
+  const dedupedData = data.filter((item: any) => {
+    if (seen.has(item.id)) return false;
+    seen.add(item.id);
+    return true;
+  }).slice(0, limit);
 
   const [{ count }] = await db
     .select({ count: sql<number>`count(*)` })
@@ -245,7 +255,7 @@ export async function fetchAdminFeaturedProducts({
   const total = Number(count);
 
   return {
-    data,
+    data: dedupedData,
     meta: {
       page: currentPage,
       pageSize: limit,
@@ -484,7 +494,7 @@ export async function fetchAdminDashboardStats() {
     db
       .select({ verifiedUsers: sql<number>`count(*)` })
       .from(users)
-      .where(eq(users.emailVerified, true)),
+      .where(eq(users.isEmailVerified, true)),
     db
       .select({
         totalRevenue: sql<number>`coalesce(sum(${payment.paymentAmount}), 0)`,

@@ -55,7 +55,9 @@ export const loadRazorpayScript = (): Promise<boolean> => {
   }
 
   const subscriptionItems = items.filter(
-    (item: any) => item.isTypeSubscription === true,
+    (item: any) =>
+      item.isTypeSubscription === true &&
+      item.subscriptionType !== "cycle_sync",
   );
 
   if (subscriptionItems.length > 0) {
@@ -96,8 +98,12 @@ export const loadRazorpayScript = (): Promise<boolean> => {
     );
 
     await CreatePaymentGatewaySubscription(subscriptions);
-    await createSubscription({userId,items});
 
+  }
+
+  if (items.some((item: any) => item.isTypeSubscription === true)) {
+    const { userId }: any = await getCurrentUser()
+    await createSubscription({ userId, items });
   }
 
   // 1️⃣ Create Razorpay Order (ONLY amount here)

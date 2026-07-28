@@ -154,13 +154,16 @@ export default function EditProduct({ productDetails }: any) {
   );
 
   // Mapping Initial Data to Variant State
+  const variantsList = productDetails.productVariants || productDetails.prodcutVarientBoxRes || [];
+  const defaultVariant = variantsList[0] || {};
+
   const [variants, setVariants] = useState<any>({
     id: product?.id || "",
     isExisting: true,
     name: product.name || "",
     sku: product.sku || "",
-    price: product.basePrice || 0,
-    strikethroughPrice: product.strikethroughPrice || 0,
+    price: defaultVariant.price || 0,
+    strikethroughPrice: defaultVariant.strikethroughPrice || 0,
     description: product.description || "",
     banner: product.bannerImage
       ? { key: product.bannerImage, preview: product.bannerImage }
@@ -168,6 +171,7 @@ export default function EditProduct({ productDetails }: any) {
     gallery: (productMediaRes || []).map((m: any) => ({
       key: m.mediaURL,
       preview: m.mediaURL,
+      id: m.id,
     })),
     attributes: Object.fromEntries(
       (productAttributeRes || []).map((a: any) => [

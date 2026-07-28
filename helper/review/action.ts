@@ -83,7 +83,6 @@ export async function createReview(reviewData: any) {
           userId,
           productId: productVarientId,
           name: userInfo?.name || "Guest User",
-          email: userInfo?.email || "",
           rating: Number(rating),
           message,
         })
@@ -126,7 +125,7 @@ export async function getProductReviews(slug: string | any) {
         rating: review.rating,
         userId: review.userId,
         name: review.name,
-        email: review.email,
+        email: users.email,
         message: review.message,
         productId: review.productId,
         createdAt: review.createdAt,
@@ -277,13 +276,14 @@ export async function getUserAllReviews() {
         rating: review.rating,
         userId: review.userId,
         name: review.name,
-        email: review.email,
+        email: users.email,
         message: review.message,
         productId: review.productId,
         isAdminApproved: review.isAdminApproved,
         createdAt: review.createdAt,
       })
       .from(review)
+      .innerJoin(users, eq(review.userId, users.id))
       .where(eq(review.userId, userId));
 
     const reviewsWithMedia = await Promise.all(

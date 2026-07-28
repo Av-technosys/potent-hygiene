@@ -11,7 +11,7 @@ import { revalidatePath, unstable_cache } from "next/cache";
 import { generateUniqueSlug } from "../slug/generateUniqueSlug";
 import { and, asc, ilike, sql } from "drizzle-orm";
 import { paginate } from "@/lib/pagination";
-import { category, productCategory, product } from "@/db/schema";
+import { category, productCategory, product, productVariant } from "@/db/schema";
 import { getImageKey } from "@/lib/imageUrl";
 
 
@@ -204,8 +204,8 @@ export async function getAllProductsByCategorySlug(slug: string) {
       .select({
         id: product.id,
         name: product.name,
-        basePrice: product.basePrice,
-        strikethroughPrice: product.strikethroughPrice,
+        basePrice: productVariant.price,
+        strikethroughPrice: productVariant.strikethroughPrice,
         slug: product.slug,
         bannerImage: product.bannerImage,
         rateing1Star: product.rateing1Star,
@@ -216,6 +216,7 @@ export async function getAllProductsByCategorySlug(slug: string) {
         sku: product.sku,
       })
       .from(product)
+      .leftJoin(productVariant, eq(product.id, productVariant.productId))
       .innerJoin(
         productCategory,
         eq(product.id, productCategory.productId),
@@ -226,7 +227,13 @@ export async function getAllProductsByCategorySlug(slug: string) {
       )
       .where(eq(category.slug, slug));
 
-    return products;
+    // Deduplicate products
+    const seen = new Set();
+    return products.filter((item: any) => {
+      if (seen.has(item.id)) return false;
+      seen.add(item.id);
+      return true;
+    });
   } catch (error) {
     console.error("fetch products by category failed:", error);
     return [];

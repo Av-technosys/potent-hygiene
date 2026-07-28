@@ -18,6 +18,14 @@ import SizeSelectorBox from "./sizeSelectorBox";
 import { toast } from "sonner";
 import { subscriptionPlans } from "@/const/globalconst";
 import { getImageUrl } from "@/lib/imageUrl";
+import {
+  calculateMixBoxPricing,
+  normalizeMixBoxRecipe,
+  normalizePadSize,
+  type MixBoxSelection,
+  type SubscriptionType,
+} from "@/lib/mixYourBox";
+import { calculateCycleSyncSchedule } from "@/lib/cycleSync";
 
 export default function ProductDetailPage({
   // categoryName,
@@ -25,14 +33,25 @@ export default function ProductDetailPage({
   productInfo,
   themeColor,
 }: any) {
+  const variantsList = productInfo.productVariants || productInfo.prodcutVarientBoxRes || [];
+  const defaultVariant = variantsList[0] || productInfo;
+  
+  const defaultSize = defaultVariant.size || "Medium (280mm)";
+  const defaultFlow = defaultVariant.flowType || "Regular Flow";
+
   const [quantity, setQuantity] = useState(1);
-  const [selectedSize, setSelectedSize] = useState("Medium (280mm)");
-  const [selectedFlow, setSelectedFlow] = useState("Regular Flow");
+  const [selectedSize, setSelectedSize] = useState(defaultSize);
+  const [selectedFlow, setSelectedFlow] = useState(defaultFlow);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState<any>({});
-  const [activeVariant, setActiveVariant] = useState(productInfo);
+  const [cycleSync, setCycleSync] = useState({
+    lastPeriodDate: "",
+    cycleLength: 28,
+    periodLength: 5,
+  });
+  const [activeVariant, setActiveVariant] = useState(defaultVariant);
   const [bannerImage, setBannerImage] = useState<any>(
-    activeVariant.bannerImage,
+    activeVariant.image || productInfo.bannerImage
   );
 
   const [cartSizes, setCartSizes] = useState<any>([]);
@@ -43,23 +62,14 @@ export default function ProductDetailPage({
   const isTypeBox = productInfo.hasVarientBox;
   const isQuantityChangable = productInfo.hasVarientBox ? false : true;
 
-  // Size extraction logic (Aapne jo pehle likha tha)
-  const sizeAttr = activeVariant?.productAttributeRes?.find(
-    (a: any) => a.attribute === "size",
-  );
+  // Size and Flow extraction logic from variantsList
+  const sizes = Array.from(new Set(variantsList.map((v: any) => v.size).filter(Boolean))) as string[];
+  const flows = Array.from(new Set(variantsList.map((v: any) => v.flowType).filter(Boolean))) as string[];
 
-  const sizes = sizeAttr?.value?.split(",").map((s: string) => s.trim()) || [];
-  const flowAttr = activeVariant?.productAttributeRes?.find(
-    (a: any) => a.attribute === "flow",
-  );
-
-  const flows = flowAttr?.value?.split(",").map((s: string) => s.trim()) || [];
-
-  // Discount percentage calculate karne ke liye
   const discount =
-    activeVariant?.strikethroughPrice && activeVariant?.basePrice
+    activeVariant?.strikethroughPrice && activeVariant?.price
       ? Math.round(
-        ((activeVariant.strikethroughPrice - activeVariant.basePrice) /
+        ((activeVariant.strikethroughPrice - activeVariant.price) /
           activeVariant.strikethroughPrice) *
         100,
       )
@@ -69,37 +79,76 @@ export default function ProductDetailPage({
 
   const productId = productInfo.id;
 
+  const subscriptionType = (selectedPlan?.subscriptionType ?? null) as SubscriptionType;
+  const purchaseType = isSubscribed ? "subscription" : "one_time";
+  const mixBoxRecipe = normalizeMixBoxRecipe(
+    cartSizes
+      .map((item: any): MixBoxSelection | null => {
+        const size = normalizePadSize(item.name ?? "");
+        return size ? { size, quantity: item.qty } : null;
+      })
+      .filter(Boolean) as MixBoxSelection[],
+  );
+  const cycleSyncSchedule =
+    subscriptionType === "cycle_sync" && cycleSync.lastPeriodDate
+      ? calculateCycleSyncSchedule(cycleSync)
+      : null;
+  const effectivePurchaseType =
+    cycleSyncSchedule?.valid && !cycleSyncSchedule.shouldCreateSubscription
+      ? "one_time"
+      : purchaseType;
+  const effectiveSubscriptionType =
+    effectivePurchaseType === "subscription" ? subscriptionType : null;
+  const mixBoxPricing = isTypeBox
+    ? calculateMixBoxPricing({
+      recipe: mixBoxRecipe,
+      setPrice: activeVariant?.price || 0,
+      purchaseType: effectivePurchaseType,
+      subscriptionType: effectiveSubscriptionType,
+    })
+    : null;
+
   const addToCart = async () => {
     if (isTypeBox) {
-      if (total !== 12) {
-        toast.error("You must add exactly 12 items to place the order!");
+      if (!mixBoxPricing?.valid) {
+        toast.error(mixBoxPricing?.message ?? "Complete your box before adding it to cart.");
+        return;
+      }
+    }
+
+    if (subscriptionType === "cycle_sync") {
+      if (!cycleSyncSchedule?.valid) {
+        toast.error(cycleSyncSchedule?.message ?? "Enter valid Cycle Sync details.");
         return;
       }
     }
 
     await addToCartAction({
-      productId: activeVariant?.id || productId,
-      sku: `${selectedSize}-${selectedFlow}`,
+      productId: productInfo.id,
+      productVariantId: activeVariant?.id,
+      sku: activeVariant?.sku || `${selectedSize}-${selectedFlow}`,
       slug: productInfo?.slug || "",
-      // title: isSubscribed
-      //   ? `${activeVariant?.name || "Sanitary Pads"} - ${selectedPlan === "1" ? "Monthly" : selectedPlan === "2" ? "Every 2 Months" : "Every 3 Months"}`
-      //   : activeVariant?.name || "Sanitary Pads",
-      title: activeVariant?.name,
-      price: activeVariant?.basePrice || 0,
+      title: activeVariant?.name || productInfo?.name,
+      price: isTypeBox && mixBoxPricing?.valid
+        ? mixBoxPricing.price
+        : activeVariant?.price || 0,
       selectedPlan: selectedPlan,
-      isSubscribed: isSubscribed,
-      image: activeVariant?.bannerImage || "/product.png",
-      // price: isSubscribed
-      //   ? selectedPlan === "1"
-      //     ? 239
-      //     : selectedPlan === "2"
-      //       ? 229
-      //       : 219
-      //   : activeVariant?.basePrice || 0,
+      isSubscribed: effectivePurchaseType === "subscription",
+      image: activeVariant?.image || productInfo?.bannerImage || "/product.png",
       originalPrice: activeVariant?.strikethroughPrice,
       cartSizes: isQuantityChangable ? [] : cartSizes,
+      mixBoxRecipe: isTypeBox ? mixBoxRecipe : undefined,
+      totalPads: isTypeBox && mixBoxPricing?.valid ? mixBoxPricing.totalPads : undefined,
+      boxCount: isTypeBox && mixBoxPricing?.valid ? mixBoxPricing.boxCount : undefined,
+      freeLiners: isTypeBox && mixBoxPricing?.valid ? mixBoxPricing.freeLiners : undefined,
+      purchaseType: effectivePurchaseType,
+      subscriptionType: effectiveSubscriptionType,
+      cycleSync:
+        effectiveSubscriptionType === "cycle_sync"
+          ? cycleSync
+          : undefined,
       isQuantityChangable: isQuantityChangable,
-      quantity: quantity,
+      quantity: isTypeBox ? 1 : quantity,
       ...(isTypeBox ? { uuid: crypto.randomUUID() } : {}),
     });
   };
@@ -108,6 +157,24 @@ export default function ProductDetailPage({
     setSelectedPlan(plan);
     setIsSubscribed(plan !== null ? true : false);
     // Do not redirect to /cart. Wait for user to click Add to Cart.
+  };
+
+  const handleSizeChange = (size: string) => {
+    setSelectedSize(size);
+    const match = variantsList.find((v: any) => v.size === size && (selectedFlow ? v.flowType === selectedFlow : true));
+    if (match) {
+      setActiveVariant(match);
+      if (match.image) setBannerImage(match.image);
+    }
+  };
+
+  const handleFlowChange = (flow: string) => {
+    setSelectedFlow(flow);
+    const match = variantsList.find((v: any) => (selectedSize ? v.size === selectedSize : true) && v.flowType === flow);
+    if (match) {
+      setActiveVariant(match);
+      if (match.image) setBannerImage(match.image);
+    }
   };
 
   const handleVariantChange = (variant: any) => {
@@ -213,10 +280,16 @@ export default function ProductDetailPage({
 
           {/* Price */}
           <div className="flex items-center gap-3">
-            <span className="text-2xl font-bold text-[#168BA0]">
-              ₹{activeVariant?.basePrice}
-            </span>
-            {activeVariant?.strikethroughPrice && (
+            {isTypeBox && !mixBoxPricing?.valid ? (
+              <span className="text-sm font-medium text-red-600">
+                {mixBoxPricing?.message ?? "Build a valid box to see pricing."}
+              </span>
+            ) : (
+              <span className="text-2xl font-bold text-[#168BA0]">
+                Rs. {isTypeBox ? mixBoxPricing?.price : activeVariant?.price}
+              </span>
+            )}
+            {!isTypeBox && activeVariant?.strikethroughPrice && (
               <>
                 <span className="line-through text-gray-400">
                   ₹{activeVariant?.strikethroughPrice}
@@ -247,7 +320,7 @@ export default function ProductDetailPage({
                     <button
                       key={s}
                       type="button"
-                      onClick={() => setSelectedSize(s)}
+                      onClick={() => handleSizeChange(s)}
                       // className={`px-4 py-2 text-sm rounded-full border transition ${
                       //   selectedSize === s ? "text-white" : "bg-white"
                       // }`}
@@ -283,7 +356,7 @@ export default function ProductDetailPage({
                     <button
                       key={flow}
                       type="button"
-                      onClick={() => setSelectedFlow(flow)}
+                      onClick={() => handleFlowChange(flow)}
                       className={`px-4 py-2 text-sm rounded-full border bg-${themeColor.darkColor} transition ${selectedFlow === flow ? "text-black" : "bg-white"
                         }`}
                       style={{
@@ -340,8 +413,9 @@ export default function ProductDetailPage({
           <div className="flex gap-4">
             <button
               onClick={addToCart}
+              disabled={Boolean(isTypeBox && !mixBoxPricing?.valid)}
               style={{ backgroundColor: themeColor.darkColor, color: productInfo.brand == "loway" ? themeColor.textColor : "white" }}
-              className="flex-1 text-black py-3 rounded-xl transition"
+              className="flex-1 text-black py-3 rounded-xl transition disabled:opacity-50 disabled:cursor-not-allowed"
             // style={{
             //   backgroundColor: themeColor.darkColor || "#168BA0",
             // }}
@@ -385,7 +459,7 @@ export default function ProductDetailPage({
                 <div className="flex items-center gap-3">
                   <input
                     type="radio"
-                    checked={selectedPlan === plan.id}
+                    checked={selectedPlan?.id === plan.id}
                     readOnly
                   />
 
@@ -395,6 +469,63 @@ export default function ProductDetailPage({
                 <span className="font-medium">{plan.price}</span>
               </div>
             ))}
+
+            {subscriptionType === "cycle_sync" && (
+              <div className="grid gap-3 rounded-xl border border-gray-200 p-4">
+                <input
+                  type="date"
+                  value={cycleSync.lastPeriodDate}
+                  onChange={(event) =>
+                    setCycleSync((current) => ({
+                      ...current,
+                      lastPeriodDate: event.target.value,
+                    }))
+                  }
+                  className="rounded-md border px-3 py-2 text-sm"
+                />
+                <div className="grid grid-cols-2 gap-3">
+                  <input
+                    type="number"
+                    min={21}
+                    max={45}
+                    value={cycleSync.cycleLength}
+                    onChange={(event) =>
+                      setCycleSync((current) => ({
+                        ...current,
+                        cycleLength: Number(event.target.value),
+                      }))
+                    }
+                    className="rounded-md border px-3 py-2 text-sm"
+                    aria-label="Cycle length"
+                  />
+                  <input
+                    type="number"
+                    min={1}
+                    value={cycleSync.periodLength}
+                    onChange={(event) =>
+                      setCycleSync((current) => ({
+                        ...current,
+                        periodLength: Number(event.target.value),
+                      }))
+                    }
+                    className="rounded-md border px-3 py-2 text-sm"
+                    aria-label="Period length"
+                  />
+                </div>
+                {cycleSyncSchedule?.valid && (
+                  <p className="text-sm text-gray-600">
+                    {cycleSyncSchedule.message ??
+                      `Expected arrival: ${cycleSyncSchedule.arrivalDate.toLocaleDateString()}`}
+                  </p>
+                )}
+                {cycleSyncSchedule?.valid && cycleSyncSchedule.warning && (
+                  <p className="text-sm text-amber-700">{cycleSyncSchedule.warning}</p>
+                )}
+                {cycleSyncSchedule && !cycleSyncSchedule.valid && (
+                  <p className="text-sm text-red-600">{cycleSyncSchedule.message}</p>
+                )}
+              </div>
+            )}
 
             <div className="flex justify-between items-center pt-4">
               {/* <span className="text-xl font-bold">₹239</span> */}
@@ -467,3 +598,5 @@ function ProductVarient({
     </>
   );
 }
+
+

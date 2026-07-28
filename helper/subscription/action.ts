@@ -74,6 +74,9 @@ export async function CreatePaymentGatewaySubscription(subscriptions:any){
         await db.insert(paymentGatewaySubscription).values(
             subscriptions.map((item: any) => {
                 return {
+                    userId: item.userId,
+                    subscriptionId: item.subscriptionId,
+                    gatewaySubscriptionId: item.gatewaySubscriptionId || item.id,
                     planId: item.plan_id,
                     totalCount: item.total_count,
                     remainingCount:item.remaining_count,
@@ -81,7 +84,7 @@ export async function CreatePaymentGatewaySubscription(subscriptions:any){
                     startAt: item.start_at,
                     customerNotify: item.customer_notify,
                     expireBy: item.expire_by,
-                    shourURL: item.short_url,
+                    shortUrl: item.short_url,
                     // startDate: item.start_date,
                 };
             })

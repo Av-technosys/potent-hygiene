@@ -3,6 +3,8 @@ import RewardsReferrelHeader from '@/app/components/common/rewards&ReferrelHeade
 import RewardsHistory from './rewardsHistory'
 import { Suspense } from 'react'
 
+export const dynamic = "force-dynamic";
+
 const cards = [
   {
     title: "Per Purchase",

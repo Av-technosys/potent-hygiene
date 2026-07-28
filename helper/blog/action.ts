@@ -1,12 +1,22 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 
-import { blog } from "@/db/blogSchema"; 
+import { blog } from "@/db/schema";
 import { db } from "@/lib/db";
 import { getImageKey } from "@/lib/imageUrl";
 
 import { and, desc, eq, ilike, or } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
+
+function normalizeBlog(blogData: typeof blog.$inferSelect) {
+  return {
+    ...blogData,
+    userImage: blogData.authorImage,
+    userName: blogData.authorName,
+    isVisible: blogData.isPublished,
+  };
+}
+
 export async function getBlogs(search = "") {
   const filters = [];
   if (search && search.trim() !== "") {
@@ -21,11 +31,13 @@ export async function getBlogs(search = "") {
   const whereClause = filters.length ? and(...filters) : undefined;
 
   try {
-    return await db
+    const result = await db
       .select()
       .from(blog)
       .where(whereClause)
       .orderBy(desc(blog.date));
+
+    return result.map(normalizeBlog);
   } catch (error) {
     console.error("Fetch Blogs Error:", error);
     return [];
@@ -40,7 +52,7 @@ export async function getBlogBySlug(slug: string) {
       .where(eq(blog.slug, slug))
       .limit(1);
     
-    return result[0] || null;
+    return result[0] ? normalizeBlog(result[0]) : null;
   } catch (error) {
     console.error("Fetch Blog By Slug Error:", error);
     return null;
@@ -60,15 +72,15 @@ export async function createBlog(blogData: any) {
       metaDescription: blogData.metaDescription,
       blogCategory: blogData.blogCategory,
       image: getImageKey(blogData.image),
-      userImage: getImageKey(blogData.userImage),
-      userName: blogData.userName,
+      authorImage: getImageKey(blogData.userImage),
+      authorName: blogData.userName,
       date: blogData.date,
       data: blogData.data, 
       slug: slug,
       tags: Array.isArray(blogData.tags) 
         ? blogData.tags 
         : (blogData.tags ? blogData.tags.split(',').map((t: string) => t.trim()) : []),
-      isVisible: true,
+      isPublished: true,
     });
     revalidatePath("/admin/blog");
     revalidatePath("/blog"); 
@@ -94,8 +106,8 @@ export async function updateBlog(blogId: string, blogData: any) {
         metaDescription: blogData.metaDescription,
         blogCategory: blogData.blogCategory,
         image: getImageKey(blogData.image),
-        userImage: getImageKey(blogData.userImage),
-        userName: blogData.userName,
+        authorImage: getImageKey(blogData.userImage),
+        authorName: blogData.userName,
         date: blogData.date,
         data: blogData.data,
         slug: slug,
@@ -133,7 +145,7 @@ export async function getBlogById(id: string) {
       .where(eq(blog.id, id))
       .limit(1);
     
-    return result[0] || null;
+    return result[0] ? normalizeBlog(result[0]) : null;
   } catch (error) {
     console.error("Fetch Blog By ID Error:", error);
     return null;

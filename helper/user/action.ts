@@ -133,7 +133,7 @@ export async function getProfile() {
     fullName: user.name,
     email: user.email,
     phone: user.phone,
-    emailVerified: user.emailVerified,
+    emailVerified: user.isEmailVerified,
     createdAt: user.createdAt,
   };
 }
@@ -209,10 +209,8 @@ export async function updateUserAddress(data: any) {
   await db
     .update(address)
     .set({
-      fullName: data.fullName,
-      phone: data.phone,
-      street: data.street,
-      locality: data.locality,
+      streetAddress1: data.street,
+      streetAddress2: data.locality,
       city: data.city,
       state: data.state,
       pincode: data.pincode,
@@ -279,8 +277,13 @@ export async function createUserAddress(data: NewAddressInput) {
     const [newAddress] = await db
       .insert(address)
       .values({
-        ...data,
         userId,
+        streetAddress1: data.street,
+        streetAddress2: data.locality,
+        city: data.city,
+        state: data.state,
+        pincode: data.pincode,
+        country: data.country,
         isDefault: data.isDefault ?? false,
       })
       .returning();

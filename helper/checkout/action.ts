@@ -1,9 +1,10 @@
 "use server";
 
-import { cart, cartItem, coupon, couponTransaction, product } from "@/db/schema";
+import { cart, cartItem, coupon, couponTransaction, product, productVariant } from "@/db/schema";
 import { db } from "@/lib/db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 import { requireUserWithRefresh } from "../user/action";
+import { calculateMixBoxPricing, type MixBoxRecipe } from "@/lib/mixYourBox";
 
 const roundMoney = (amount: number) => Number(amount.toFixed(2));
 
@@ -19,20 +20,33 @@ async function getUserCartItems(userId: string) {
   const items = await db
     .select({
       productId: cartItem.productId,
-      productVarientBox: cartItem.productVarientBox,
+      productVariantId: cartItem.productVariantId,
       clientCartItemId: cartItem.clientCartItemId,
+      mixBoxRecipe: cartItem.mixBoxRecipe,
+      totalPads: cartItem.totalPads,
+      boxCount: cartItem.boxCount,
+      freeLiners: cartItem.freeLiners,
+      purchaseType: cartItem.purchaseType,
+      subscriptionType: cartItem.subscriptionType,
+      cycleLength: cartItem.cycleLength,
+      periodLength: cartItem.periodLength,
+      lastPeriodDate: cartItem.lastPeriodDate,
+      nextPeriodDate: cartItem.nextPeriodDate,
+      arrivalDate: cartItem.arrivalDate,
+      chargeDate: cartItem.chargeDate,
       isTypeSubscription: cartItem.isTypeSubscription,
-      frequencyInMonths: cartItem.frequencyInMonths,
+      frequencyInDays: cartItem.frequencyInDays,
       quantity: cartItem.quantity,
       title: product.name,
-      image: product.bannerImage,
-      price: product.basePrice,
-      originalPrice: product.strikethroughPrice,
+      image: sql<string>`COALESCE(${productVariant.image}, ${product.bannerImage})`,
+      price: sql<number>`COALESCE(${productVariant.price}, 0)`,
+      originalPrice: productVariant.strikethroughPrice,
       slug: product.slug,
-      sku: product.sku,
+      sku: sql<string>`COALESCE(${productVariant.sku}, ${product.sku})`,
     })
     .from(cartItem)
     .leftJoin(product, eq(cartItem.productId, product.id))
+    .leftJoin(productVariant, eq(cartItem.productVariantId, productVariant.id))
     .where(eq(cartItem.cartId, userCart.id));
 
   return items.map((item) => ({
@@ -103,18 +117,57 @@ export async function calculateCheckoutPricingForUser({
 }) {
   const items = await getUserCartItems(userId);
 
-  const countedBoxes = new Set<string>();
+  for (const item of items) {
+    if (!item.mixBoxRecipe) continue;
+
+    const pricing = calculateMixBoxPricing({
+      recipe: item.mixBoxRecipe as MixBoxRecipe,
+      setPrice: Number(item.price || 0),
+      purchaseType: item.purchaseType === "subscription" ? "subscription" : "one_time",
+      subscriptionType: item.subscriptionType as any,
+    });
+
+    if (!pricing.valid) {
+      return {
+        success: false,
+        message: pricing.message,
+        items,
+        subtotal: 0,
+        discount: 0,
+        discountedSubtotal: 0,
+        gst: 0,
+        shipping: 0,
+        final: 0,
+        coupon: null,
+      };
+    }
+  }
+
+  const countedLegacyBoxes = new Set<string>();
   const subtotal = roundMoney(
     items.reduce((sum, item) => {
       const price = Number(item.price || 0);
 
-      if (item.productVarientBox) {
+      if (item.mixBoxRecipe) {
+        const pricing = calculateMixBoxPricing({
+          recipe: item.mixBoxRecipe as MixBoxRecipe,
+          setPrice: price,
+          purchaseType: item.purchaseType === "subscription" ? "subscription" : "one_time",
+          subscriptionType: item.subscriptionType as any,
+        });
+
+        if (!pricing.valid) return sum;
+
+        return sum + pricing.price * Number(item.quantity || 1);
+      }
+
+      if (item.clientCartItemId && !item.mixBoxRecipe) {
         const key =
           item.clientCartItemId ?? `${item.productId}-${item.price}`;
 
-        if (countedBoxes.has(key)) return sum;
+        if (countedLegacyBoxes.has(key)) return sum;
 
-        countedBoxes.add(key);
+        countedLegacyBoxes.add(key);
         return sum + price;
       }
 

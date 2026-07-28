@@ -31,12 +31,39 @@ export async function GET() {
       createdAt: new Date()
     })
 
-    if (!sub.nextOrderDate || !plan.frequencyInMonths) continue
+    if (!sub.nextOrderDate) continue
 
-    const nextBilling = new Date(sub.nextOrderDate)
+    let nextBilling = new Date(sub.nextOrderDate)
 
-    nextBilling.setMonth(
-      nextBilling.getMonth() + plan.frequencyInMonths
+    if (plan.subscriptionType === "cycle_sync" && plan.cycleLength) {
+      const nextPeriodDate = plan.nextPeriodDate
+        ? new Date(plan.nextPeriodDate)
+        : new Date(sub.nextOrderDate)
+
+      nextPeriodDate.setDate(nextPeriodDate.getDate() + plan.cycleLength)
+      nextBilling = new Date(nextPeriodDate)
+      nextBilling.setDate(nextBilling.getDate() - 10)
+
+      const nextArrival = new Date(nextPeriodDate)
+      nextArrival.setDate(nextArrival.getDate() - 5)
+
+      await db
+        .update(subscriptions)
+        .set({
+          nextOrderDate: nextBilling,
+          nextPeriodDate,
+          arrivalDate: nextArrival,
+          chargeDate: nextBilling,
+        })
+        .where(eq(subscriptions.id, sub.id))
+
+      continue
+    }
+
+    if (!plan.frequencyInDays) continue
+
+    nextBilling.setDate(
+      nextBilling.getDate() + plan.frequencyInDays
     )
 
     await db

@@ -36,7 +36,7 @@ export async function POST(req: Request) {
     await db
       .update(users)
       .set({
-        emailVerified: true,
+        isEmailVerified: true,
         updatedAt: new Date(),
       })
       .where(eq(users.email, email));

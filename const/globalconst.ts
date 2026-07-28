@@ -727,13 +727,26 @@ export const BrandProductColors = {
 
 export const subscriptionPlans = [
   {
-    id: "1",
+    id: "monthly",
     label: "Monthly Subscription",
-    price: "₹239",
+    price: "15% off",
     period: 1,
+    subscriptionType: "monthly",
   },
-  { id: "2", label: "Every 2 Months", price: "₹229", period: 2 },
-  { id: "3", label: "Every 3 Months", price: "₹219", period: 3 },
+  {
+    id: "every_2_months",
+    label: "Every 2 Months",
+    price: "12% off",
+    period: 2,
+    subscriptionType: "every_2_months",
+  },
+  {
+    id: "cycle_sync",
+    label: "Cycle Sync",
+    price: "15% off",
+    period: null,
+    subscriptionType: "cycle_sync",
+  },
 ];
 
 export const ovyProductDetailsPage = {
@@ -768,3 +781,4 @@ export const ORDER_STATUS = {
 
 export type OrderStatus =
   (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
+

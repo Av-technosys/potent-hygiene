@@ -2,6 +2,14 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/imageUrl";
+import {
+  MIX_BOX_MAX_PADS,
+  MIX_BOX_PAD_UNIT,
+  getMixBoxAdjustmentMessage,
+  normalizeMixBoxRecipe,
+  normalizePadSize,
+  validateMixBoxRecipe,
+} from "@/lib/mixYourBox";
 
 export default function SizeSelectorBox({
   items,
@@ -11,7 +19,7 @@ export default function SizeSelectorBox({
   setTotal,
   themeColor,
 }: any) {
-  const MAX = 12;
+  const MAX = MIX_BOX_MAX_PADS;
 
   useEffect(() => {
     const formatted = items.map((item: any, index: number) => ({
@@ -32,7 +40,7 @@ export default function SizeSelectorBox({
         if (type === "inc") {
           return { ...item, qty: item.qty + 1 };
         } else {
-          return { ...item, qty: item.qty - 1 };
+          return { ...item, qty: Math.max(0, item.qty - 1) };
         }
       }
       return item;
@@ -41,6 +49,17 @@ export default function SizeSelectorBox({
     setCartSizes(newSizes);
     setTotal(newSizes.reduce((acc: any, item: any) => acc + item.qty, 0));
   };
+
+  const validation = validateMixBoxRecipe(
+    normalizeMixBoxRecipe(
+      cartSizes
+        .map((item: any) => {
+          const size = normalizePadSize(item.name ?? "");
+          return size ? { size, quantity: item.qty } : null;
+        })
+        .filter(Boolean),
+    ),
+  );
 
   return (
     <div style={{borderColor: themeColor.darkColor}} className="space-y-2 border bg-white rounded-xl shadow p-4 sm:p-6">
@@ -77,7 +96,7 @@ export default function SizeSelectorBox({
               {/* RIGHT */}
               <div className="flex items-center gap-3">
                 <button
-                  disabled={total <= 0}
+                  disabled={item.qty <= 0}
                   onClick={() => updateQty(item.id, "dec")}
                   className="text-lg px-2 text-gray-500"
                 >
@@ -87,7 +106,7 @@ export default function SizeSelectorBox({
                 <span className="font-semibold">{item.qty}</span>
 
                 <button
-                  disabled={total >= 12}
+                  disabled={total >= MAX}
                   onClick={() => updateQty(item.id, "inc")}
                   className={`text-lg px-2 ${
                     total >= MAX ? "text-gray-300" : "text-teal-600"
@@ -113,9 +132,15 @@ export default function SizeSelectorBox({
       >
         <span>Your box contains</span>
         <span className="font-semibold">
-          {total} / {MAX} Pads
+          {total} Pads
         </span>
       </div>
+
+      <p className={`text-sm ${validation.valid ? "text-green-700" : "text-red-600"}`}>
+        {validation.valid
+          ? `${total / MIX_BOX_PAD_UNIT} box${total === MIX_BOX_PAD_UNIT ? "" : "es"} selected.`
+          : getMixBoxAdjustmentMessage(total)}
+      </p>
     </div>
   );
 }

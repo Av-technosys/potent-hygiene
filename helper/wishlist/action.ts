@@ -4,6 +4,7 @@ import {
   wishlist,
   wishlistItem,
   product,
+  productVariant,
 } from "@/db/schema";
 import { and, eq } from "drizzle-orm";
 import { requireUserWithRefresh } from "../user/action";
@@ -76,7 +77,7 @@ export async function getWishlistDB() {
     .select({
       productId: wishlistItem.productId,
       name: product.name,
-      price: product.basePrice,
+      price: productVariant.price,
       image: product.bannerImage,
     })
     .from(wishlistItem)
@@ -84,11 +85,20 @@ export async function getWishlistDB() {
       product,
       eq(product.id, wishlistItem.productId)
     )
+    .leftJoin(
+      productVariant,
+      eq(product.id, productVariant.productId)
+    )
     .innerJoin(
       wishlist,
       eq(wishlist.id, wishlistItem.wishlistId)
     )
     .where(eq(wishlist.userId, userId));
 
-  return result;
+  const seen = new Set();
+  return result.filter((item: any) => {
+    if (seen.has(item.productId)) return false;
+    seen.add(item.productId);
+    return true;
+  });
 }

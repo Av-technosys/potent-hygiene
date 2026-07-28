@@ -57,15 +57,17 @@ export async function POST(req: Request) {
   } catch (error: any) {
     if (error.__type === "UserNotFoundException") {
       try {
-        await cognitoSignUp({
+        const cognitoRes = await cognitoSignUp({
           email,
           password,
           userAttribute: [{ Name: "email", Value: email }],
         });
 
+        const cognitoId = cognitoRes.UserSub;
+        if (!cognitoId) throw new Error("Cognito User ID missing");
+
         const safeName = name || "New User";
         const safePhone = phone || "0000000000";
-        const dummyPassword = "COGNITO_AUTH";
 
         const [existingDbUser] = await db
           .select()
@@ -81,7 +83,7 @@ export async function POST(req: Request) {
               name: safeName,
               email,
               phone: safePhone,
-              password: dummyPassword,
+              cognitoId,
               referralCoins: ref ? 200 : 0,
             })
             .returning();

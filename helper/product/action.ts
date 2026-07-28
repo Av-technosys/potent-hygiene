@@ -13,9 +13,18 @@ import {
   productCategory,
   productAttribute,
   productMedia,
-  productVarientBox,
+  productVariant,
   productFilter,
 } from "@/db/schema";
+
+function deduplicateProducts(rows: any[]) {
+  const seen = new Set();
+  return rows.filter((row) => {
+    if (seen.has(row.id)) return false;
+    seen.add(row.id);
+    return true;
+  });
+}
 import { getImageKey } from "@/lib/imageUrl";
 import { bestSellingSlug, isUUID } from "@/const/globalconst";
 
@@ -210,8 +219,6 @@ export async function createProduct(formData: FormData): Promise<void> {
           slug: slug,
           sku: variants.sku,
           description: variants.description,
-          basePrice: variants.price,
-          strikethroughPrice: variants.strikethroughPrice,
           bannerImage: getImageKey(variants.bannerImage) || null,
           type: variants.type || null,
           size: Array.isArray(variants.size) ? variants.size : [],
@@ -268,16 +275,39 @@ export async function createProduct(formData: FormData): Promise<void> {
         );
       }
 
-      // 6. Insert Variant Boxes
+      // 6. Insert Variants
       if (variants.VarientBoxes?.length) {
-        await tx.insert(productVarientBox).values(
+        await tx.insert(productVariant).values(
           variants.VarientBoxes.map((varient: any) => ({
             productId,
+            sku: varient.sku || `${variants.sku}-${varient.name.replace(/\s+/g, '-').toUpperCase()}`,
             name: varient.name,
-            description: varient.description,
-            image: getImageKey(varient.image),
+            price: Number(varient.price) || 0,
+            strikethroughPrice: varient.strikethroughPrice ? Number(varient.strikethroughPrice) : null,
+            image: getImageKey(varient.image) || null,
+            size: varient.size || null,
+            flowType: varient.flowType || null,
+            allowCycleSync: varient.allowCycleSync || false,
+            allowSubscription: varient.allowSubscription || false,
+            isMixBox: varient.isMixBox || false,
+            isInStock: varient.isInStock !== undefined ? varient.isInStock : true,
           })),
         );
+      } else {
+        await tx.insert(productVariant).values({
+          productId,
+          sku: variants.sku,
+          name: variants.name,
+          price: Number(variants.price) || 0,
+          strikethroughPrice: variants.strikethroughPrice ? Number(variants.strikethroughPrice) : null,
+          image: getImageKey(variants.bannerImage) || null,
+          size: null,
+          flowType: null,
+          allowCycleSync: false,
+          allowSubscription: false,
+          isMixBox: false,
+          isInStock: variants.isInStock !== undefined ? variants.isInStock : true,
+        });
       }
     });
 
@@ -329,8 +359,6 @@ export async function updateProduct(formData: FormData): Promise<void> {
             brand: variants.brand,
             sku: variants.sku,
             description: variants.description,
-            basePrice: variants.price,
-            strikethroughPrice: variants.strikethroughPrice,
             bannerImage: getImageKey(variants.bannerImage) || null,
             type: variants.type || null,
             size: Array.isArray(variants.size) ? variants.size : [],
@@ -381,17 +409,40 @@ export async function updateProduct(formData: FormData): Promise<void> {
       }
 
       await tx
-        .delete(productVarientBox)
-        .where(eq(productVarientBox.productId, vId!));
+        .delete(productVariant)
+        .where(eq(productVariant.productId, vId!));
       if (variants.VarientBoxes?.length) {
-        await tx.insert(productVarientBox).values(
+        await tx.insert(productVariant).values(
           variants.VarientBoxes.map((varient: any) => ({
             productId: vId!,
+            sku: varient.sku || `${variants.sku}-${varient.name.replace(/\s+/g, '-').toUpperCase()}`,
             name: varient.name,
-            description: varient.description,
-            image: getImageKey(varient.image),
+            price: Number(varient.price) || 0,
+            strikethroughPrice: varient.strikethroughPrice ? Number(varient.strikethroughPrice) : null,
+            image: getImageKey(varient.image) || null,
+            size: varient.size || null,
+            flowType: varient.flowType || null,
+            allowCycleSync: varient.allowCycleSync || false,
+            allowSubscription: varient.allowSubscription || false,
+            isMixBox: varient.isMixBox || false,
+            isInStock: varient.isInStock !== undefined ? varient.isInStock : true,
           })),
         );
+      } else {
+        await tx.insert(productVariant).values({
+          productId: vId!,
+          sku: variants.sku,
+          name: variants.name,
+          price: Number(variants.price) || 0,
+          strikethroughPrice: variants.strikethroughPrice ? Number(variants.strikethroughPrice) : null,
+          image: getImageKey(variants.bannerImage) || null,
+          size: null,
+          flowType: null,
+          allowCycleSync: false,
+          allowSubscription: false,
+          isMixBox: false,
+          isInStock: variants.isInStock !== undefined ? variants.isInStock : true,
+        });
       }
 
       // Update Subscriptions
@@ -430,7 +481,7 @@ export async function getFullProductDetails(identifier: string) {
     if (!productDeails) throw new Error("Product not found");
 
     const [
-      prodcutVarientBoxRes,
+      productVariantsRes,
       categoryRes,
       productAttributeRes,
       productMediaRes,
@@ -438,8 +489,8 @@ export async function getFullProductDetails(identifier: string) {
     ] = await Promise.all([
       db
         .select()
-        .from(productVarientBox)
-        .where(eq(productVarientBox.productId, productDeails.id)),
+        .from(productVariant)
+        .where(eq(productVariant.productId, productDeails.id)),
       db
         .select()
         .from(category)
@@ -462,7 +513,8 @@ export async function getFullProductDetails(identifier: string) {
 
     return {
       ...productDeails,
-      prodcutVarientBoxRes,
+      prodcutVarientBoxRes: productVariantsRes,
+      productVariants: productVariantsRes,
       categoryRes,
       productAttributeRes,
       productMediaRes,
@@ -489,7 +541,7 @@ export async function getFullProduct(identifier: string) {
     if (!productDeails) throw new Error("Product not found");
 
     const [
-      prodcutVarientBoxRes,
+      productVariantsRes,
       categoryRes,
       productAttributeRes,
       productMediaRes,
@@ -497,8 +549,8 @@ export async function getFullProduct(identifier: string) {
     ] = await Promise.all([
       db
         .select()
-        .from(productVarientBox)
-        .where(eq(productVarientBox.productId, productDeails.id)),
+        .from(productVariant)
+        .where(eq(productVariant.productId, productDeails.id)),
       db
         .select()
         .from(category)
@@ -521,7 +573,8 @@ export async function getFullProduct(identifier: string) {
 
     return {
       ...productDeails,
-      prodcutVarientBoxRes,
+      prodcutVarientBoxRes: productVariantsRes,
+      productVariants: productVariantsRes,
       categoryRes,
       productAttributeRes,
       productMediaRes,
@@ -570,7 +623,7 @@ export async function getProductSimilarProducts(slug: string | any) {
         id: product.id,
         name: product.name,
         slug: product.slug,
-        basePrice: product.basePrice,
+        basePrice: productVariant.price,
         bannerImage: product.bannerImage,
         rateing1Star: product.rateing1Star,
         rateing2Star: product.rateing2Star,
@@ -578,18 +631,19 @@ export async function getProductSimilarProducts(slug: string | any) {
         rateing4Star: product.rateing4Star,
         rateing5Star: product.rateing5Star,
         hasVarientBox: product.hasVarientBox,
-        strikethroughPrice: product.strikethroughPrice,
+        strikethroughPrice: productVariant.strikethroughPrice,
         category: category.name,
       })
       .from(product)
+      .leftJoin(productVariant, eq(product.id, productVariant.productId))
       .innerJoin(productCategory, eq(productCategory.productId, product.id))
       .innerJoin(category, eq(category.id, productCategory.categoryId))
       .where(
         and(eq(productCategory.categoryId, categoryId), ne(product.id, v.id)),
       )
-      .limit(10);
+      .limit(30);
 
-    return similarVariants;
+    return deduplicateProducts(similarVariants).slice(0, 10);
   } catch (error) {
     console.error("getProductSimilarProducts failed:", error);
   }
@@ -673,14 +727,14 @@ export async function getProducts({
   if (min && max) {
     filters.push(
       and(
-        gte(product.basePrice, Number(min)),
-        lte(product.basePrice, Number(max)),
+        gte(productVariant.price, Number(min)),
+        lte(productVariant.price, Number(max)),
       ),
     );
   } else if (min) {
-    filters.push(gte(product.basePrice, Number(min)));
+    filters.push(gte(productVariant.price, Number(min)));
   } else if (max) {
-    filters.push(lte(product.basePrice, Number(max)));
+    filters.push(lte(productVariant.price, Number(max)));
   }
 
   if (stock) {
@@ -719,30 +773,32 @@ export async function getProducts({
         name: product.name,
         slug: product.slug,
         hasVarientBox: product.hasVarientBox,
-        basePrice: product.basePrice,
-        strikethroughPrice: product.strikethroughPrice,
+        basePrice: productVariant.price,
+        strikethroughPrice: productVariant.strikethroughPrice,
         bannerImage: product.bannerImage,
         createdAt: product.createdAt,
       })
       .from(product)
-      // .leftJoin(productCategory, eq(productCategory.productId, product.id))
+      .leftJoin(productVariant, eq(product.id, productVariant.productId))
       .where(whereClause)
       .orderBy(desc(product.createdAt))
-      .limit(pageSize)
+      .limit(pageSize * 10)
       .offset(offset),
 
     db
       .select({ count: sql<number>`count(distinct ${product.id})` })
       .from(product)
+      .leftJoin(productVariant, eq(product.id, productVariant.productId))
       .leftJoin(productCategory, eq(productCategory.productId, product.id))
       .leftJoin(category, eq(category.id, productCategory.categoryId))
       .where(whereClause),
   ]);
 
+  const dedupedItems = deduplicateProducts(items).slice(0, pageSize);
   const totalPages = Math.ceil(total[0].count / pageSize);
 
   return {
-    items,
+    items: dedupedItems,
     totalPages,
     page,
   };
@@ -750,7 +806,21 @@ export async function getProducts({
 
 export async function getUserProduct() {
   try {
-    return await db.select({ id: product.id, name: product.name, slug: product.slug, bannerImage: product.bannerImage, basePrice: product.basePrice, strikethroughPrice: product.strikethroughPrice, type: product.type }).from(product).orderBy(desc(product.createdAt))
+    const rows = await db
+      .select({
+        id: product.id,
+        name: product.name,
+        slug: product.slug,
+        bannerImage: product.bannerImage,
+        basePrice: productVariant.price,
+        strikethroughPrice: productVariant.strikethroughPrice,
+        type: product.type,
+        createdAt: product.createdAt,
+      })
+      .from(product)
+      .leftJoin(productVariant, eq(product.id, productVariant.productId))
+      .orderBy(desc(product.createdAt));
+    return deduplicateProducts(rows);
   } catch (error) {
     console.log(error)
   }
@@ -866,33 +936,38 @@ export async function getBestSellingProducts() {
       .select({
         id: product.id,
         name: product.name,
-        price: product.basePrice,
-        oldPrice: product.strikethroughPrice,
+        price: productVariant.price,
+        oldPrice: productVariant.strikethroughPrice,
         image: product.bannerImage,
         slug: product.slug,
       })
       .from(product)
+      .leftJoin(productVariant, eq(product.id, productVariant.productId))
       .innerJoin(productCategory, eq(productCategory.productId, product.id))
       .innerJoin(category, eq(category.id, productCategory.categoryId))
       .where(eq(category.slug, bestSellingSlug))
-      .limit(4);
+      .limit(20);
+
+    const deduped = deduplicateProducts(products).slice(0, 4);
 
     // fallback
-    if (products.length === 0) {
-      return await db
+    if (deduped.length === 0) {
+      const fallbackRows = await db
         .select({
           id: product.id,
           name: product.name,
-          price: product.basePrice,
-          oldPrice: product.strikethroughPrice,
+          price: productVariant.price,
+          oldPrice: productVariant.strikethroughPrice,
           image: product.bannerImage,
           slug: product.slug,
         })
         .from(product)
-        .limit(4);
+        .leftJoin(productVariant, eq(product.id, productVariant.productId))
+        .limit(20);
+      return deduplicateProducts(fallbackRows).slice(0, 4);
     }
 
-    return products;
+    return deduped;
   } catch (error) {
     console.error(error);
     return [];
@@ -904,13 +979,13 @@ export async function getBrandBestSellingProducts(slug: any) {
     const brandProducts = await db.select({
       id: product.id,
       name: product.name,
-      price: product.basePrice,
+      price: productVariant.price,
       image: product.bannerImage,
       slug: product.slug,
       brand: product.brand,
-      oldPrice: product.strikethroughPrice
-    }).from(product).where(eq(product.brand, slug)).limit(4);
-    return brandProducts
+      oldPrice: productVariant.strikethroughPrice
+    }).from(product).leftJoin(productVariant, eq(product.id, productVariant.productId)).where(eq(product.brand, slug)).limit(20);
+    return deduplicateProducts(brandProducts).slice(0, 4);
   } catch (error) {
     console.error(error);
     return [];
@@ -922,13 +997,13 @@ export async function getBrandNewArrivalProducts(slug: any) {
     const brandProducts = await db.select({
       id: product.id,
       name: product.name,
-      price: product.basePrice,
+      price: productVariant.price,
       image: product.bannerImage,
       slug: product.slug,
       brand: product.brand,
-      oldPrice: product.strikethroughPrice
-    }).from(product).where(eq(product.brand, slug)).orderBy(desc(product.createdAt)).limit(4);
-    return brandProducts
+      oldPrice: productVariant.strikethroughPrice
+    }).from(product).leftJoin(productVariant, eq(product.id, productVariant.productId)).where(eq(product.brand, slug)).orderBy(desc(product.createdAt)).limit(20);
+    return deduplicateProducts(brandProducts).slice(0, 4);
   } catch (error) {
     console.error(error);
     return [];

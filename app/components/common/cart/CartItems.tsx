@@ -41,7 +41,7 @@ export function CartItems() {
         <div className="space-y-4">
           {items.map((item: any) => (
             <div
-              key={`${item.productId}-${item.sku || "default"}`}
+              key={`${item.productId}-${item.sku || "default"}-${item.uuid || item.totalPads || "line"}`}
               className="flex flex-col sm:flex-row  gap-4 p-4 border rounded-lg bg-white shadow-sm"
             >
               {/* Product Image */}
@@ -59,6 +59,11 @@ export function CartItems() {
               <div className="flex-1 flex flex-col sm:flex-row  sm:justify-between gap-8">
                 <div className="space-y-1">
                   <h3 className="font-semibold text-[#333333]">{item.title}</h3>
+                  {item.mixBoxRecipe && (
+                    <p className="text-xs text-gray-500">
+                      {item.totalPads} pads, {item.boxCount} box{item.boxCount === 1 ? "" : "es"}, {item.freeLiners} free liners
+                    </p>
+                  )}
                   <p className="text-lg font-bold text-[#168BA0]">
                     ₹{item.price}
                   </p>

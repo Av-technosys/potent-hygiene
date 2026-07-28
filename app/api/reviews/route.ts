@@ -38,7 +38,6 @@ export async function POST(req: NextRequest) {
       .values({
         userId: body.userId,
         name: body.name,
-        email: body.email,
         productId: body.productId,
         rating: body.rating,
         message: body.message,

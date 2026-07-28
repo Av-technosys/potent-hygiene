@@ -1,11 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use server";
 import { db } from "@/src/db";
-import { cart, cartItem, product } from "@/src/db/schema";
-import { eq, and, sql, inArray } from "drizzle-orm";
+import { cart, cartItem, product, productVariant } from "@/src/db/schema";
+import { eq, and, sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { v4 as uuidv4 } from "uuid";
 import { requireUserWithRefresh } from "../user/action";
+import { calculateCycleSyncSchedule } from "@/lib/cycleSync";
+import {
+  calculateMixBoxPricing,
+  normalizeMixBoxRecipe,
+  normalizePadSize,
+  type MixBoxSelection,
+  type PurchaseType,
+  type SubscriptionType,
+} from "@/lib/mixYourBox";
 
 export async function getCart() {
   try {
@@ -23,19 +32,34 @@ export async function getCart() {
     const itemsWithDetails = await db
       .select({
         productId: cartItem.productId,
-        productVarientBox: cartItem.productVarientBox,
+        productVariantId: cartItem.productVariantId,
         isTypeSubscription: cartItem.isTypeSubscription,
-        frequencyInMonths: cartItem.frequencyInMonths,
+        frequencyInDays: cartItem.frequencyInDays,
         quantity: cartItem.quantity,
         title: product.name,
-        image: product.bannerImage,
-        price: product.basePrice,
-        originalPrice: product.strikethroughPrice,
+        image: sql<string>`COALESCE(${productVariant.image}, ${product.bannerImage})`,
+        price: sql<number>`COALESCE(${productVariant.price}, 0)`,
+        originalPrice: productVariant.strikethroughPrice,
         slug: product.slug,
-        sku: product.sku,
+        sku: sql<string>`COALESCE(${productVariant.sku}, ${product.sku})`,
+        size: productVariant.size,
+        flowType: productVariant.flowType,
+        mixBoxRecipe: cartItem.mixBoxRecipe,
+        totalPads: cartItem.totalPads,
+        boxCount: cartItem.boxCount,
+        freeLiners: cartItem.freeLiners,
+        purchaseType: cartItem.purchaseType,
+        subscriptionType: cartItem.subscriptionType,
+        cycleLength: cartItem.cycleLength,
+        periodLength: cartItem.periodLength,
+        lastPeriodDate: cartItem.lastPeriodDate,
+        nextPeriodDate: cartItem.nextPeriodDate,
+        arrivalDate: cartItem.arrivalDate,
+        chargeDate: cartItem.chargeDate,
       })
       .from(cartItem)
       .leftJoin(product, eq(cartItem.productId, product.id))
+      .leftJoin(productVariant, eq(cartItem.productVariantId, productVariant.id))
       .where(eq(cartItem.cartId, userCart.id));
 
     return { success: true, items: itemsWithDetails };
@@ -44,17 +68,27 @@ export async function getCart() {
     return { success: false, error: "Failed to fetch cart" };
   }
 }
+
 export async function addToCart(
   productId: string,
   quantity: any,
   selectedPlan: any,
   isSubscribed: any,
+  productVariantId?: string,
   cartSizes?: any,
-  uuid?:any
+  uuid?: any,
+  metadata?: {
+    mixBoxRecipe?: any;
+    purchaseType?: PurchaseType;
+    subscriptionType?: SubscriptionType;
+    cycleSync?: {
+      lastPeriodDate: string;
+      cycleLength: number;
+      periodLength: number;
+    };
+  }
 ) {
   try {
-   
-
     const { userId } = await requireUserWithRefresh();
     if (!userId) {
       return {
@@ -62,6 +96,45 @@ export async function addToCart(
         error: "UNAUTHORIZED",
       };
     }
+
+    const [variantInfo] = await db
+      .select({
+        price: productVariant.price,
+      })
+      .from(productVariant)
+      .where(
+        productVariantId
+          ? eq(productVariant.id, productVariantId)
+          : eq(productVariant.productId, productId)
+      )
+      .limit(1);
+
+    const purchaseType: PurchaseType =
+      metadata?.purchaseType ?? (isSubscribed ? "subscription" : "one_time");
+    let subscriptionType: SubscriptionType =
+      metadata?.subscriptionType ??
+      (selectedPlan?.subscriptionType ??
+        (selectedPlan?.period === 2 ? "every_2_months" : selectedPlan?.period === 1 ? "monthly" : null));
+
+    const cycleSchedule =
+      subscriptionType === "cycle_sync" && metadata?.cycleSync
+        ? calculateCycleSyncSchedule(metadata.cycleSync)
+        : null;
+
+    if (cycleSchedule && !cycleSchedule.valid) {
+      return { success: false, error: cycleSchedule.message };
+    }
+
+    const effectivePurchaseType: PurchaseType =
+      cycleSchedule?.valid && !cycleSchedule.shouldCreateSubscription
+        ? "one_time"
+        : purchaseType;
+
+    if (effectivePurchaseType === "one_time") {
+      subscriptionType = null;
+      isSubscribed = false;
+    }
+
     const result = await db.transaction(async (tx) => {
       // Get or create cart
       let existingCart = await tx
@@ -95,6 +168,7 @@ export async function addToCart(
             and(
               eq(cartItem.cartId, existingCart.id),
               eq(cartItem.productId, productId),
+              productVariantId ? eq(cartItem.productVariantId, productVariantId) : sql`product_variant_id IS NULL`
             ),
           )
           .then((r) => r[0]);
@@ -102,7 +176,6 @@ export async function addToCart(
         if (existingItem) {
           const currentQuantity = existingItem.quantity ?? 0;
           const newQuantity = currentQuantity + quantity;
-          // Update quantity
           await tx
             .update(cartItem)
             .set({ quantity: newQuantity })
@@ -119,9 +192,10 @@ export async function addToCart(
             id: uuidv4(),
             cartId: existingCart.id,
             productId,
+            productVariantId: productVariantId || null,
             quantity,
             isTypeSubscription: isSubscribed,
-            frequencyInMonths:selectedPlan !== null && selectedPlan?.period,
+            frequencyInDays: selectedPlan !== null && selectedPlan?.period ? selectedPlan.period * 30 : null,
           });
 
           return {
@@ -131,18 +205,62 @@ export async function addToCart(
           };
         }
       } else {
-        await tx.insert(cartItem).values(
-          cartSizes.map((size: any) => ({
-            id: uuidv4(),
-            cartId: existingCart.id,
-            productId,
-            quantity: size.qty,
-            productVarientBox: size.id,
-            isTypeSubscription: isSubscribed,
-            frequencyInMonths:selectedPlan !== null && selectedPlan?.period,
-            clientCartItemId:uuid
-          })),
-        );
+        const recipe =
+          metadata?.mixBoxRecipe ??
+          normalizeMixBoxRecipe(
+            cartSizes
+              .map((size: any): MixBoxSelection | null => {
+                const padSize = normalizePadSize(size.name ?? "");
+                return padSize ? { size: padSize, quantity: size.qty } : null;
+              })
+              .filter(Boolean) as MixBoxSelection[],
+          );
+
+        const pricing = calculateMixBoxPricing({
+          recipe,
+          setPrice: variantInfo?.price ?? 0,
+          purchaseType: effectivePurchaseType,
+          subscriptionType,
+        });
+
+        if (!pricing.valid) {
+          return {
+            success: false,
+            error: pricing.message,
+          };
+        }
+
+        const [mixVariant] = await tx
+          .select({ id: productVariant.id })
+          .from(productVariant)
+          .where(and(eq(productVariant.productId, productId), eq(productVariant.isMixBox, true)))
+          .limit(1);
+
+        await tx.insert(cartItem).values({
+          id: uuidv4(),
+          cartId: existingCart.id,
+          productId,
+          productVariantId: mixVariant?.id || productVariantId || null,
+          quantity: 1,
+          isTypeSubscription: effectivePurchaseType === "subscription",
+          frequencyInDays: subscriptionType === "monthly" ? 30 : subscriptionType === "every_2_months" ? 60 : null,
+          clientCartItemId: uuid,
+          mixBoxRecipe: recipe,
+          totalPads: pricing.totalPads,
+          boxCount: pricing.boxCount,
+          freeLiners: pricing.freeLiners,
+          purchaseType: effectivePurchaseType,
+          subscriptionType,
+          cycleLength: cycleSchedule?.valid ? cycleSchedule.cycleLength : null,
+          periodLength: cycleSchedule?.valid ? cycleSchedule.periodLength : null,
+          lastPeriodDate:
+            cycleSchedule?.valid && metadata?.cycleSync?.lastPeriodDate
+              ? new Date(metadata.cycleSync.lastPeriodDate)
+              : null,
+          nextPeriodDate: cycleSchedule?.valid ? cycleSchedule.nextPeriod : null,
+          arrivalDate: cycleSchedule?.valid ? cycleSchedule.arrivalDate : null,
+          chargeDate: cycleSchedule?.valid ? cycleSchedule.chargeDate : null,
+        });
 
         return {
           success: true,
@@ -162,6 +280,7 @@ export async function addToCart(
 
 export async function removeFromCart(
   productId: string,
+  productVariantId?: any,
   uuid?: any,
   cartSizes?: any,
 ) {
@@ -188,7 +307,7 @@ export async function removeFromCart(
           and(
             eq(cartItem.cartId, userCart.id),
             eq(cartItem.productId, productId),
-            // eq(cartItem.uuid,uuid)  yeh krna hai jab cart me uuid set ho jaye tab taki vhi product remove ho jiski uuid match ho nhii toh yeh same productgvareint wale sbhii ko uda dega..
+            productVariantId ? eq(cartItem.productVariantId, productVariantId) : sql`TRUE`
           ),
         );
       } else {
@@ -196,12 +315,7 @@ export async function removeFromCart(
           and(
             eq(cartItem.cartId, userCart.id),
             eq(cartItem.productId, productId),
-            eq(cartItem.clientCartItemId,uuid),
-            inArray(
-              cartItem.productVarientBox,
-              cartSizes.map((item: any) => item.id),
-            ),
-            // eq(cartItem.uuid,uuid)  yeh krna hai jab cart me uuid set ho jaye tab taki vhi product remove ho jiski uuid match ho nhii toh yeh same productgvareint wale sbhii ko uda dega..
+            eq(cartItem.clientCartItemId, uuid),
           ),
         );
       }
@@ -220,6 +334,7 @@ export async function removeFromCart(
 export async function updateCartItemQuantity(
   productId: string,
   quantity: number,
+  productVariantId?: string,
 ) {
   try {
     const { userId } = await requireUserWithRefresh();
@@ -244,17 +359,16 @@ export async function updateCartItemQuantity(
       );
 
       if (quantity === 0) {
-        // Remove item if quantity is 0
         await tx
           .delete(cartItem)
           .where(
             and(
               eq(cartItem.cartId, userCart.id),
               eq(cartItem.productId, productId),
+              productVariantId ? eq(cartItem.productVariantId, productVariantId) : sql`TRUE`
             ),
           );
       } else {
-        // Update quantity
         await tx
           .update(cartItem)
           .set({ quantity })
@@ -262,6 +376,7 @@ export async function updateCartItemQuantity(
             and(
               eq(cartItem.cartId, userCart.id),
               eq(cartItem.productId, productId),
+              productVariantId ? eq(cartItem.productVariantId, productVariantId) : sql`TRUE`
             ),
           );
       }

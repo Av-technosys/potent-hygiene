@@ -1,6 +1,7 @@
 import Razorpay from "razorpay";
 import { NextResponse } from "next/server";
 import { RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET } from "@/env";
+import { calculateMixBoxPricing, type MixBoxRecipe } from "@/lib/mixYourBox";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -15,12 +16,22 @@ export async function POST(req: Request) {
     items.map(async (item: any) => {
       if (!item.isTypeSubscription) return null;
 
+      const mixPricing = item.mixBoxRecipe
+        ? calculateMixBoxPricing({
+          recipe: item.mixBoxRecipe as MixBoxRecipe,
+          setPrice: item.price,
+          purchaseType: "subscription",
+          subscriptionType: item.subscriptionType,
+        })
+        : null;
+      const planAmount = mixPricing?.valid ? mixPricing.price : item.price;
+
       const plan = await razorpay.plans.create({
         period: "monthly",
         interval: item.frequencyInMonths, 
         item: {
           name: item.title,
-          amount: item.price * 100, 
+          amount: Math.round(planAmount * 100), 
           currency: "INR",
         },
       });

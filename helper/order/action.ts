@@ -6,12 +6,13 @@ import { and, or, sql, asc, eq, desc, inArray } from "drizzle-orm";
 import { db } from "@/lib/db";
 
 import { revalidatePath } from "next/cache";
-import { cart, cartItem, cancelRequest, couponTransaction, product, returnRequest, returnRequestImage, review, rewardCoinsHistory } from "@/db/schema";
+import { cart, cartItem, cancelRequest, couponTransaction, product, productVariant, returnRequest, returnRequestImage, review, rewardCoinsHistory } from "@/db/schema";
 import { order, orderItem, payment, users } from "@/db/schema";
 import { requireUserWithRefresh } from "../user/action";
 import { calculateCheckoutPricingForUser } from "../checkout/action";
 import { ORDER_STATUS } from "@/const/globalconst";
 import { getImageKey } from "@/lib/imageUrl";
+import { calculateMixBoxPricing, type MixBoxRecipe } from "@/lib/mixYourBox";
 import {
   sendDeliveryConfirmationEmail,
   sendOrderStatusUpdateEmail,
@@ -469,6 +470,10 @@ export async function createOrder({
       throw new Error("No product IDs provided");
     }
 
+    const uniqueVariantIds = [
+      ...new Set(checkoutItems.map((item: any) => item.productVariantId).filter(Boolean)),
+    ] as string[];
+
     const products = await db
       .select()
       .from(product)
@@ -479,6 +484,11 @@ export async function createOrder({
     }
 
     const productMap = new Map(products.map((p) => [p.id, p]));
+
+    const variants = uniqueVariantIds.length
+      ? await db.select().from(productVariant).where(inArray(productVariant.id, uniqueVariantIds))
+      : [];
+    const variantMap = new Map(variants.map((v) => [v.id, v]));
 
     const safeAmount = Math.round(pricing.final);
 
@@ -500,25 +510,39 @@ export async function createOrder({
       const orderId = insertedOrder[0].id;
 
       const orderItemsToInsert = checkoutItems.map((item: any) => {
-        // const Id =
-        //   (item as any).id || (item as any).productId;
         const Id = item.productId;
         const p = productMap.get(Id);
+        const v = item.productVariantId ? variantMap.get(item.productVariantId) : null;
+        
+        const itemPrice = v?.price ?? 0;
 
-        if (!p || !p.name || !p.slug || p.basePrice == null) {
+        if (!p || !p.name || !p.slug) {
           throw new Error("Invalid product data");
         }
 
         return {
           orderId,
           productId: p.id,
+          productVariantId: v?.id ?? null,
           quantity: item.quantity,
-          productVarientBox: item.productVarientBox,
+          mixBoxRecipe: item.mixBoxRecipe,
+          totalPads: item.totalPads,
+          boxCount: item.boxCount,
+          freeLiners: item.freeLiners,
+          purchaseType: item.purchaseType,
+          subscriptionType: item.subscriptionType,
           productName: p.name,
           productSlug: p.slug,
-          productImage: p.bannerImage ?? null,
-          productSKU: p.sku ?? null,
-          productPrice: p.basePrice,
+          productImage: v?.image ?? p.bannerImage ?? null,
+          productSKU: v?.sku ?? p.sku ?? null,
+          productPrice: item.mixBoxRecipe
+            ? calculateMixBoxPricing({
+              recipe: item.mixBoxRecipe as MixBoxRecipe,
+              setPrice: itemPrice,
+              purchaseType: item.purchaseType === "subscription" ? "subscription" : "one_time",
+              subscriptionType: item.subscriptionType,
+            }).price ?? itemPrice
+            : itemPrice,
         };
       });
 

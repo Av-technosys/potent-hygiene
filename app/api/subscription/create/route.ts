@@ -11,15 +11,15 @@ export async function POST(req: Request) {
     where: eq(subscriptions.id, planId)
   })
 
-  if (!plan || !plan.frequencyInMonths) {
+  if (!plan || !plan.frequencyInDays) {
     return Response.json({ error: "Plan not found or invalid" })
   }
 
   const startDate = new Date()
 
   const nextBillingDate = new Date()
-  nextBillingDate.setMonth(
-    nextBillingDate.getMonth() + plan.frequencyInMonths
+  nextBillingDate.setDate(
+    nextBillingDate.getDate() + plan.frequencyInDays
   )
 
   const newSubscription = await db

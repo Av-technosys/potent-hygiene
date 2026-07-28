@@ -1,3 +1,9 @@
+import type {
+  MixBoxRecipe,
+  PurchaseType,
+  SubscriptionType,
+} from "@/lib/mixYourBox";
+
 export type CartAttribute = {
   attribute: string; 
   value: string;    
@@ -5,6 +11,7 @@ export type CartAttribute = {
 
 export type CartItem = {
   productId: string;
+  productVariantId?: string;
   sku?: string;
   slug: string;
   title: string;
@@ -13,6 +20,19 @@ export type CartItem = {
   originalPrice?: number; 
   quantity: number;
   cartSizes?: any[];
+  mixBoxRecipe?: MixBoxRecipe;
+  totalPads?: number;
+  boxCount?: number;
+  freeLiners?: number;
+  purchaseType?: PurchaseType;
+  subscriptionType?: SubscriptionType;
+  selectedPlan?: any;
+  isSubscribed?: boolean;
+  cycleSync?: {
+    lastPeriodDate: string;
+    cycleLength: number;
+    periodLength: number;
+  };
   isQuantityChangable?: boolean;
   addedAt: number;
   uuid?: string; 

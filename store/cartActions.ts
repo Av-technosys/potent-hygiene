@@ -12,10 +12,12 @@ import {
 } from "@/helper/cart/action";
 import { isUserLoggedIn } from "@/helper/auth/action";
 import { toast } from "sonner";
+import type { MixBoxRecipe, PurchaseType, SubscriptionType } from "@/lib/mixYourBox";
 
 // Types
 type CartItem = {
   productId: string;
+  productVariantId?: string;
   sku?: string;
   slug: string;
   title: string;
@@ -25,6 +27,17 @@ type CartItem = {
   isSubscribed?:any;
   originalPrice?: number;
   cartSizes?: any[];
+  mixBoxRecipe?: MixBoxRecipe;
+  totalPads?: number;
+  boxCount?: number;
+  freeLiners?: number;
+  purchaseType?: PurchaseType;
+  subscriptionType?: SubscriptionType;
+  cycleSync?: {
+    lastPeriodDate: string;
+    cycleLength: number;
+    periodLength: number;
+  };
   isQuantityChangable?: boolean;
   quantity?: number;
   uuid?: string; 
@@ -32,23 +45,19 @@ type CartItem = {
 
 // Add to cart
 export const addToCart = async (item: CartItem) => {
-
-  const isAuth = await isUserLoggedIn()
+  const isAuth = await isUserLoggedIn();
 
   if (!isAuth) {
     toast.info("Please login to add items to cart");
-
     setTimeout(() => {
       window.location.href = "/login";
     }, 1200);
-
     return; // ✅ stop execution
   }
 
- 
-
   const normalizedItem = {
     productId: item.productId,
+    productVariantId: item.productVariantId,
     sku: item.sku,
     slug: item.slug,
     title: item.title,
@@ -58,6 +67,13 @@ export const addToCart = async (item: CartItem) => {
     isSubscribed: item.isSubscribed,
     originalPrice: item.originalPrice,
     cartSizes: item.cartSizes,
+    mixBoxRecipe: item.mixBoxRecipe,
+    totalPads: item.totalPads,
+    boxCount: item.boxCount,
+    freeLiners: item.freeLiners,
+    purchaseType: item.purchaseType,
+    subscriptionType: item.subscriptionType,
+    cycleSync: item.cycleSync,
     isQuantityChangable: item.isQuantityChangable,
     quantity: item.quantity,
     uuid: item.uuid 
@@ -66,39 +82,35 @@ export const addToCart = async (item: CartItem) => {
   // ✅ optimistic UI
   useCartStore.getState().addItem(normalizedItem);
 
-  if(item.isQuantityChangable){
-  // ✅ DB sync
-  toast.success("Item added to cart");
-  addToCartDB(item.productId, item.quantity, item.selectedPlan, item.isSubscribed).catch((error) => {
-    console.error("Failed to sync with DB:", error);
-  });
-  }else{
-     // ✅ DB sync
-  toast.success("Item added to cart");
-  addToCartDB(item.productId, item.quantity, item.selectedPlan, item.isSubscribed, item.cartSizes,item.uuid).catch((error) => {
-    console.error("Failed to sync with DB:", error);
-  });
+  if (item.isQuantityChangable) {
+    // ✅ DB sync
+    toast.success("Item added to cart");
+    addToCartDB(item.productId, item.quantity, item.selectedPlan, item.isSubscribed, item.productVariantId).catch((error) => {
+      console.error("Failed to sync with DB:", error);
+    });
+  } else {
+    // ✅ DB sync
+    toast.success("Item added to cart");
+    addToCartDB(item.productId, item.quantity, item.selectedPlan, item.isSubscribed, item.productVariantId, item.cartSizes, item.uuid).catch((error) => {
+      console.error("Failed to sync with DB:", error);
+    });
   }
-
-
- 
 };
 
 // Remove
-export const removeFromCart = async (productId: string, sku?: string,uuid?:string,cartSizes?:any) => {
-  useCartStore.getState().removeItem(productId, sku,uuid);
+export const removeFromCart = async (productId: string, sku?: string, uuid?: string, cartSizes?: any, productVariantId?: string) => {
+  useCartStore.getState().removeItem(productId, sku, uuid);
 
-  if(!cartSizes || cartSizes.length === 0){
-  removeFromCartDB(productId, sku).catch((error) => {
-    console.error("Failed to remove from DB:", error);
-  });
-  toast.success("Item removed from cart");
-  }else{
-    removeFromCartDB(productId, uuid,cartSizes).catch((error) => {
+  if (!cartSizes || cartSizes.length === 0) {
+    removeFromCartDB(productId, productVariantId, sku).catch((error) => {
       console.error("Failed to remove from DB:", error);
     });
     toast.success("Item removed from cart");
-
+  } else {
+    removeFromCartDB(productId, productVariantId, uuid, cartSizes).catch((error) => {
+      console.error("Failed to remove from DB:", error);
+    });
+    toast.success("Item removed from cart");
   }
 };
 
@@ -106,11 +118,12 @@ export const removeFromCart = async (productId: string, sku?: string,uuid?:strin
 export const updateCartQuantity = async (
   productId: string,
   quantity: number,
-  sku?: string
+  sku?: string,
+  productVariantId?: string
 ) => {
   useCartStore.getState().updateQuantity(productId, quantity, sku);
 
-  updateCartItemQuantity(productId, quantity).catch((error) => {
+  updateCartItemQuantity(productId, quantity, productVariantId).catch((error) => {
     console.error("Failed to update DB:", error);
   });
 };
@@ -133,6 +146,7 @@ export const syncCartFromDB = async () => {
     if (result.success && result.items) {
       const formattedItems = result.items.map((item: any) => ({
         productId: item.productId,
+        productVariantId: item.productVariantId,
         sku: item.sku || "",
         slug: item.slug || "",
         title: item.title || "Product",
@@ -140,6 +154,17 @@ export const syncCartFromDB = async () => {
         price: item.price || 0,
         originalPrice: item.originalPrice,
         quantity: item.quantity ?? 0,
+        mixBoxRecipe: item.mixBoxRecipe,
+        totalPads: item.totalPads,
+        boxCount: item.boxCount,
+        freeLiners: item.freeLiners,
+        purchaseType: item.purchaseType,
+        subscriptionType: item.subscriptionType,
+        selectedPlan: {
+          period: item.frequencyInMonths,
+          subscriptionType: item.subscriptionType,
+        },
+        isSubscribed: item.isTypeSubscription,
         addedAt: Date.now(),
       }));
 
